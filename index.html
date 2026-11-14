@@ -92,9 +92,9 @@
     <div class="input-panel">
         <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入下一期开奖数据</div>
         <div class="input-row">
-            <div>期号: <input type="text" id="in-period" placeholder="例如: 2026317" style="width: 90px;"></div>
-            <div>平码(6个逗号隔开): <input type="text" id="in-normals" placeholder="例如: 1,2,3,4,5,6" style="width: 170px;"></div>
-            <div>特码(1个): <input type="text" id="in-special" placeholder="例如: 8" style="width: 50px;"></div>
+            <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 100px;"></div>
+            <div>平码(支持空格或逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 210px;"></div>
+            <div>特码(1个): <input type="text" id="in-special" placeholder="例如: 26" style="width: 60px;"></div>
             <button class="add-btn" onclick="addNewDraw()">📥 确认录入并实时更新</button>
             <button class="reset-data-btn" onclick="resetDefaultData()">恢复默认</button>
         </div>
@@ -325,6 +325,19 @@ function clearRecords() {
     }
 }
 
+// 自动计算下一期期号并填入输入框
+function initAutoPeriod() {
+    if (HISTORY_DATA && HISTORY_DATA.length > 0) {
+        var latestPeriod = parseInt(HISTORY_DATA[0].period, 10);
+        if (!isNaN(latestPeriod)) {
+            var nextPeriodInput = document.getElementById("in-period");
+            if (nextPeriodInput) {
+                nextPeriodInput.value = (latestPeriod + 1).toString();
+            }
+        }
+    }
+}
+
 function addNewDraw() {
     var pInput = document.getElementById("in-period").value.trim();
     var nInput = document.getElementById("in-normals").value.trim();
@@ -335,11 +348,13 @@ function addNewDraw() {
         return;
     }
 
-    var normalsArr = nInput.split(',').map(function(item) { return parseInt(item.trim(), 10); });
+    // 支持空格、逗号或混用分隔平码
+    var cleanedStr = nInput.replace(/[,，\s]+/g, ' ').trim();
+    var normalsArr = cleanedStr.split(' ').map(function(item) { return parseInt(item, 10); });
     var specialNum = parseInt(sInput, 10);
 
-    if (normalsArr.length !== 6 || isNaN(specialNum)) {
-        alert("格式错误：平码必须是6个数字（用英文逗号隔开），特码必须是1个数字！");
+    if (normalsArr.length !== 6 || normalsArr.some(isNaN) || isNaN(specialNum)) {
+        alert("格式错误：平码必须是6个数字（可用空格或逗号隔开），特码必须是1个数字！");
         return;
     }
 
@@ -349,7 +364,6 @@ function addNewDraw() {
     HISTORY_DATA.unshift(newObj);
     localStorage.setItem("MACAU_HISTORY_DATA", JSON.stringify(HISTORY_DATA));
 
-    document.getElementById("in-period").value = "";
     document.getElementById("in-normals").value = "";
     document.getElementById("in-special").value = "";
 
@@ -357,6 +371,7 @@ function addNewDraw() {
     renderTable(null);
     checkPredictRecords();
     doPredict();
+    initAutoPeriod(); // 自动更新为再下一期
     alert("第 " + pInput + " 期开奖数据已累加，战绩已更新！");
 }
 
@@ -368,6 +383,7 @@ function resetDefaultData() {
         renderTable(null);
         checkPredictRecords();
         doPredict();
+        initAutoPeriod();
         alert("已恢复默认历史数据！");
     }
 }
@@ -553,6 +569,7 @@ window.onload = function() {
     renderTopLatest();
     renderTable(null);
     updateTimer();
+    initAutoPeriod(); // 页面加载时自动填入下一期期号
     checkPredictRecords();
     doPredict();
 };
