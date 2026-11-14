@@ -57,6 +57,9 @@
         .result-box { background: #ffffff; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 6px; text-align: center; margin-top: 20px; }
         .result-num { font-size: 28px; font-weight: bold; color: #dc2626; margin: 10px 0; }
         
+        .copy-btn { background: #0284c7; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
+        .copy-btn:hover { background: #0369a1; }
+
         .record-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; background: #ffffff; }
         .record-table th, .record-table td { padding: 8px 10px; text-align: center; border-bottom: 1px solid #e2e8f0; }
         .record-table th { background: #f1f5f9; color: #334155; font-weight: bold; }
@@ -140,7 +143,8 @@
     <div class="result-box">
         <div style="font-weight: bold; color: #334155;">🎯 综合全维加权精选推荐</div>
         <div class="result-num" id="recommended-code">等待生成</div>
-        <div id="pool-display" style="color: #64748b; font-size: 13px;"></div>
+        <div id="pool-display" style="color: #64748b; font-size: 13px; margin-bottom: 8px;"></div>
+        <button class="copy-btn" onclick="copyPredictData()">📋 一键复制纯数字预测数据</button>
     </div>
 
     <!-- 🎯 智能预测中奖历史记录与战绩复盘模块 -->
@@ -197,6 +201,7 @@ function getColorName(n) {
 }
 
 var DEFAULT_DATA = [
+    { period: "2026317", time: "2026-11-14 21:35:00", normals: [31, 49, 30, 22, 43, 24], special_num: 26 },
     { period: "2026316", time: "2026-11-12 21:32:32", normals: [14, 4, 10, 46, 45, 49], special_num: 3 },
     { period: "2026315", time: "2026-11-11 21:32:32", normals: [6, 9, 25, 27, 33, 22], special_num: 48 },
     { period: "2026314", time: "2026-11-10 21:32:32", normals: [13, 26, 9, 37, 34, 44], special_num: 31 },
@@ -325,7 +330,42 @@ function clearRecords() {
     }
 }
 
-// 自动计算下一期期号并填入输入框
+// 一键复制纯数字预测数据函数（自动过滤生肖文字）
+function copyPredictData() {
+    var rawPoolText = document.getElementById("pool-display").innerText;
+    // 使用正则提取出所有的数字（例如从 "01(馬)、03(龍)" 提取出 "01, 03..." 或 "01 03..."）
+    var numbers = rawPoolText.match(/\d+/g);
+    if (!numbers || numbers.length === 0) {
+        alert("当前没有可复制的预测数据！");
+        return;
+    }
+    var pureNumbersStr = numbers.join(' '); // 纯数字用空格隔开
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(pureNumbersStr).then(function() {
+            alert("📋 纯数字预测数据复制成功：\n" + pureNumbersStr);
+        }).catch(function() {
+            fallbackCopy(pureNumbersStr);
+        });
+    } else {
+        fallbackCopy(pureNumbersStr);
+    }
+}
+
+function fallbackCopy(text) {
+    var textarea = document.createElement("textarea");
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand("copy");
+        alert("📋 纯数字预测数据复制成功：\n" + text);
+    } catch (e) {
+        alert("复制失败，请手动选择复制。");
+    }
+    document.body.removeChild(textarea);
+}
+
 function initAutoPeriod() {
     if (HISTORY_DATA && HISTORY_DATA.length > 0) {
         var latestPeriod = parseInt(HISTORY_DATA[0].period, 10);
@@ -348,7 +388,6 @@ function addNewDraw() {
         return;
     }
 
-    // 支持空格、逗号或混用分隔平码
     var cleanedStr = nInput.replace(/[,，\s]+/g, ' ').trim();
     var normalsArr = cleanedStr.split(' ').map(function(item) { return parseInt(item, 10); });
     var specialNum = parseInt(sInput, 10);
@@ -371,12 +410,12 @@ function addNewDraw() {
     renderTable(null);
     checkPredictRecords();
     doPredict();
-    initAutoPeriod(); // 自动更新为再下一期
+    initAutoPeriod();
     alert("第 " + pInput + " 期开奖数据已累加，战绩已更新！");
 }
 
 function resetDefaultData() {
-    if (confirm("确定要恢复默认的 40 期历史数据吗？")) {
+    if (confirm("确定要恢复默认的历史数据吗？")) {
         HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
         localStorage.setItem("MACAU_HISTORY_DATA", JSON.stringify(HISTORY_DATA));
         renderTopLatest();
@@ -569,7 +608,7 @@ window.onload = function() {
     renderTopLatest();
     renderTable(null);
     updateTimer();
-    initAutoPeriod(); // 页面加载时自动填入下一期期号
+    initAutoPeriod();
     checkPredictRecords();
     doPredict();
 };
