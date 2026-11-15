@@ -55,7 +55,6 @@
         .badge-green { background: #16a34a; }
         .badge-purple { background: #7c3aed; }
         .badge-teal { background: #0d9488; }
-        .badge-amber { background: #d97706; }
 
         .result-box { background: #ffffff; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 6px; text-align: center; margin-top: 20px; }
         .result-num { font-size: 26px; font-weight: bold; color: #dc2626; margin: 10px 0; }
@@ -235,7 +234,6 @@ var ZODIAC_MAP = {
     37:"馬", 38:"蛇", 39:"龍", 40:"兔", 41:"虎", 42:"牛", 43:"鼠", 44:"豬", 45:"狗", 46:"雞", 47:"猴", 48:"羊", 49:"馬"
 };
 
-// 家肖：牛、馬、羊、雞、狗、豬；野肖：鼠、虎、兔、龍、蛇、猴
 var HOME_ZODIACS = ["牛", "馬", "羊", "雞", "狗", "豬"];
 function isHomeZodiac(zodiac) {
     return HOME_ZODIACS.indexOf(zodiac) !== -1;
@@ -729,7 +727,6 @@ function doPredict() {
         var prevSpec = prev.special_num;
         var prev2Spec = prev2.special_num;
 
-        // 1. 十位顺逆式走势分析
         var lastTen = Math.floor(specNum / 10);
         var prevTen = Math.floor(prevSpec / 10);
         var prev2Ten = Math.floor(prev2Spec / 10);
@@ -747,7 +744,6 @@ function doPredict() {
             tenTargetDesc = "平移防变盘 (重点关注邻头切换)";
         }
 
-        // 2. 个位（尾数）顺逆式走势分析
         var lastUnit = specNum % 10;
         var prevUnit = prevSpec % 10;
         var unitTrendType = "平式走平";
@@ -763,7 +759,6 @@ function doPredict() {
             unitTargetDesc = "同尾防跳变 (个位防向两翼扩散)";
         }
 
-        // 3. 大小与单双走势统计
         var isSmall = specNum < 25;
         var isOdd = specNum % 2 !== 0;
         var targetSize = isSmall ? "大" : "小";
@@ -771,7 +766,6 @@ function doPredict() {
         var lastColor = getColorName(specNum);
         var badgeColorClass = lastColor === "红波" ? "badge-red" : (lastColor === "蓝波" ? "badge-blue" : "badge-green");
 
-        // 4. 家野肖2连击形态监控
         var lastZodiac = getZodiac(specNum);
         var prevZodiac = getZodiac(prevSpec);
         var isLastHome = isHomeZodiac(lastZodiac);
@@ -780,7 +774,7 @@ function doPredict() {
         var isDoubleHome = isLastHome && isPrevHome;
         var isDoubleWild = (!isLastHome && !isPrevHome);
         var homeWildStatusStr = "交替跳动形态";
-        var targetHomeWildPref = null; // true偏家肖, false偏野肖
+        var targetHomeWildPref = null;
         if (isDoubleHome) {
             homeWildStatusStr = "连续2期开出【家肖】(防守变盘野肖)";
             targetHomeWildPref = false;
@@ -789,7 +783,6 @@ function doPredict() {
             targetHomeWildPref = true;
         }
 
-        // 5. 获取多重遗漏自动排除规则
         var analysis = getAnalysisExclusions();
         var excludedColdNums = analysis.cold7;
         var maxZodiac = analysis.maxZodiac;
@@ -797,10 +790,8 @@ function doPredict() {
         var maxTail = analysis.maxTail;
         var excludedTailNums = analysis.excludedTailNums;
 
-        // 6. 全维数据走势动态打分选号池
         var pool = [];
         for (var i = 1; i <= 49; i++) {
-            // 第一步：硬性剔除极端冷码(7个)、遗漏最多生肖、遗漏最多尾数
             if (excludedColdNums.indexOf(i) !== -1) continue;
             if (excludedZodiacNums.indexOf(i) !== -1) continue;
             if (excludedTailNums.indexOf(i) !== -1) continue;
@@ -813,27 +804,20 @@ function doPredict() {
             var iZodiac = getZodiac(i);
             var iIsHome = isHomeZodiac(iZodiac);
 
-            // 维度A：跟踪十位顺逆式加权
             if (lastTen > prevTen && iTen >= lastTen) score += 30;
             else if (lastTen < prevTen && iTen <= lastTen) score += 30;
             else if (lastTen === prevTen && iTen !== lastTen) score += 20;
 
-            // 维度B：跟踪个位顺逆式加权
             if (lastUnit > prevUnit && iUnit >= lastUnit) score += 25;
             else if (lastUnit < prevUnit && iUnit <= lastUnit) score += 25;
             else if (lastUnit === prevUnit && iUnit !== lastUnit) score += 15;
 
-            // 维度C：大小单双形态加权
             if (iSize === targetSize) score += 20;
             if (iParity === targetParity) score += 20;
 
-            // 维度D：家野肖2连击极性变盘加权
             if (targetHomeWildPref !== null && iIsHome === targetHomeWildPref) score += 20;
-
-            // 维度E：波色变盘回补加权
             if (getColorName(i) !== lastColor) score += 15;
 
-            // 维度F：适度遗漏热度加分（排除极冷后的温热回补）
             var omitVal = OMISSION_DATA[i] || 0;
             score += Math.min(25, Math.floor(omitVal / 3));
 
@@ -845,11 +829,9 @@ function doPredict() {
             });
         }
 
-        // 按全维走势综合得分从高到低排序，截取前12个高契合度候选号码
         pool.sort(function(a, b) { return b.score !== a.score ? b.score - a.score : b.omit - a.omit; });
         var topPool = pool.slice(0, 12);
 
-        // 渲染全维分析报告
         var analysisHtml = 
             '• <b>十位顺逆式走势分析：</b> 判定为 <span class="badge badge-teal">' + tenTrendType + '</span>' +
             '<div class="reason-box">💡 <b>原理解析：</b>追踪最近特码十位轨迹（' + prev2Ten + ' → ' + prevTen + ' → ' + lastTen + '），当前呈现【' + tenTrendType + '】形态。下期跟着数据惯性走，' + tenTargetDesc + '。</div>' +
@@ -885,7 +867,6 @@ function doPredict() {
             var best = topPool[0];
             var bestPad = best.num < 10 ? "0" + best.num : "" + best.num;
 
-            // 显示时按号码从小到大排列方便查看与复制
             var displayPool = topPool.slice().sort(function(a, b) { return a.num - b.num; });
             var poolStrs = [];
             var sortedPoolNums = [];
