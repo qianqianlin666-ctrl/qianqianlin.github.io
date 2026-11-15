@@ -2,63 +2,86 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新澳門六合彩開獎公告与智能分析中心</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f1f5f9; color: #1e293b; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f1f5f9; color: #1e293b; margin: 0; padding: 15px; }
+        .container { max-width: 1000px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
         
-        .top-banner { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px 20px; border-radius: 6px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .latest-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .top-banner { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .latest-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .draw-label { font-size: 15px; color: #334155; font-weight: bold; }
         
-        .ball-item { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; margin: 0 3px; }
-        .ball { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 4px; font-size: 15px; font-weight: bold; color: white; }
+        .ball-item { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; margin: 0 2px; }
+        .ball { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 4px; font-size: 14px; font-weight: bold; color: white; }
         .ball-red { background: #dc2626; }
         .ball-blue { background: #2563eb; }
         .ball-green { background: #16a34a; }
-        .sub-animal { font-size: 12px; color: #475569; margin-top: 4px; font-weight: bold; }
+        .sub-animal { font-size: 11px; color: #475569; margin-top: 3px; font-weight: bold; }
         
-        .plus-sign { color: #dc2626; font-size: 22px; font-weight: bold; margin: 0 6px; vertical-align: middle; padding-bottom: 14px; display: inline-block; }
+        .plus-sign { color: #dc2626; font-size: 20px; font-weight: bold; margin: 0 4px; vertical-align: middle; padding-bottom: 12px; display: inline-block; }
 
         .timer-area { text-align: right; }
         .timer-text { font-size: 12px; color: #64748b; margin-bottom: 3px; }
-        .time-box { display: inline-block; background: #1e293b; color: #ffffff; font-size: 18px; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-family: monospace; }
-        .time-colon { color: #dc2626; font-size: 18px; font-weight: bold; margin: 0 2px; }
+        .time-box { display: inline-block; background: #1e293b; color: #ffffff; font-size: 16px; font-weight: bold; padding: 4px 7px; border-radius: 4px; font-family: monospace; }
+        .time-colon { color: #dc2626; font-size: 16px; font-weight: bold; margin: 0 2px; }
 
         .input-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
         .input-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
-        .input-row input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; }
-        .add-btn { background: #16a34a; color: white; border: none; padding: 9px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .input-row input { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; }
+        .add-btn { background: #16a34a; color: white; border: none; padding: 9px 14px; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .add-btn:hover { background: #15803d; }
         .reset-data-btn { background: #64748b; color: white; border: none; padding: 9px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; }
 
-        .filter-bar { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-        .filter-label { font-weight: bold; color: #dc2626; margin-right: 8px; font-size: 14px; }
-        .zodiac-btn { background: #ffffff; color: #334155; border: 1px solid #cbd5e1; padding: 5px 12px; border-radius: 4px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
-        .zodiac-btn:hover { background: #e2e8f0; }
+        .filter-bar { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 15px; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .filter-label { font-weight: bold; color: #dc2626; margin-right: 6px; font-size: 14px; }
+        .zodiac-btn { background: #ffffff; color: #334155; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 4px; font-size: 13px; cursor: pointer; }
         .zodiac-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; font-weight: bold; }
         .zodiac-btn.reset { background: #1e293b; color: #fff; border-color: #1e293b; }
 
         .section-title { font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 10px; border-left: 4px solid #2563eb; padding-left: 8px; }
         .history-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; background: #ffffff; }
-        .history-table th, .history-table td { padding: 10px 12px; text-align: center; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+        .history-table th, .history-table td { padding: 8px 10px; text-align: center; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
         .history-table th { background: #f1f5f9; color: #334155; font-weight: bold; position: sticky; top: 0; z-index: 10; }
         
         .dimmed { opacity: 0.2; filter: grayscale(90%); }
         .highlight-row { background: rgba(37, 99, 235, 0.08); }
 
-        .card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 6px; margin-top: 25px; }
-        .reason-box { font-size: 13px; color: #475569; margin-top: 4px; margin-bottom: 12px; line-height: 1.6; border-left: 2px solid #2563eb; padding-left: 10px; background: #ffffff; padding-top: 6px; padding-bottom: 6px; border-radius: 0 4px 4px 0; border: 1px solid #e2e8f0; border-left-width: 4px; }
-        .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; background: #2563eb; color: #fff; margin-right: 3px;}
+        .card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 6px; margin-top: 20px; }
+        .reason-box { font-size: 13px; color: #475569; margin-top: 4px; margin-bottom: 12px; line-height: 1.6; padding: 6px 10px; border-radius: 0 4px 4px 0; border: 1px solid #e2e8f0; border-left: 4px solid #2563eb; background: #ffffff; }
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; background: #2563eb; color: #fff; margin-right: 3px; }
         .badge-red { background: #dc2626; }
         .badge-blue { background: #2563eb; }
         .badge-green { background: #16a34a; }
 
         .result-box { background: #ffffff; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 6px; text-align: center; margin-top: 20px; }
-        .result-num { font-size: 28px; font-weight: bold; color: #dc2626; margin: 10px 0; }
+        .result-num { font-size: 26px; font-weight: bold; color: #dc2626; margin: 10px 0; }
         
-        .copy-btn { background: #0284c7; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
-        .copy-btn:hover { background: #0369a1; }
+        .btn-group { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+        .btn-custom { border: none; padding: 7px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-copy { background: #0284c7; }
+        .btn-copy:hover { background: #0369a1; }
+        .btn-omit { background: #7c3aed; }
+        .btn-omit:hover { background: #6d28d9; }
+        .btn-zodiac { background: #d97706; }
+        .btn-zodiac:hover { background: #b45309; }
+        .btn-tail { background: #0d9488; }
+        .btn-tail:hover { background: #0f766e; }
+
+        /* 弹窗/面板通用样式 */
+        .sub-panel { display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 15px; margin-top: 15px; text-align: left; }
+        .omission-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 12px; }
+        .zodiac-grid, .tail-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+        @media (max-width: 600px) { 
+            .omission-grid { grid-template-columns: repeat(4, 1fr); } 
+            .zodiac-grid, .tail-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        .omit-cell { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 4px; text-align: center; }
+        .omit-cell.excluded { background: #fef2f2; border-color: #fca5a5; }
+        .omit-tag { font-size: 10px; font-weight: bold; padding: 1px 4px; border-radius: 3px; display: inline-block; margin-top: 3px; }
+        .tag-excluded { background: #dc2626; color: #fff; }
+        .tag-keep { background: #e2e8f0; color: #475569; }
+        .omit-count { font-size: 12px; color: #334155; font-weight: bold; margin-top: 3px; }
 
         .record-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; background: #ffffff; }
         .record-table th, .record-table td { padding: 8px 10px; text-align: center; border-bottom: 1px solid #e2e8f0; }
@@ -68,7 +91,7 @@
         .status-wait { color: #d97706; font-weight: bold; background: #fef3c7; padding: 2px 8px; border-radius: 4px; display: inline-block; }
 
         .btn-container { margin-top: 20px; }
-        button.action-btn { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        button.action-btn { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
         button.action-btn:hover { background: #1d4ed8; }
     </style>
 </head>
@@ -93,12 +116,12 @@
 
     <!-- 手动录入表单面板 -->
     <div class="input-panel">
-        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入下一期开奖数据</div>
+        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（自动更新号码、生肖、尾数遗漏）</div>
         <div class="input-row">
-            <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 100px;"></div>
-            <div>平码(支持空格或逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 210px;"></div>
-            <div>特码(1个): <input type="text" id="in-special" placeholder="例如: 26" style="width: 60px;"></div>
-            <button class="add-btn" onclick="addNewDraw()">📥 确认录入并实时更新</button>
+            <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 95px;"></div>
+            <div>平码(空格/逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 190px;"></div>
+            <div>特码: <input type="text" id="in-special" placeholder="例如: 26" style="width: 55px;"></div>
+            <button class="add-btn" onclick="addNewDraw()">📥 确认录入</button>
             <button class="reset-data-btn" onclick="resetDefaultData()">恢复默认</button>
         </div>
     </div>
@@ -121,7 +144,7 @@
     </div>
 
     <div class="section-title">开奖历史记录表（支持持续累加）</div>
-    <div style="overflow-x: auto; max-height: 480px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 4px;">
+    <div style="overflow-x: auto; max-height: 420px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 4px;">
         <table class="history-table">
             <thead>
                 <tr>
@@ -136,15 +159,40 @@
     </div>
 
     <div class="card">
-        <div class="section-title" style="border-left-color: #dc2626;">📊 多维形态与矩阵斜线走势分析（含原理拆解）</div>
+        <div class="section-title" style="border-left-color: #dc2626;">📊 多维形态与遗漏智能过滤分析（号码、生肖、尾数）</div>
         <div id="analysis-results">正在分析开奖走势...</div>
     </div>
 
     <div class="result-box">
-        <div style="font-weight: bold; color: #334155;">🎯 综合全维加权精选推荐</div>
+        <div style="font-weight: bold; color: #334155;">🎯 综合全维加权精选推荐（已自动过滤极冷7码、最长遗漏生肖及最长遗漏尾数）</div>
         <div class="result-num" id="recommended-code">等待生成</div>
         <div id="pool-display" style="color: #64748b; font-size: 13px; margin-bottom: 8px;"></div>
-        <button class="copy-btn" onclick="copyPredictData()">📋 一键复制纯数字预测数据</button>
+        <div id="excluded-info" style="font-size: 12px; color: #dc2626; margin-bottom: 8px;"></div>
+        
+        <div class="btn-group">
+            <button class="btn-custom btn-copy" onclick="copyPredictData()">📋 复制纯数字</button>
+            <button class="btn-custom btn-omit" onclick="togglePanel('omission-panel')">📊 遗漏号码</button>
+            <button class="btn-custom btn-zodiac" onclick="togglePanel('zodiac-panel')">🐇 遗漏生肖</button>
+            <button class="btn-custom btn-tail" onclick="togglePanel('tail-panel')">🔢 遗漏尾数</button>
+        </div>
+
+        <!-- 1. 号码遗漏面板 -->
+        <div class="sub-panel" id="omission-panel">
+            <b style="color:#0f172a; font-size:13px;">📈 特码未开出遗漏次数实时排行（自动排除前7个冷码）</b>
+            <div class="omission-grid" id="omission-grid"></div>
+        </div>
+
+        <!-- 2. 生肖遗漏面板 -->
+        <div class="sub-panel" id="zodiac-panel">
+            <b style="color:#0f172a; font-size:13px;">🐇 特码生肖未开出次数排行（自动排除遗漏最多的生肖）</b>
+            <div class="zodiac-grid" id="zodiac-grid"></div>
+        </div>
+
+        <!-- 3. 尾数遗漏面板 -->
+        <div class="sub-panel" id="tail-panel">
+            <b style="color:#0f172a; font-size:13px;">🔢 特码尾数(0-9)未开出次数排行（自动排除遗漏最多的尾数）</b>
+            <div class="tail-grid" id="tail-grid"></div>
+        </div>
     </div>
 
     <!-- 🎯 智能预测中奖历史记录与战绩复盘模块 -->
@@ -160,7 +208,7 @@
                     <tr>
                         <th>预测期数</th>
                         <th>推荐一码</th>
-                        <th>候选号池 (含特码/平码)</th>
+                        <th>候选号池 (已过滤)</th>
                         <th>实际开出特码</th>
                         <th>核对结果</th>
                     </tr>
@@ -185,6 +233,15 @@ var ZODIAC_MAP = {
     37:"馬", 38:"蛇", 39:"龍", 40:"兔", 41:"虎", 42:"牛", 43:"鼠", 44:"豬", 45:"狗", 46:"雞", 47:"猴", 48:"羊", 49:"馬"
 };
 
+// 获取某个生肖包含的所有号码
+function getNumbersByZodiac(zodiacName) {
+    var nums = [];
+    for (var i = 1; i <= 49; i++) {
+        if (ZODIAC_MAP[i] === zodiacName) nums.push(i);
+    }
+    return nums;
+}
+
 var REDS = [1,2,7,8,12,13,18,19,23,24,29,30,34,35,40,45,46];
 var BLUES = [3,4,9,10,14,15,20,25,26,31,36,37,41,42,47,48];
 
@@ -200,7 +257,30 @@ function getColorName(n) {
     return "绿波";
 }
 
+// 1. 号码遗漏默认基准初始化
+var DEFAULT_OMISSIONS = {
+    41: 136, 29: 127, 47: 112, 6: 106, 4: 104, 37: 102, 39: 84,
+    12: 81, 27: 78, 16: 65, 44: 63, 1: 62, 7: 61, 20: 58,
+    30: 56, 9: 55, 49: 53, 22: 49, 35: 47, 33: 44, 14: 42,
+    11: 41, 2: 40, 10: 37, 18: 35, 32: 34, 19: 33, 24: 32,
+    40: 28, 36: 26, 5: 25, 28: 24, 25: 23, 8: 20, 23: 19,
+    45: 16, 17: 15, 21: 14, 15: 12, 42: 11, 13: 9, 46: 8,
+    34: 7, 43: 5, 31: 4, 48: 3, 3: 2, 26: 1, 38: 0
+};
+
+// 2. 生肖遗漏默认基准初始化（依据图片：兔24、猪20、猴19、虎15、狗14、牛11、馬9、雞7、鼠4、羊3、龍2、蛇0）[cite: 14]
+var DEFAULT_ZODIAC_OMISSIONS = {
+    "兔": 24, "豬": 20, "猴": 19, "虎": 15, "狗": 14, "牛": 11,
+    "馬": 9, "雞": 7, "鼠": 4, "羊": 3, "龍": 2, "蛇": 0
+};
+
+// 3. 尾数遗漏默认基准初始化（依据图片：9尾33、0尾28、7尾15、5尾12、2尾11、4尾7、1尾4、3尾2、6尾1、8尾0）[cite: 15]
+var DEFAULT_TAIL_OMISSIONS = {
+    9: 33, 0: 28, 7: 15, 5: 12, 2: 11, 4: 7, 1: 4, 3: 2, 6: 1, 8: 0
+};
+
 var DEFAULT_DATA = [
+    { period: "2026318", time: "2026-11-15 21:35:00", normals: [10, 36, 2, 9, 26, 37], special_num: 38 },
     { period: "2026317", time: "2026-11-14 21:35:00", normals: [31, 49, 30, 22, 43, 24], special_num: 26 },
     { period: "2026316", time: "2026-11-12 21:32:32", normals: [14, 4, 10, 46, 45, 49], special_num: 3 },
     { period: "2026315", time: "2026-11-11 21:32:32", normals: [6, 9, 25, 27, 33, 22], special_num: 48 },
@@ -253,6 +333,33 @@ try {
     }
 } catch (e) { HISTORY_DATA = DEFAULT_DATA; }
 
+var OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_OMISSIONS));
+try {
+    var storedOmit = localStorage.getItem("MACAU_OMISSION_DATA");
+    if (storedOmit) {
+        var parsedOmit = JSON.parse(storedOmit);
+        if (parsedOmit && typeof parsedOmit === 'object') OMISSION_DATA = parsedOmit;
+    }
+} catch (e) { OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_OMISSIONS)); }
+
+var ZODIAC_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_ZODIAC_OMISSIONS));
+try {
+    var storedZod = localStorage.getItem("MACAU_ZODIAC_OMISSION_DATA");
+    if (storedZod) {
+        var parsedZod = JSON.parse(storedZod);
+        if (parsedZod && typeof parsedZod === 'object') ZODIAC_OMISSION_DATA = parsedZod;
+    }
+} catch (e) { ZODIAC_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_ZODIAC_OMISSIONS)); }
+
+var TAIL_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_TAIL_OMISSIONS));
+try {
+    var storedTail = localStorage.getItem("MACAU_TAIL_OMISSION_DATA");
+    if (storedTail) {
+        var parsedTail = JSON.parse(storedTail);
+        if (parsedTail && typeof parsedTail === 'object') TAIL_OMISSION_DATA = parsedTail;
+    }
+} catch (e) { TAIL_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_TAIL_OMISSIONS)); }
+
 var PREDICT_RECORDS = [];
 try {
     var storedRec = localStorage.getItem("MACAU_PREDICT_RECORDS");
@@ -262,25 +369,128 @@ try {
     }
 } catch (e) { PREDICT_RECORDS = []; }
 
+// 获取遗漏分析及自动排除对象
+function getAnalysisExclusions() {
+    // 1. 号码排序及排除最冷前7
+    var numList = [];
+    for (var num = 1; num <= 49; num++) {
+        numList.push({ num: num, count: OMISSION_DATA[num] || 0 });
+    }
+    numList.sort(function(a, b) { return b.count !== a.count ? b.count - a.count : a.num - b.num; });
+    var cold7 = numList.slice(0, 7).map(function(item) { return item.num; });
+
+    // 2. 生肖排序及排除遗漏最多1个
+    var zodiacList = [];
+    for (var z in ZODIAC_OMISSION_DATA) {
+        zodiacList.push({ name: z, count: ZODIAC_OMISSION_DATA[z] });
+    }
+    zodiacList.sort(function(a, b) { return b.count - a.count; });
+    var maxZodiac = zodiacList.length > 0 ? zodiacList[0].name : "";
+    var excludedZodiacNums = getNumbersByZodiac(maxZodiac);
+
+    // 3. 尾数排序及排除遗漏最多1个
+    var tailList = [];
+    for (var t = 0; t <= 9; t++) {
+        tailList.push({ tail: t, count: TAIL_OMISSION_DATA[t] !== undefined ? TAIL_OMISSION_DATA[t] : 0 });
+    }
+    tailList.sort(function(a, b) { return b.count - a.count; });
+    var maxTail = tailList.length > 0 ? tailList[0].tail : -1;
+    var excludedTailNums = [];
+    for (var i = 1; i <= 49; i++) {
+        if (i % 10 === maxTail) excludedTailNums.push(i);
+    }
+
+    return {
+        numList: numList,
+        cold7: cold7,
+        zodiacList: zodiacList,
+        maxZodiac: maxZodiac,
+        excludedZodiacNums: excludedZodiacNums,
+        tailList: tailList,
+        maxTail: maxTail,
+        excludedTailNums: excludedTailNums
+    };
+}
+
+// 渲染各个面板
+function renderPanels() {
+    var analysis = getAnalysisExclusions();
+
+    // 1. 渲染号码遗漏网格
+    var grid = document.getElementById("omission-grid");
+    if (grid) {
+        var html = "";
+        for (var i = 0; i < analysis.numList.length; i++) {
+            var item = analysis.numList[i];
+            var padN = item.num < 10 ? "0" + item.num : "" + item.num;
+            var isExcluded = analysis.cold7.indexOf(item.num) !== -1;
+            html += '<div class="omit-cell ' + (isExcluded ? 'excluded' : '') + '">' +
+                '<div class="ball ' + getColorClass(item.num) + '" style="width:28px;height:28px;font-size:12px;margin:0 auto;">' + padN + '</div>' +
+                '<div class="omit-count">遗漏 ' + item.count + ' 期</div>' +
+                '<span class="omit-tag ' + (isExcluded ? 'tag-excluded' : 'tag-keep') + '">' + (isExcluded ? '冷码排除' : '保留') + '</span>' +
+                '</div>';
+        }
+        grid.innerHTML = html;
+    }
+
+    // 2. 渲染生肖遗漏网格
+    var zGrid = document.getElementById("zodiac-grid");
+    if (zGrid) {
+        var zHtml = "";
+        for (var i = 0; i < analysis.zodiacList.length; i++) {
+            var zItem = analysis.zodiacList[i];
+            var isMax = (zItem.name === analysis.maxZodiac);
+            zHtml += '<div class="omit-cell ' + (isMax ? 'excluded' : '') + '">' +
+                '<div style="font-weight:bold; font-size:14px; color:#1e293b; margin-top:2px;">' + zItem.name + '生肖</div>' +
+                '<div class="omit-count">遗漏 ' + zItem.count + ' 期</div>' +
+                '<span class="omit-tag ' + (isMax ? 'tag-excluded' : 'tag-keep') + '">' + (isMax ? '最多排除' : '保留') + '</span>' +
+                '</div>';
+        }
+        zGrid.innerHTML = zHtml;
+    }
+
+    // 3. 渲染尾数遗漏网格
+    var tGrid = document.getElementById("tail-panel") ? document.getElementById("tail-grid") : null;
+    if (tGrid) {
+        var tHtml = "";
+        for (var i = 0; i < analysis.tailList.length; i++) {
+            var tItem = analysis.tailList[i];
+            var isMax = (tItem.tail === analysis.maxTail);
+            tHtml += '<div class="omit-cell ' + (isMax ? 'excluded' : '') + '">' +
+                '<div style="font-weight:bold; font-size:14px; color:#1e293b; margin-top:2px;">' + tItem.tail + ' 尾</div>' +
+                '<div class="omit-count">遗漏 ' + tItem.count + ' 期</div>' +
+                '<span class="omit-tag ' + (isMax ? 'tag-excluded' : 'tag-keep') + '">' + (isMax ? '最多排除' : '保留') + '</span>' +
+                '</div>';
+        }
+        tGrid.innerHTML = tHtml;
+    }
+}
+
+// 切换显示指定的面板（点击对应按钮时展开/折叠）
+function togglePanel(panelId) {
+    var p = document.getElementById(panelId);
+    if (!p) return;
+    var isVisible = (p.style.display === "block");
+    // 先隐藏所有子面板
+    document.getElementById("omission-panel").style.display = "none";
+    document.getElementById("zodiac-panel").style.display = "none";
+    document.getElementById("tail-panel").style.display = "none";
+
+    if (!isVisible) {
+        renderPanels();
+        p.style.display = "block";
+    }
+}
+
 function checkPredictRecords() {
     if (!PREDICT_RECORDS || PREDICT_RECORDS.length === 0) return;
-    
     for (var r = 0; r < PREDICT_RECORDS.length; r++) {
         var rec = PREDICT_RECORDS[r];
         for (var h = 0; h < HISTORY_DATA.length; h++) {
-            var historyPeriodNum = parseInt(HISTORY_DATA[h].period, 10);
-            var targetPeriodNum = parseInt(rec.targetPeriod, 10);
-            if (historyPeriodNum >= targetPeriodNum) {
+            if (parseInt(HISTORY_DATA[h].period, 10) >= parseInt(rec.targetPeriod, 10)) {
                 var actualSpec = HISTORY_DATA[h].special_num;
                 rec.actualSpecial = actualSpec;
-                
-                var isWin = false;
-                if (rec.bestNum === actualSpec) {
-                    isWin = true;
-                } else if (rec.poolNums && rec.poolNums.indexOf(actualSpec) !== -1) {
-                    isWin = true;
-                }
-                
+                var isWin = (rec.bestNum === actualSpec || (rec.poolNums && rec.poolNums.indexOf(actualSpec) !== -1));
                 rec.result = isWin ? "中" : "不中";
                 break;
             }
@@ -294,19 +504,15 @@ function renderPredictRecords() {
     var tbody = document.getElementById("predict-record-tbody");
     if (!tbody) return;
     if (!PREDICT_RECORDS || PREDICT_RECORDS.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="color:#94a3b8;">暂无预测记录，请点击下方按钮运行预测</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="color:#94a3b8;">暂无预测记录</td></tr>';
         return;
     }
-
     var html = "";
     for (var i = 0; i < PREDICT_RECORDS.length; i++) {
         var item = PREDICT_RECORDS[i];
         var statusBadge = '<span class="status-wait">等待开奖</span>';
-        if (item.result === "中") {
-            statusBadge = '<span class="status-win">🟢 中</span>';
-        } else if (item.result === "不中") {
-            statusBadge = '<span class="status-lose">🔴 不中</span>';
-        }
+        if (item.result === "中") statusBadge = '<span class="status-win">🟢 中</span>';
+        else if (item.result === "不中") statusBadge = '<span class="status-lose">🔴 不中</span>';
 
         var specStr = item.actualSpecial !== undefined ? (item.actualSpecial < 10 ? "0" + item.actualSpecial : item.actualSpecial) : "待开奖";
         var bestPad = item.bestNum < 10 ? "0" + item.bestNum : item.bestNum;
@@ -330,26 +536,16 @@ function clearRecords() {
     }
 }
 
-// 一键复制纯数字预测数据函数（自动过滤生肖文字）
 function copyPredictData() {
     var rawPoolText = document.getElementById("pool-display").innerText;
-    // 使用正则提取出所有的数字（例如从 "01(馬)、03(龍)" 提取出 "01, 03..." 或 "01 03..."）
     var numbers = rawPoolText.match(/\d+/g);
-    if (!numbers || numbers.length === 0) {
-        alert("当前没有可复制的预测数据！");
-        return;
-    }
-    var pureNumbersStr = numbers.join(' '); // 纯数字用空格隔开
-
+    if (!numbers || numbers.length === 0) { alert("当前没有可复制的预测数据！"); return; }
+    var pureNumbersStr = numbers.join(' ');
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(pureNumbersStr).then(function() {
             alert("📋 纯数字预测数据复制成功：\n" + pureNumbersStr);
-        }).catch(function() {
-            fallbackCopy(pureNumbersStr);
-        });
-    } else {
-        fallbackCopy(pureNumbersStr);
-    }
+        }).catch(function() { fallbackCopy(pureNumbersStr); });
+    } else { fallbackCopy(pureNumbersStr); }
 }
 
 function fallbackCopy(text) {
@@ -357,12 +553,8 @@ function fallbackCopy(text) {
     textarea.value = text;
     document.body.appendChild(textarea);
     textarea.select();
-    try {
-        document.execCommand("copy");
-        alert("📋 纯数字预测数据复制成功：\n" + text);
-    } catch (e) {
-        alert("复制失败，请手动选择复制。");
-    }
+    try { document.execCommand("copy"); alert("📋 复制成功：\n" + text); }
+    catch (e) { alert("复制失败"); }
     document.body.removeChild(textarea);
 }
 
@@ -371,9 +563,7 @@ function initAutoPeriod() {
         var latestPeriod = parseInt(HISTORY_DATA[0].period, 10);
         if (!isNaN(latestPeriod)) {
             var nextPeriodInput = document.getElementById("in-period");
-            if (nextPeriodInput) {
-                nextPeriodInput.value = (latestPeriod + 1).toString();
-            }
+            if (nextPeriodInput) nextPeriodInput.value = (latestPeriod + 1).toString();
         }
     }
 }
@@ -383,47 +573,76 @@ function addNewDraw() {
     var nInput = document.getElementById("in-normals").value.trim();
     var sInput = document.getElementById("in-special").value.trim();
 
-    if (!pInput || !nInput || !sInput) {
-        alert("请完整填写期号、平码和特码！");
-        return;
-    }
+    if (!pInput || !nInput || !sInput) { alert("请完整填写期号、平码和特码！"); return; }
 
     var cleanedStr = nInput.replace(/[,，\s]+/g, ' ').trim();
     var normalsArr = cleanedStr.split(' ').map(function(item) { return parseInt(item, 10); });
     var specialNum = parseInt(sInput, 10);
 
-    if (normalsArr.length !== 6 || normalsArr.some(isNaN) || isNaN(specialNum)) {
-        alert("格式错误：平码必须是6个数字（可用空格或逗号隔开），特码必须是1个数字！");
+    if (normalsArr.length !== 6 || normalsArr.some(isNaN) || isNaN(specialNum) || specialNum < 1 || specialNum > 49) {
+        alert("格式错误：平码必须是6个数字，特码必须是1~49之间！");
         return;
     }
 
     var nowStr = new Date().toISOString().slice(0, 10) + " 21:35:00";
     var newObj = { period: pInput, time: nowStr, normals: normalsArr, special_num: specialNum };
-
     HISTORY_DATA.unshift(newObj);
     localStorage.setItem("MACAU_HISTORY_DATA", JSON.stringify(HISTORY_DATA));
+
+    // 1. 更新号码遗漏
+    for (var num = 1; num <= 49; num++) {
+        if (num === specialNum) OMISSION_DATA[num] = 0;
+        else OMISSION_DATA[num] = (OMISSION_DATA[num] || 0) + 1;
+    }
+    localStorage.setItem("MACAU_OMISSION_DATA", JSON.stringify(OMISSION_DATA));
+
+    // 2. 更新生肖遗漏
+    var specZodiac = getZodiac(specialNum);
+    for (var z in ZODIAC_OMISSION_DATA) {
+        if (z === specZodiac) ZODIAC_OMISSION_DATA[z] = 0;
+        else ZODIAC_OMISSION_DATA[z] = (ZODIAC_OMISSION_DATA[z] || 0) + 1;
+    }
+    localStorage.setItem("MACAU_ZODIAC_OMISSION_DATA", JSON.stringify(ZODIAC_OMISSION_DATA));
+
+    // 3. 更新尾数遗漏
+    var specTail = specialNum % 10;
+    for (var t = 0; t <= 9; t++) {
+        if (t === specTail) TAIL_OMISSION_DATA[t] = 0;
+        else TAIL_OMISSION_DATA[t] = (TAIL_OMISSION_DATA[t] !== undefined ? TAIL_OMISSION_DATA[t] : 0) + 1;
+    }
+    localStorage.setItem("MACAU_TAIL_OMISSION_DATA", JSON.stringify(TAIL_OMISSION_DATA));
 
     document.getElementById("in-normals").value = "";
     document.getElementById("in-special").value = "";
 
     renderTopLatest();
     renderTable(null);
+    renderPanels();
     checkPredictRecords();
     doPredict();
     initAutoPeriod();
-    alert("第 " + pInput + " 期开奖数据已累加，战绩已更新！");
+    alert("第 " + pInput + " 期开奖录入成功！号码、生肖、尾数遗漏已全自动更新并过滤！");
 }
 
 function resetDefaultData() {
-    if (confirm("确定要恢复默认的历史数据吗？")) {
+    if (confirm("确定要恢复默认的历史数据与所有遗漏统计吗？")) {
         HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_OMISSIONS));
+        ZODIAC_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_ZODIAC_OMISSIONS));
+        TAIL_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_TAIL_OMISSIONS));
+
         localStorage.setItem("MACAU_HISTORY_DATA", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_OMISSION_DATA", JSON.stringify(OMISSION_DATA));
+        localStorage.setItem("MACAU_ZODIAC_OMISSION_DATA", JSON.stringify(ZODIAC_OMISSION_DATA));
+        localStorage.setItem("MACAU_TAIL_OMISSION_DATA", JSON.stringify(TAIL_OMISSION_DATA));
+
         renderTopLatest();
         renderTable(null);
+        renderPanels();
         checkPredictRecords();
         doPredict();
         initAutoPeriod();
-        alert("已恢复默认历史数据！");
+        alert("已恢复默认数据！");
     }
 }
 
@@ -432,17 +651,14 @@ function renderTopLatest() {
     var container = document.getElementById("top-latest-balls");
     if (!container) return;
     var html = '<span class="draw-label">第 ' + latest.period + ' 期开奖：</span>';
-    
     for (var i = 0; i < latest.normals.length; i++) {
         var n = latest.normals[i];
         var padN = n < 10 ? "0" + n : "" + n;
         html += '<div class="ball-item"><div class="ball ' + getColorClass(n) + '">' + padN + '</div><div class="sub-animal">' + getZodiac(n) + '</div></div>';
     }
-    
     html += '<span class="plus-sign">+</span>';
     var specPad = latest.special_num < 10 ? "0" + latest.special_num : "" + latest.special_num;
     html += '<div class="ball-item"><div class="ball ' + getColorClass(latest.special_num) + '">' + specPad + '</div><div class="sub-animal">' + getZodiac(latest.special_num) + '</div></div>';
-    
     container.innerHTML = html;
 }
 
@@ -450,11 +666,9 @@ function renderTable(selectedZodiac) {
     var tbody = document.getElementById("history-tbody");
     if (!tbody) return;
     var html = "";
-    
     for (var i = 0; i < HISTORY_DATA.length; i++) {
         var item = HISTORY_DATA[i];
         var specAnimal = getZodiac(item.special_num);
-        
         var hasMatch = false;
         if (selectedZodiac) {
             if (specAnimal === selectedZodiac) hasMatch = true;
@@ -462,7 +676,6 @@ function renderTable(selectedZodiac) {
                 if (getZodiac(item.normals[j]) === selectedZodiac) { hasMatch = true; break; }
             }
         }
-
         var nHtml = "";
         for (var j = 0; j < item.normals.length; j++) {
             var n = item.normals[j];
@@ -471,13 +684,10 @@ function renderTable(selectedZodiac) {
             var dim = selectedZodiac && anim !== selectedZodiac ? " dimmed" : "";
             nHtml += '<div class="ball-item' + dim + '"><div class="ball ' + getColorClass(n) + '" style="width:30px;height:30px;font-size:13px;">' + padN + '</div><div class="sub-animal">' + anim + '</div></div>';
         }
-        
         var specPad = item.special_num < 10 ? "0" + item.special_num : "" + item.special_num;
         var specDim = selectedZodiac && specAnimal !== selectedZodiac ? " dimmed" : "";
         var specHtml = '<div class="ball-item' + specDim + '"><div class="ball ' + getColorClass(item.special_num) + '" style="width:30px;height:30px;font-size:13px;">' + specPad + '</div><div class="sub-animal">' + specAnimal + '</div></div>';
-        
         var trClass = (selectedZodiac && hasMatch) ? " highlight-row" : "";
-
         html += "<tr class='" + trClass.trim() + "'>" +
             "<td><b>第 " + item.period + " 期</b></td>" +
             "<td>" + item.time + "</td>" +
@@ -505,11 +715,9 @@ function updateTimer() {
         var h = Math.floor(diff / 3600);
         var m = Math.floor((diff % 3600) / 60);
         var s = diff % 60;
-        
         var hStr = h < 10 ? "0" + h : "" + h;
         var mStr = m < 10 ? "0" + m : "" + m;
         var sStr = s < 10 ? "0" + s : "" + s;
-        
         document.getElementById("t-h1").innerText = hStr[0];
         document.getElementById("t-h2").innerText = hStr[1];
         document.getElementById("t-m1").innerText = mStr[0];
@@ -532,71 +740,82 @@ function doPredict() {
         var lastColor = getColorName(specNum);
         var badgeColorClass = lastColor === "红波" ? "badge-red" : (lastColor === "蓝波" ? "badge-blue" : "badge-green");
 
+        // 获取分析与自动排除规则
+        var analysis = getAnalysisExclusions();
+        var excludedColdNums = analysis.cold7;
+        var maxZodiac = analysis.maxZodiac;
+        var excludedZodiacNums = analysis.excludedZodiacNums;
+        var maxTail = analysis.maxTail;
+        var excludedTailNums = analysis.excludedTailNums;
+
         var pool = [];
         var poolNums = [];
         for (var i = 1; i <= 49; i++) {
+            // 三重自动排除：号码遗漏最多7个码、生肖遗漏最多1个生肖、尾数遗漏最多1个尾数
+            if (excludedColdNums.indexOf(i) !== -1) continue;
+            if (excludedZodiacNums.indexOf(i) !== -1) continue;
+            if (excludedTailNums.indexOf(i) !== -1) continue;
+
             var nSize = i >= 25 ? "大" : "小";
             var nParity = i % 2 === 0 ? "雙" : "單";
             if (nSize === targetSize && nParity === targetParity) {
-                pool.push({ num: i, anim: getZodiac(i) });
+                pool.push({ num: i, anim: getZodiac(i), omit: OMISSION_DATA[i] || 0 });
                 poolNums.push(i);
             }
         }
 
+        pool.sort(function(a, b) { return b.omit - a.omit; });
+
         var analysisHtml = 
+            '• <b>多维遗漏智能过滤机制：</b> <span class="badge badge-red">已自动剔除极端冷码、生肖与尾数</span>' +
+            '<div class="reason-box">💡 <b>过滤详情：</b>' +
+            '<br>1. <b>号码遗漏排除（最冷前7个）：</b> ' + excludedColdNums.map(function(n){return n<10?"0"+n:n}).join('、') +
+            '<br>2. <b>生肖遗漏排除（遗漏最多）：</b> 【' + maxZodiac + '生肖】（包含号：' + excludedZodiacNums.map(function(n){return n<10?"0"+n:n}).join('、') + '）' +
+            '<br>3. <b>尾数遗漏排除（遗漏最多）：</b> 【' + maxTail + ' 尾】（包含号：' + excludedTailNums.map(function(n){return n<10?"0"+n:n}).join('、') + '）' +
+            '</div>' +
+
             '• <b>大小形态走势预测：</b> 指向 <span class="badge">' + (targetSize === "大" ? "大数区间" : "小数区间") + '</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>近期大样本统计显示大小呈现交替跳动长龙形态。上一期特码为【' + (isSmall ? '小' : '大') + '】号，根据均势回归惯性，本期顺势追【' + targetSize + '】的概率显著占优。</div>' +
+            '<div class="reason-box">💡 <b>原理解析：</b>上一期特码为【' + (isSmall ? '小' : '大') + '】号，根据均势回归惯性，本期顺势追【' + targetSize + '】的概率显著占优。</div>' +
             
             '• <b>单双奇偶校验：</b> 指向 <span class="badge">' + (targetParity === "雙" ? "双数 (偶数)" : "单数 (奇数)") + '</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>通过对最近开奖号码奇偶校验发现，上一期开出【' + (isOdd ? '单' : '双') + '】数，符合当前单双交替互补走势，本期重点防范反向回补。</div>' +
-            
-            '• <b>波色（颜色）规律分析：</b> 指向 <span class="badge ' + badgeColorClass + '">' + lastColor + '变盘防守</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>上一期特码开出【' + lastColor + '】（' + (specNum < 10 ? '0' + specNum : specNum) + '号）。结合历史波色出号热度分布及三色平衡周期，本期极易向互补色系转移回补。</div>' +
-            
-            '• <b>十位与个位走势分析：</b> 指向 <span class="badge" style="background:#0d9488;">跨期平衡与遗漏纠偏</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>上期特码十位为【' + Math.floor(specNum / 10) + '】、个位为【' + (specNum % 10) + '】。通过跨期十位平衡矩阵与个位遗漏周期扫描，本期重点锁定目标头数与尾数交汇点。</div>' +
-            
-            '• <b>矩阵斜线共振扫描：</b> <span class="badge" style="background:#16a34a;">对角线斜向呼应完成</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>已成功提取矩阵中平码与特码的斜向对角呼应点，过滤掉低频杂号，锁定高权重候选区间。</div>';
+            '<div class="reason-box">💡 <b>原理解析：</b>上一期开出【' + (isOdd ? '单' : '双') + '】数，符合当前单双交替互补走势。</div>';
         
         document.getElementById("analysis-results").innerHTML = analysisHtml;
 
         if (pool.length > 0) {
+            var displayPool = pool.slice().sort(function(a, b) { return a.num - b.num; });
             var best = pool[0];
             var bestPad = best.num < 10 ? "0" + best.num : "" + best.num;
+            
             var poolStrs = [];
-            for (var j = 0; j < pool.length; j++) {
-                var p = pool[j];
+            var sortedPoolNums = [];
+            for (var j = 0; j < displayPool.length; j++) {
+                var p = displayPool[j];
                 var pPad = p.num < 10 ? "0" + p.num : "" + p.num;
                 poolStrs.push(pPad + '(' + p.anim + ')');
+                sortedPoolNums.push(p.num);
             }
 
             document.getElementById("recommended-code").innerText = "🎯 推荐精选一码：" + bestPad + " 号 (" + best.anim + ")";
-            document.getElementById("pool-display").innerHTML = "<b>符合多维交叉候选号池：</b> " + poolStrs.join('、');
+            document.getElementById("pool-display").innerHTML = "<b>过滤后多维候选号池：</b> " + poolStrs.join('、');
+            document.getElementById("excluded-info").innerText = "🚫 自动排除: 最冷7码+生肖[" + maxZodiac + "]+尾数[" + maxTail + "尾]";
 
             var nextPeriod = (parseInt(HISTORY_DATA[0].period, 10) + 1).toString();
-            
             var existIndex = -1;
             for (var r = 0; r < PREDICT_RECORDS.length; r++) {
-                if (PREDICT_RECORDS[r].targetPeriod === nextPeriod) {
-                    existIndex = r;
-                    break;
-                }
+                if (PREDICT_RECORDS[r].targetPeriod === nextPeriod) { existIndex = r; break; }
             }
 
             var recordItem = {
                 targetPeriod: nextPeriod,
                 bestNum: best.num,
-                poolNums: poolNums,
+                poolNums: sortedPoolNums,
                 poolStr: poolStrs.join('、'),
                 result: "等待开奖"
             };
 
-            if (existIndex !== -1) {
-                PREDICT_RECORDS[existIndex] = recordItem;
-            } else {
-                PREDICT_RECORDS.unshift(recordItem);
-            }
+            if (existIndex !== -1) PREDICT_RECORDS[existIndex] = recordItem;
+            else PREDICT_RECORDS.unshift(recordItem);
 
             localStorage.setItem("MACAU_PREDICT_RECORDS", JSON.stringify(PREDICT_RECORDS));
             checkPredictRecords();
@@ -607,6 +826,7 @@ function doPredict() {
 window.onload = function() {
     renderTopLatest();
     renderTable(null);
+    renderPanels();
     updateTimer();
     initAutoPeriod();
     checkPredictRecords();
