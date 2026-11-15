@@ -55,6 +55,7 @@
         .badge-green { background: #16a34a; }
         .badge-purple { background: #7c3aed; }
         .badge-teal { background: #0d9488; }
+        .badge-amber { background: #d97706; }
 
         .result-box { background: #ffffff; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 6px; text-align: center; margin-top: 20px; }
         .result-num { font-size: 26px; font-weight: bold; color: #dc2626; margin: 10px 0; }
@@ -117,7 +118,7 @@
 
     <!-- 手动录入表单面板 -->
     <div class="input-panel">
-        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（自动更新顺逆式走势及号码、生肖、尾数遗漏）</div>
+        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（自动更新顺逆式、五行合数走势与遗漏）</div>
         <div class="input-row">
             <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 95px;"></div>
             <div>平码(空格/逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 190px;"></div>
@@ -160,12 +161,12 @@
     </div>
 
     <div class="card">
-        <div class="section-title" style="border-left-color: #dc2626;">📊 全维数据走势分析中心（十位/个位顺逆式、家野肖2连击、斜线与遗漏过滤）</div>
+        <div class="section-title" style="border-left-color: #dc2626;">📊 全维数据走势分析中心（十位/个位顺逆式、五行、合数单双、家野肖2连击、斜线与遗漏过滤）</div>
         <div id="analysis-results">正在分析开奖走势...</div>
     </div>
 
     <div class="result-box">
-        <div style="font-weight: bold; color: #334155;">🎯 数据走势全维加权精选推荐（顺逆式跟踪 + 形态校验 + 遗漏过滤）</div>
+        <div style="font-weight: bold; color: #334155;">🎯 全维加权精选推荐（顺逆式 + 五行合数 + 遗漏智能过滤）</div>
         <div class="result-num" id="recommended-code">等待生成</div>
         <div id="pool-display" style="color: #64748b; font-size: 13px; margin-bottom: 8px;"></div>
         <div id="excluded-info" style="font-size: 12px; color: #dc2626; margin-bottom: 8px;"></div>
@@ -237,6 +238,16 @@ var ZODIAC_MAP = {
 var HOME_ZODIACS = ["牛", "馬", "羊", "雞", "狗", "豬"];
 function isHomeZodiac(zodiac) {
     return HOME_ZODIACS.indexOf(zodiac) !== -1;
+}
+
+// 简易五行归属映射（港澳台六合彩传统五行近似划分）
+function getWuXing(n) {
+    var rem = n % 5;
+    if (rem === 1) return "金";
+    if (rem === 2) return "木";
+    if (rem === 3) return "水";
+    if (rem === 4) return "火";
+    return "土";
 }
 
 function getNumbersByZodiac(zodiacName) {
@@ -610,7 +621,7 @@ function addNewDraw() {
     checkPredictRecords();
     doPredict();
     initAutoPeriod();
-    alert("第 " + pInput + " 期开奖录入成功！顺逆式走势与各项遗漏已全自动更新！");
+    alert("第 " + pInput + " 期开奖录入成功！顺逆式、五行合数走势与遗漏已全自动更新！");
 }
 
 function resetDefaultData() {
@@ -727,6 +738,7 @@ function doPredict() {
         var prevSpec = prev.special_num;
         var prev2Spec = prev2.special_num;
 
+        // 1. 十位顺逆式走势分析
         var lastTen = Math.floor(specNum / 10);
         var prevTen = Math.floor(prevSpec / 10);
         var prev2Ten = Math.floor(prev2Spec / 10);
@@ -744,21 +756,32 @@ function doPredict() {
             tenTargetDesc = "平移防变盘 (重点关注邻头切换)";
         }
 
+        // 2. 个位顺逆式走势分析
         var lastUnit = specNum % 10;
         var prevUnit = prevSpec % 10;
         var unitTrendType = "平式走平";
         var unitTargetDesc = "";
         if (lastUnit > prevUnit) {
             unitTrendType = "顺式递增 (" + prevUnit + "尾→" + lastUnit + "尾)";
-            unitTargetDesc = "顺势延伸追大尾 (个位倾向 ≥" + lastUnit + " 或顺延位)";
+            unitTargetDesc = "顺势延伸追大尾 (个位倾向 ≥" + lastUnit + ")";
         } else if (lastUnit < prevUnit) {
             unitTrendType = "逆式递减 (" + prevUnit + "尾→" + lastUnit + "尾)";
-            unitTargetDesc = "逆势下行追小尾 (个位倾向 ≤" + lastUnit + " 或逆延位)";
+            unitTargetDesc = "逆势下行追小尾 (个位倾向 ≤" + lastUnit + ")";
         } else {
             unitTrendType = "同尾重复 (" + prevUnit + "尾→" + lastUnit + "尾)";
-            unitTargetDesc = "同尾防跳变 (个位防向两翼扩散)";
+            unitTargetDesc = "同尾防跳变";
         }
 
+        // 3. 新增：五行分析
+        var lastWuXing = getWuXing(specNum);
+
+        // 4. 新增：合数单双与大小分析（数字之和）
+        var sumDigits = Math.floor(specNum / 10) + (specNum % 10);
+        var isHeOdd = sumDigits % 2 !== 0;
+        var heSize = sumDigits >= 7 ? "合数大" : "合数小";
+        var heParityStr = isHeOdd ? "合数单" : "合数双";
+
+        // 5. 大小单双形态
         var isSmall = specNum < 25;
         var isOdd = specNum % 2 !== 0;
         var targetSize = isSmall ? "大" : "小";
@@ -766,11 +789,11 @@ function doPredict() {
         var lastColor = getColorName(specNum);
         var badgeColorClass = lastColor === "红波" ? "badge-red" : (lastColor === "蓝波" ? "badge-blue" : "badge-green");
 
+        // 6. 家野肖2连击形态监控
         var lastZodiac = getZodiac(specNum);
         var prevZodiac = getZodiac(prevSpec);
         var isLastHome = isHomeZodiac(lastZodiac);
         var isPrevHome = isHomeZodiac(prevZodiac);
-
         var isDoubleHome = isLastHome && isPrevHome;
         var isDoubleWild = (!isLastHome && !isPrevHome);
         var homeWildStatusStr = "交替跳动形态";
@@ -783,6 +806,7 @@ function doPredict() {
             targetHomeWildPref = true;
         }
 
+        // 7. 遗漏过滤规则
         var analysis = getAnalysisExclusions();
         var excludedColdNums = analysis.cold7;
         var maxZodiac = analysis.maxZodiac;
@@ -790,6 +814,7 @@ function doPredict() {
         var maxTail = analysis.maxTail;
         var excludedTailNums = analysis.excludedTailNums;
 
+        // 8. 全维综合加权计分引擎
         var pool = [];
         for (var i = 1; i <= 49; i++) {
             if (excludedColdNums.indexOf(i) !== -1) continue;
@@ -803,23 +828,39 @@ function doPredict() {
             var iParity = i % 2 === 0 ? "雙" : "單";
             var iZodiac = getZodiac(i);
             var iIsHome = isHomeZodiac(iZodiac);
+            var iWuXing = getWuXing(i);
+            var iSum = Math.floor(i / 10) + (i % 10);
+            var iHeOdd = iSum % 2 !== 0;
 
-            if (lastTen > prevTen && iTen >= lastTen) score += 30;
-            else if (lastTen < prevTen && iTen <= lastTen) score += 30;
-            else if (lastTen === prevTen && iTen !== lastTen) score += 20;
+            // 十位顺逆加权
+            if (lastTen > prevTen && iTen >= lastTen) score += 25;
+            else if (lastTen < prevTen && iTen <= lastTen) score += 25;
+            else if (lastTen === prevTen && iTen !== lastTen) score += 15;
 
-            if (lastUnit > prevUnit && iUnit >= lastUnit) score += 25;
-            else if (lastUnit < prevUnit && iUnit <= lastUnit) score += 25;
-            else if (lastUnit === prevUnit && iUnit !== lastUnit) score += 15;
+            // 个位顺逆加权
+            if (lastUnit > prevUnit && iUnit >= lastUnit) score += 20;
+            else if (lastUnit < prevUnit && iUnit <= lastUnit) score += 20;
+            else if (lastUnit === prevUnit && iUnit !== lastUnit) score += 10;
 
-            if (iSize === targetSize) score += 20;
-            if (iParity === targetParity) score += 20;
+            // 大小单双
+            if (iSize === targetSize) score += 15;
+            if (iParity === targetParity) score += 15;
 
-            if (targetHomeWildPref !== null && iIsHome === targetHomeWildPref) score += 20;
-            if (getColorName(i) !== lastColor) score += 15;
+            // 新增：五行互补加权（倾向开出不同于上期的五行）
+            if (iWuXing !== lastWuXing) score += 15;
 
+            // 新增：合数单双互补加权
+            if (iHeOdd !== isHeOdd) score += 15;
+
+            // 家野肖2连击变盘加权
+            if (targetHomeWildPref !== null && iIsHome === targetHomeWildPref) score += 15;
+
+            // 波色变盘加权
+            if (getColorName(i) !== lastColor) score += 10;
+
+            // 遗漏热度加分
             var omitVal = OMISSION_DATA[i] || 0;
-            score += Math.min(25, Math.floor(omitVal / 3));
+            score += Math.min(20, Math.floor(omitVal / 3));
 
             pool.push({
                 num: i,
@@ -833,26 +874,20 @@ function doPredict() {
         var topPool = pool.slice(0, 12);
 
         var analysisHtml = 
-            '• <b>十位顺逆式走势分析：</b> 判定为 <span class="badge badge-teal">' + tenTrendType + '</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>追踪最近特码十位轨迹（' + prev2Ten + ' → ' + prevTen + ' → ' + lastTen + '），当前呈现【' + tenTrendType + '】形态。下期跟着数据惯性走，' + tenTargetDesc + '。</div>' +
+            '• <b>十位与个位顺逆式走势：</b> <span class="badge badge-teal">十位: ' + tenTrendType + ' | 个位: ' + unitTrendType + '</span>' +
+            '<div class="reason-box">💡 <b>原理解析：</b>十位（' + prev2Ten + '→' + prevTen + '→' + lastTen + '）与个位（' + prevUnit + '→' + lastUnit + '）的顺逆惯性已锁定。' + tenTargetDesc + '，' + unitTargetDesc + '。</div>' +
 
-            '• <b>个位（尾数）顺逆式走势分析：</b> 判定为 <span class="badge badge-teal">' + unitTrendType + '</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>追踪最近特码个位轨迹（' + prevUnit + ' → ' + lastUnit + '），当前呈现【' + unitTrendType + '】形态。下期跟着走势延伸，' + unitTargetDesc + '。</div>' +
+            '• <b>五行区间与合数单双走势：</b> <span class="badge badge-amber">上期五行【' + lastWuXing + '】 | 合数【' + heSize + ' / ' + heParityStr + '】</span>' +
+            '<div class="reason-box">💡 <b>原理解析：</b>引入传统五行循环与合数（数字之和）单双平衡机制，本期重点加权互补属性的号码区间。</div>' +
 
             '• <b>家野肖2连击形态监控：</b> <span class="badge badge-purple">' + homeWildStatusStr + '</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>最近两期特码生肖分别为【' + prevZodiac + '】与【' + lastZodiac + '】。系统自动监测同家肖或同野肖连开2次的走势节点，结合极性回归规律调整下期权重。</div>' +
+            '<div class="reason-box">💡 <b>原理解析：</b>上两期生肖分别为【' + prevZodiac + '】与【' + lastZodiac + '】。系统自动监测同家/野肖连开2次的走势节点并调整回归权重。</div>' +
 
             '• <b>矩阵斜线共振扫描：</b> <span class="badge badge-green">对角线斜向呼应完成</span>' +
             '<div class="reason-box">💡 <b>原理解析：</b>已提取历史开奖矩阵中平码与特码的斜向对角呼应点，锁定高权重交叉候选区间。</div>' +
 
-            '• <b>大小形态走势预测：</b> 指向 <span class="badge">' + (targetSize === "大" ? "大数区间 (25-49)" : "小数区间 (01-24)") + '</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>上一期特码为【' + (isSmall ? '小' : '大') + '】号（' + (specNum < 10 ? '0' + specNum : specNum) + '号），根据均势回归惯性，本期重点追踪【' + targetSize + '】数区间。</div>' +
-            
-            '• <b>单双奇偶校验：</b> 指向 <span class="badge">' + (targetParity === "雙" ? "双数 (偶数)" : "单数 (奇数)") + '</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>上期开出【' + (isOdd ? '单' : '双') + '】数，本期结合单双交替互补走势进行加权。</div>' +
-
-            '• <b>波色（颜色）规律分析：</b> 指向 <span class="badge ' + badgeColorClass + '">' + lastColor + '变盘防守</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>上一期特码开出【' + lastColor + '】，结合三色平衡周期，本期向互补色系转移回补。</div>' +
+            '• <b>大小形态与单双走势：</b> 指向 <span class="badge">' + (targetSize === "大" ? "大数区间 (25-49)" : "小数区间 (01-24)") + ' / ' + (targetParity === "雙" ? "双数" : "单数") + '</span>' +
+            '<div class="reason-box">💡 <b>原理解析：</b>上一期特码为【' + (isSmall ? '小' : '大') + '】号（' + specNum + '号），根据均势回归惯性，本期重点追踪【' + targetSize + '】数。</div>' +
 
             '• <b>多维遗漏智能过滤机制：</b> <span class="badge badge-red">已自动剔除极端冷码、生肖与尾数</span>' +
             '<div class="reason-box">💡 <b>过滤详情：</b>' +
