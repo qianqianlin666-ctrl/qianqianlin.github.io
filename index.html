@@ -50,12 +50,12 @@
         .card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 6px; margin-top: 20px; }
         .reason-box { font-size: 13px; color: #475569; margin-top: 4px; margin-bottom: 12px; line-height: 1.6; padding: 6px 10px; border-radius: 0 4px 4px 0; border: 1px solid #e2e8f0; border-left: 4px solid #2563eb; background: #ffffff; }
         .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; background: #2563eb; color: #fff; margin-right: 3px; }
-        .badge-red { background: #dc2626; }
-        .badge-blue { background: #2563eb; }
-        .badge-green { background: #16a34a; }
-        .badge-purple { background: #7c3aed; }
-        .badge-teal { background: #0d9488; }
-        .badge-amber { background: #d97706; }
+        .badge-red { background: #dc2626; color: #fff; }
+        .badge-blue { background: #2563eb; color: #fff; }
+        .badge-green { background: #16a34a; color: #fff; }
+        .badge-purple { background: #7c3aed; color: #fff; }
+        .badge-teal { background: #0d9488; color: #fff; }
+        .badge-amber { background: #d97706; color: #fff; }
 
         .result-box { background: #ffffff; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 6px; text-align: center; margin-top: 20px; }
         .result-num { font-size: 26px; font-weight: bold; color: #dc2626; margin: 10px 0; }
@@ -118,7 +118,7 @@
 
     <!-- 手动录入表单面板 -->
     <div class="input-panel">
-        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（自动更新顺逆式、五行合数走势与遗漏）</div>
+        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（阶梯式顺势次数加权）</div>
         <div class="input-row">
             <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 95px;"></div>
             <div>平码(空格/逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 190px;"></div>
@@ -161,12 +161,12 @@
     </div>
 
     <div class="card">
-        <div class="section-title" style="border-left-color: #dc2626;">📊 全维数据走势分析中心（十位/个位顺逆式、五行、合数单双、家野肖2连击、斜线与遗漏过滤）</div>
+        <div class="section-title" style="border-left-color: #dc2626;">📊 阶梯顺势加权分析中心（顺势次数越多权重呈几何级数递增）</div>
         <div id="analysis-results">正在分析开奖走势...</div>
     </div>
 
     <div class="result-box">
-        <div style="font-weight: bold; color: #334155;">🎯 全维加权精选推荐（顺逆式 + 五行合数 + 遗漏智能过滤）</div>
+        <div style="font-weight: bold; color: #334155;">🎯 依据阶梯顺势加权次数智能生成的精选推荐</div>
         <div class="result-num" id="recommended-code">等待生成</div>
         <div id="pool-display" style="color: #64748b; font-size: 13px; margin-bottom: 8px;"></div>
         <div id="excluded-info" style="font-size: 12px; color: #dc2626; margin-bottom: 8px;"></div>
@@ -210,7 +210,7 @@
                     <tr>
                         <th>预测期数</th>
                         <th>推荐一码</th>
-                        <th>候选号池 (全维走势过滤)</th>
+                        <th>候选号池 (阶梯顺势加权过滤)</th>
                         <th>实际开出特码</th>
                         <th>核对结果</th>
                     </tr>
@@ -223,7 +223,7 @@
     </div>
 
     <div class="btn-container">
-        <button class="action-btn" onclick="doPredict()">🔮 立即运行全维数据走势预测并记录战绩</button>
+        <button class="action-btn" onclick="doPredict()">🔮 立即运行阶梯顺势预测并记录战绩</button>
     </div>
 </div>
 
@@ -238,16 +238,6 @@ var ZODIAC_MAP = {
 var HOME_ZODIACS = ["牛", "馬", "羊", "雞", "狗", "豬"];
 function isHomeZodiac(zodiac) {
     return HOME_ZODIACS.indexOf(zodiac) !== -1;
-}
-
-// 简易五行归属映射（港澳台六合彩传统五行近似划分）
-function getWuXing(n) {
-    var rem = n % 5;
-    if (rem === 1) return "金";
-    if (rem === 2) return "木";
-    if (rem === 3) return "水";
-    if (rem === 4) return "火";
-    return "土";
 }
 
 function getNumbersByZodiac(zodiacName) {
@@ -273,26 +263,28 @@ function getColorName(n) {
     return "绿波";
 }
 
+// 同步更新至第 2026319 期开出 05(虎/绿波) 后的最新遗漏数据
 var DEFAULT_OMISSIONS = {
-    41: 136, 29: 127, 47: 112, 6: 106, 4: 104, 37: 102, 39: 84,
-    12: 81, 27: 78, 16: 65, 44: 63, 1: 62, 7: 61, 20: 58,
-    30: 56, 9: 55, 49: 53, 22: 49, 35: 47, 33: 44, 14: 42,
-    11: 41, 2: 40, 10: 37, 18: 35, 32: 34, 19: 33, 24: 32,
-    40: 28, 36: 26, 5: 25, 28: 24, 25: 23, 8: 20, 23: 19,
-    45: 16, 17: 15, 21: 14, 15: 12, 42: 11, 13: 9, 46: 8,
-    34: 7, 43: 5, 31: 4, 48: 3, 3: 2, 26: 1, 38: 0
+    41: 137, 29: 128, 47: 113, 6: 107, 4: 105, 37: 103, 39: 85,
+    12: 82, 27: 79, 16: 66, 44: 64, 1: 63, 7: 62, 20: 59,
+    30: 57, 9: 56, 49: 54, 22: 50, 35: 48, 33: 45, 14: 43,
+    11: 42, 2: 41, 10: 38, 18: 36, 32: 35, 19: 34, 24: 33,
+    40: 29, 36: 27, 28: 25, 25: 24, 8: 21, 23: 20,
+    45: 17, 17: 16, 21: 15, 15: 13, 42: 12, 13: 10, 46: 9,
+    34: 8, 43: 6, 31: 5, 48: 4, 3: 3, 26: 2, 38: 1, 5: 0
 };
 
 var DEFAULT_ZODIAC_OMISSIONS = {
-    "兔": 24, "豬": 20, "猴": 19, "虎": 15, "狗": 14, "牛": 11,
-    "馬": 9, "雞": 7, "鼠": 4, "羊": 3, "龍": 2, "蛇": 0
+    "兔": 25, "豬": 21, "猴": 20, "狗": 15, "牛": 12,
+    "馬": 10, "雞": 8, "鼠": 5, "羊": 4, "龍": 3, "蛇": 1, "虎": 0
 };
 
 var DEFAULT_TAIL_OMISSIONS = {
-    9: 33, 0: 28, 7: 15, 5: 12, 2: 11, 4: 7, 1: 4, 3: 2, 6: 1, 8: 0
+    9: 34, 0: 29, 7: 16, 2: 12, 4: 8, 1: 5, 3: 3, 6: 2, 8: 1, 5: 0
 };
 
 var DEFAULT_DATA = [
+    { period: "2026319", time: "2026-11-15 21:35:00", normals: [6, 3, 15, 13, 25, 45], special_num: 5 },
     { period: "2026318", time: "2026-11-15 21:35:00", normals: [10, 36, 2, 9, 26, 37], special_num: 38 },
     { period: "2026317", time: "2026-11-14 21:35:00", normals: [31, 49, 30, 22, 43, 24], special_num: 26 },
     { period: "2026316", time: "2026-11-12 21:32:32", normals: [14, 4, 10, 46, 45, 49], special_num: 3 },
@@ -338,40 +330,31 @@ var DEFAULT_DATA = [
 ];
 
 var HISTORY_DATA = DEFAULT_DATA;
+var OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_OMISSIONS));
+var ZODIAC_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_ZODIAC_OMISSIONS));
+var TAIL_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_TAIL_OMISSIONS));
+
+// 自动检测内置最新期号：如果代码中更新了最新开奖，自动刷新旧缓存
 try {
     var stored = localStorage.getItem("MACAU_HISTORY_DATA");
     if (stored) {
         var parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) HISTORY_DATA = parsed;
+        if (Array.isArray(parsed) && parsed.length > 0 && parseInt(parsed[0].period, 10) >= parseInt(DEFAULT_DATA[0].period, 10)) {
+            HISTORY_DATA = parsed;
+            var storedOmit = localStorage.getItem("MACAU_OMISSION_DATA");
+            if (storedOmit) OMISSION_DATA = JSON.parse(storedOmit);
+            var storedZod = localStorage.getItem("MACAU_ZODIAC_OMISSION_DATA");
+            if (storedZod) ZODIAC_OMISSION_DATA = JSON.parse(storedZod);
+            var storedTail = localStorage.getItem("MACAU_TAIL_OMISSION_DATA");
+            if (storedTail) TAIL_OMISSION_DATA = JSON.parse(storedTail);
+        } else {
+            localStorage.setItem("MACAU_HISTORY_DATA", JSON.stringify(HISTORY_DATA));
+            localStorage.setItem("MACAU_OMISSION_DATA", JSON.stringify(OMISSION_DATA));
+            localStorage.setItem("MACAU_ZODIAC_OMISSION_DATA", JSON.stringify(ZODIAC_OMISSION_DATA));
+            localStorage.setItem("MACAU_TAIL_OMISSION_DATA", JSON.stringify(TAIL_OMISSION_DATA));
+        }
     }
-} catch (e) { HISTORY_DATA = DEFAULT_DATA; }
-
-var OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_OMISSIONS));
-try {
-    var storedOmit = localStorage.getItem("MACAU_OMISSION_DATA");
-    if (storedOmit) {
-        var parsedOmit = JSON.parse(storedOmit);
-        if (parsedOmit && typeof parsedOmit === 'object') OMISSION_DATA = parsedOmit;
-    }
-} catch (e) { OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_OMISSIONS)); }
-
-var ZODIAC_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_ZODIAC_OMISSIONS));
-try {
-    var storedZod = localStorage.getItem("MACAU_ZODIAC_OMISSION_DATA");
-    if (storedZod) {
-        var parsedZod = JSON.parse(storedZod);
-        if (parsedZod && typeof parsedZod === 'object') ZODIAC_OMISSION_DATA = parsedZod;
-    }
-} catch (e) { ZODIAC_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_ZODIAC_OMISSIONS)); }
-
-var TAIL_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_TAIL_OMISSIONS));
-try {
-    var storedTail = localStorage.getItem("MACAU_TAIL_OMISSION_DATA");
-    if (storedTail) {
-        var parsedTail = JSON.parse(storedTail);
-        if (parsedTail && typeof parsedTail === 'object') TAIL_OMISSION_DATA = parsedTail;
-    }
-} catch (e) { TAIL_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_TAIL_OMISSIONS)); }
+} catch (e) {}
 
 var PREDICT_RECORDS = [];
 try {
@@ -621,7 +604,7 @@ function addNewDraw() {
     checkPredictRecords();
     doPredict();
     initAutoPeriod();
-    alert("第 " + pInput + " 期开奖录入成功！顺逆式、五行合数走势与遗漏已全自动更新！");
+    alert("第 " + pInput + " 期开奖录入成功！阶梯顺势加权与遗漏已全自动更新！");
 }
 
 function resetDefaultData() {
@@ -728,85 +711,42 @@ function updateTimer() {
 }
 setInterval(updateTimer, 1000);
 
+// 通用连续顺势次数统计器
+function countStreak(getterFn) {
+    if (!HISTORY_DATA || HISTORY_DATA.length === 0) return 1;
+    var baseVal = getterFn(HISTORY_DATA[0].special_num);
+    var streak = 1;
+    for (var k = 1; k < HISTORY_DATA.length; k++) {
+        if (getterFn(HISTORY_DATA[k].special_num) === baseVal) {
+            streak++;
+        } else {
+            break;
+        }
+    }
+    return streak;
+}
+
 function doPredict() {
     try {
         var last = HISTORY_DATA[0];
-        var prev = HISTORY_DATA.length > 1 ? HISTORY_DATA[1] : last;
-        var prev2 = HISTORY_DATA.length > 2 ? HISTORY_DATA[2] : prev;
-
         var specNum = last.special_num;
-        var prevSpec = prev.special_num;
-        var prev2Spec = prev2.special_num;
 
-        // 1. 十位顺逆式走势分析
-        var lastTen = Math.floor(specNum / 10);
-        var prevTen = Math.floor(prevSpec / 10);
-        var prev2Ten = Math.floor(prev2Spec / 10);
-        
-        var tenTrendType = "平式走平";
-        var tenTargetDesc = "";
-        if (lastTen > prevTen) {
-            tenTrendType = "顺式递增 (" + prevTen + "→" + lastTen + ")";
-            tenTargetDesc = "顺势看大头 (重点锁定十位 " + lastTen + "头 或 " + Math.min(4, lastTen + 1) + "头)";
-        } else if (lastTen < prevTen) {
-            tenTrendType = "逆式递减 (" + prevTen + "→" + lastTen + ")";
-            tenTargetDesc = "逆势回落小头 (重点锁定十位 " + lastTen + "头 或 " + Math.max(0, lastTen - 1) + "头)";
-        } else {
-            tenTrendType = "同头平移 (" + prevTen + "→" + lastTen + ")";
-            tenTargetDesc = "平移防变盘 (重点关注邻头切换)";
-        }
+        // 1. 动态追溯各项指标连续顺势的真实“次数”（支持3次、4次及更高连开）
+        var s1 = Math.floor(specNum / 10);
+        var tenStreak = countStreak(function(n) { return Math.floor(n / 10); });
 
-        // 2. 个位顺逆式走势分析
-        var lastUnit = specNum % 10;
-        var prevUnit = prevSpec % 10;
-        var unitTrendType = "平式走平";
-        var unitTargetDesc = "";
-        if (lastUnit > prevUnit) {
-            unitTrendType = "顺式递增 (" + prevUnit + "尾→" + lastUnit + "尾)";
-            unitTargetDesc = "顺势延伸追大尾 (个位倾向 ≥" + lastUnit + ")";
-        } else if (lastUnit < prevUnit) {
-            unitTrendType = "逆式递减 (" + prevUnit + "尾→" + lastUnit + "尾)";
-            unitTargetDesc = "逆势下行追小尾 (个位倾向 ≤" + lastUnit + ")";
-        } else {
-            unitTrendType = "同尾重复 (" + prevUnit + "尾→" + lastUnit + "尾)";
-            unitTargetDesc = "同尾防跳变";
-        }
+        var u1 = specNum % 10;
+        var unitStreak = countStreak(function(n) { return n % 10; });
 
-        // 3. 新增：五行分析
-        var lastWuXing = getWuXing(specNum);
+        var c1 = getColorName(specNum);
+        var colorStreak = countStreak(function(n) { return getColorName(n); });
 
-        // 4. 新增：合数单双与大小分析（数字之和）
-        var sumDigits = Math.floor(specNum / 10) + (specNum % 10);
-        var isHeOdd = sumDigits % 2 !== 0;
-        var heSize = sumDigits >= 7 ? "合数大" : "合数小";
-        var heParityStr = isHeOdd ? "合数单" : "合数双";
+        var h1 = isHomeZodiac(getZodiac(specNum));
+        var zodiacStreak = countStreak(function(n) { return isHomeZodiac(getZodiac(n)); });
 
-        // 5. 大小单双形态
-        var isSmall = specNum < 25;
-        var isOdd = specNum % 2 !== 0;
-        var targetSize = isSmall ? "大" : "小";
-        var targetParity = isOdd ? "雙" : "單";
-        var lastColor = getColorName(specNum);
-        var badgeColorClass = lastColor === "红波" ? "badge-red" : (lastColor === "蓝波" ? "badge-blue" : "badge-green");
+        var badgeColorClass = c1 === "红波" ? "badge-red" : (c1 === "蓝波" ? "badge-blue" : "badge-green");
 
-        // 6. 家野肖2连击形态监控
-        var lastZodiac = getZodiac(specNum);
-        var prevZodiac = getZodiac(prevSpec);
-        var isLastHome = isHomeZodiac(lastZodiac);
-        var isPrevHome = isHomeZodiac(prevZodiac);
-        var isDoubleHome = isLastHome && isPrevHome;
-        var isDoubleWild = (!isLastHome && !isPrevHome);
-        var homeWildStatusStr = "交替跳动形态";
-        var targetHomeWildPref = null;
-        if (isDoubleHome) {
-            homeWildStatusStr = "连续2期开出【家肖】(防守变盘野肖)";
-            targetHomeWildPref = false;
-        } else if (isDoubleWild) {
-            homeWildStatusStr = "连续2期开出【野肖】(防守变盘家肖)";
-            targetHomeWildPref = true;
-        }
-
-        // 7. 遗漏过滤规则
+        // 遗漏过滤规则
         var analysis = getAnalysisExclusions();
         var excludedColdNums = analysis.cold7;
         var maxZodiac = analysis.maxZodiac;
@@ -814,7 +754,7 @@ function doPredict() {
         var maxTail = analysis.maxTail;
         var excludedTailNums = analysis.excludedTailNums;
 
-        // 8. 全维综合加权计分引擎
+        // 2. 阶梯式顺势加权评分引擎（顺 1 次基础分，顺 2 次翻倍，顺 3 次及以上高阶重仓加码）
         var pool = [];
         for (var i = 1; i <= 49; i++) {
             if (excludedColdNums.indexOf(i) !== -1) continue;
@@ -824,76 +764,70 @@ function doPredict() {
             var score = 0;
             var iTen = Math.floor(i / 10);
             var iUnit = i % 10;
-            var iSize = i >= 25 ? "大" : "小";
-            var iParity = i % 2 === 0 ? "雙" : "單";
-            var iZodiac = getZodiac(i);
-            var iIsHome = isHomeZodiac(iZodiac);
-            var iWuXing = getWuXing(i);
-            var iSum = Math.floor(i / 10) + (i % 10);
-            var iHeOdd = iSum % 2 !== 0;
+            var iColor = getColorName(i);
+            var iIsHome = isHomeZodiac(getZodiac(i));
 
-            // 十位顺逆加权
-            if (lastTen > prevTen && iTen >= lastTen) score += 25;
-            else if (lastTen < prevTen && iTen <= lastTen) score += 25;
-            else if (lastTen === prevTen && iTen !== lastTen) score += 15;
+            // --- A. 十位阶梯加权 ---
+            if (iTen === s1) {
+                if (tenStreak === 1) score += 15;
+                else if (tenStreak === 2) score += 30;
+                else if (tenStreak >= 3) score += 50;
+            }
 
-            // 个位顺逆加权
-            if (lastUnit > prevUnit && iUnit >= lastUnit) score += 20;
-            else if (lastUnit < prevUnit && iUnit <= lastUnit) score += 20;
-            else if (lastUnit === prevUnit && iUnit !== lastUnit) score += 10;
+            // --- B. 个位阶梯加权 ---
+            if (iUnit === u1) {
+                if (unitStreak === 1) score += 15;
+                else if (unitStreak === 2) score += 30;
+                else if (unitStreak >= 3) score += 50;
+            }
 
-            // 大小单双
-            if (iSize === targetSize) score += 15;
-            if (iParity === targetParity) score += 15;
+            // --- C. 波色阶梯加权 ---
+            if (iColor === c1) {
+                if (colorStreak === 1) score += 15;
+                else if (colorStreak === 2) score += 32;
+                else if (colorStreak >= 3) score += 55;
+            }
 
-            // 新增：五行互补加权（倾向开出不同于上期的五行）
-            if (iWuXing !== lastWuXing) score += 15;
+            // --- D. 家野肖阶梯加权 ---
+            if (iIsHome === h1) {
+                if (zodiacStreak === 1) score += 15;
+                else if (zodiacStreak === 2) score += 35;
+                else if (zodiacStreak >= 3) score += 60;
+            }
 
-            // 新增：合数单双互补加权
-            if (iHeOdd !== isHeOdd) score += 15;
-
-            // 家野肖2连击变盘加权
-            if (targetHomeWildPref !== null && iIsHome === targetHomeWildPref) score += 15;
-
-            // 波色变盘加权
-            if (getColorName(i) !== lastColor) score += 10;
-
-            // 遗漏热度加分
+            // --- E. 遗漏温热回补分 ---
             var omitVal = OMISSION_DATA[i] || 0;
             score += Math.min(20, Math.floor(omitVal / 3));
 
             pool.push({
                 num: i,
-                anim: iZodiac,
+                anim: getZodiac(i),
                 omit: omitVal,
                 score: score
             });
         }
 
-        pool.sort(function(a, b) { return b.score !== a.score ? b.score - a.score : b.omit - a.omit; });
+        pool.sort(function(a, b) { return b.score !== a.score ? b.score - a.score : a.omit - b.omit; });
         var topPool = pool.slice(0, 12);
 
         var analysisHtml = 
-            '• <b>十位与个位顺逆式走势：</b> <span class="badge badge-teal">十位: ' + tenTrendType + ' | 个位: ' + unitTrendType + '</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>十位（' + prev2Ten + '→' + prevTen + '→' + lastTen + '）与个位（' + prevUnit + '→' + lastUnit + '）的顺逆惯性已锁定。' + tenTargetDesc + '，' + unitTargetDesc + '。</div>' +
+            '• <b>十位连续顺势阶梯：</b> <span class="badge badge-teal">当前头路: ' + s1 + '头 | 连续顺势: <b style="color:#fef08a;">' + tenStreak + ' 次</b></span>' +
+            '<div class="reason-box">💡 <b>阶梯加权规则：</b>顺1次基础分(+15)，顺2次翻倍(+30)，顺3次及以上重仓加码(+50)。当前十位【' + s1 + '头】持续评级为 ' + tenStreak + ' 阶。</div>' +
 
-            '• <b>五行区间与合数单双走势：</b> <span class="badge badge-amber">上期五行【' + lastWuXing + '】 | 合数【' + heSize + ' / ' + heParityStr + '】</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>引入传统五行循环与合数（数字之和）单双平衡机制，本期重点加权互补属性的号码区间。</div>' +
+            '• <b>个位连续惯性阶梯：</b> <span class="badge badge-teal">当前尾数: ' + u1 + '尾 | 连续顺势: <b style="color:#fef08a;">' + unitStreak + ' 次</b></span>' +
+            '<div class="reason-box">💡 <b>阶梯加权规则：</b>个位【' + u1 + '尾】连续顺势达 ' + unitStreak + ' 次，系统自动按阶梯倍数向该尾数号码倾斜权重。</div>' +
 
-            '• <b>家野肖2连击形态监控：</b> <span class="badge badge-purple">' + homeWildStatusStr + '</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>上两期生肖分别为【' + prevZodiac + '】与【' + lastZodiac + '】。系统自动监测同家/野肖连开2次的走势节点并调整回归权重。</div>' +
+            '• <b>波色连续延续阶梯：</b> <span class="badge ' + badgeColorClass + '">波色: ' + c1 + ' | 连续顺势: <b style="color:#fef08a;">' + colorStreak + ' 次</b></span>' +
+            '<div class="reason-box">💡 <b>阶梯加权规则：</b>【' + c1 + '】已连续开出 ' + colorStreak + ' 期，触发第 ' + colorStreak + ' 阶顺势加权（当前加权：' + (colorStreak === 1 ? '15分' : (colorStreak === 2 ? '32分' : '55分重仓')) + '）。</div>' +
 
-            '• <b>矩阵斜线共振扫描：</b> <span class="badge badge-green">对角线斜向呼应完成</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>已提取历史开奖矩阵中平码与特码的斜向对角呼应点，锁定高权重交叉候选区间。</div>' +
+            '• <b>家野肖连开形态阶梯：</b> <span class="badge badge-purple">当前属性: ' + (h1 ? '家肖' : '野肖') + ' | 连续顺势: <b style="color:#fef08a;">' + zodiacStreak + ' 次</b></span>' +
+            '<div class="reason-box">💡 <b>阶梯加权规则：</b>【' + (h1 ? '家肖' : '野肖') + '】已连开达 ' + zodiacStreak + ' 期，系统自动按阶梯最高权重重仓追击同类肖！</div>' +
 
-            '• <b>大小形态与单双走势：</b> 指向 <span class="badge">' + (targetSize === "大" ? "大数区间 (25-49)" : "小数区间 (01-24)") + ' / ' + (targetParity === "雙" ? "双数" : "单数") + '</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>上一期特码为【' + (isSmall ? '小' : '大') + '】号（' + specNum + '号），根据均势回归惯性，本期重点追踪【' + targetSize + '】数。</div>' +
-
-            '• <b>多维遗漏智能过滤机制：</b> <span class="badge badge-red">已自动剔除极端冷码、生肖与尾数</span>' +
+            '• <b>多维遗漏智能过滤：</b> <span class="badge badge-red">已自动剔除极端冷码、生肖与尾数</span>' +
             '<div class="reason-box">💡 <b>过滤详情：</b>' +
-            '<br>1. <b>号码遗漏排除（最冷前7个）：</b> ' + excludedColdNums.map(function(n){return n<10?"0"+n:n}).join('、') +
-            '<br>2. <b>生肖遗漏排除（遗漏最多）：</b> 【' + maxZodiac + '生肖】（包含号：' + excludedZodiacNums.map(function(n){return n<10?"0"+n:n}).join('、') + '）' +
-            '<br>3. <b>尾数遗漏排除（遗漏最多）：</b> 【' + maxTail + ' 尾】（包含号：' + excludedTailNums.map(function(n){return n<10?"0"+n:n}).join('、') + '）' +
+            '<br>1. <b>冷码排除（最冷7个）：</b> ' + excludedColdNums.map(function(n){return n<10?"0"+n:n}).join('、') +
+            '<br>2. <b>生肖排除（遗漏最多）：</b> 【' + maxZodiac + '生肖】' +
+            '<br>3. <b>尾数排除（遗漏最多）：</b> 【' + maxTail + ' 尾】' +
             '</div>';
         
         document.getElementById("analysis-results").innerHTML = analysisHtml;
@@ -908,12 +842,12 @@ function doPredict() {
             for (var j = 0; j < displayPool.length; j++) {
                 var p = displayPool[j];
                 var pPad = p.num < 10 ? "0" + p.num : "" + p.num;
-                poolStrs.push(pPad + '(' + p.anim + ')');
+                poolStrs.push(pPad + '(' + p.anim + '·评' + p.score + ')');
                 sortedPoolNums.push(p.num);
             }
 
-            document.getElementById("recommended-code").innerText = "🎯 推荐精选一码：" + bestPad + " 号 (" + best.anim + ")";
-            document.getElementById("pool-display").innerHTML = "<b>全维走势精选号池 (Top12)：</b> " + poolStrs.join('、');
+            document.getElementById("recommended-code").innerText = "🎯 阶梯顺势推荐一码：" + bestPad + " 号 (" + best.anim + ")";
+            document.getElementById("pool-display").innerHTML = "<b>顺势加权精选号池 (Top12带评分)：</b> " + poolStrs.join('、');
             document.getElementById("excluded-info").innerText = "🚫 自动排除: 最冷7码+生肖[" + maxZodiac + "]+尾数[" + maxTail + "尾]";
 
             var nextPeriod = (parseInt(HISTORY_DATA[0].period, 10) + 1).toString();
