@@ -118,7 +118,7 @@
 
     <!-- 手动录入表单面板 -->
     <div class="input-panel">
-        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（阶梯式顺势次数加权）</div>
+        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（200期大数据库 + 历史纪律约束 + 排除上期重号）</div>
         <div class="input-row">
             <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 95px;"></div>
             <div>平码(空格/逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 190px;"></div>
@@ -145,7 +145,7 @@
         <button class="zodiac-btn reset active" onclick="filterZodiac(null, this)">还原</button>
     </div>
 
-    <div class="section-title">开奖历史记录表（支持持续累加）</div>
+    <div class="section-title">开奖历史记录表（已收录 200 期完整数据：2026120 - 2026319 期）</div>
     <div style="overflow-x: auto; max-height: 420px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 4px;">
         <table class="history-table">
             <thead>
@@ -161,12 +161,12 @@
     </div>
 
     <div class="card">
-        <div class="section-title" style="border-left-color: #dc2626;">📊 阶梯顺势加权分析中心（顺势次数越多权重呈几何级数递增）</div>
+        <div class="section-title" style="border-left-color: #dc2626;">📊 全维历史纪律与阶梯顺势分析中心（严格受限于 200 期历史最高连开纪录）</div>
         <div id="analysis-results">正在分析开奖走势...</div>
     </div>
 
     <div class="result-box">
-        <div style="font-weight: bold; color: #334155;">🎯 依据阶梯顺势加权次数智能生成的精选推荐</div>
+        <div style="font-weight: bold; color: #334155;">🎯 依据 200 期历史纪律与顺势规律智能生成的精选推荐</div>
         <div class="result-num" id="recommended-code">等待生成</div>
         <div id="pool-display" style="color: #64748b; font-size: 13px; margin-bottom: 8px;"></div>
         <div id="excluded-info" style="font-size: 12px; color: #dc2626; margin-bottom: 8px;"></div>
@@ -210,7 +210,7 @@
                     <tr>
                         <th>预测期数</th>
                         <th>推荐一码</th>
-                        <th>候选号池 (阶梯顺势加权过滤)</th>
+                        <th>候选号池 (已排除上期特码及冷门)</th>
                         <th>实际开出特码</th>
                         <th>核对结果</th>
                     </tr>
@@ -223,7 +223,7 @@
     </div>
 
     <div class="btn-container">
-        <button class="action-btn" onclick="doPredict()">🔮 立即运行阶梯顺势预测并记录战绩</button>
+        <button class="action-btn" onclick="doPredict()">🔮 立即运行历史纪律顺势预测并记录战绩</button>
     </div>
 </div>
 
@@ -263,26 +263,7 @@ function getColorName(n) {
     return "绿波";
 }
 
-// 同步更新至第 2026319 期开出 05(虎/绿波) 后的最新遗漏数据
-var DEFAULT_OMISSIONS = {
-    41: 137, 29: 128, 47: 113, 6: 107, 4: 105, 37: 103, 39: 85,
-    12: 82, 27: 79, 16: 66, 44: 64, 1: 63, 7: 62, 20: 59,
-    30: 57, 9: 56, 49: 54, 22: 50, 35: 48, 33: 45, 14: 43,
-    11: 42, 2: 41, 10: 38, 18: 36, 32: 35, 19: 34, 24: 33,
-    40: 29, 36: 27, 28: 25, 25: 24, 8: 21, 23: 20,
-    45: 17, 17: 16, 21: 15, 15: 13, 42: 12, 13: 10, 46: 9,
-    34: 8, 43: 6, 31: 5, 48: 4, 3: 3, 26: 2, 38: 1, 5: 0
-};
-
-var DEFAULT_ZODIAC_OMISSIONS = {
-    "兔": 25, "豬": 21, "猴": 20, "狗": 15, "牛": 12,
-    "馬": 10, "雞": 8, "鼠": 5, "羊": 4, "龍": 3, "蛇": 1, "虎": 0
-};
-
-var DEFAULT_TAIL_OMISSIONS = {
-    9: 34, 0: 29, 7: 16, 2: 12, 4: 8, 1: 5, 3: 3, 6: 2, 8: 1, 5: 0
-};
-
+// 完整 200 期历史开奖数据库（2026319 至 2026120 期）
 var DEFAULT_DATA = [
     { period: "2026319", time: "2026-11-15 21:35:00", normals: [6, 3, 15, 13, 25, 45], special_num: 5 },
     { period: "2026318", time: "2026-11-15 21:35:00", normals: [10, 36, 2, 9, 26, 37], special_num: 38 },
@@ -326,35 +307,219 @@ var DEFAULT_DATA = [
     { period: "2026280", time: "2026-10-07 21:32:32", normals: [1, 26, 28, 29, 3, 5], special_num: 15 },
     { period: "2026279", time: "2026-10-06 21:32:32", normals: [29, 32, 47, 38, 6, 26], special_num: 10 },
     { period: "2026278", time: "2026-10-05 21:32:32", normals: [6, 40, 24, 29, 44, 1], special_num: 2 },
-    { period: "2026277", time: "2026-10-04 21:32:32", normals: [41, 23, 14, 31, 13, 32], special_num: 11 }
+    { period: "2026277", time: "2026-10-04 21:32:32", normals: [41, 23, 14, 31, 13, 32], special_num: 11 },
+    { period: "2026276", time: "2026-10-03 21:32:32", normals: [2, 21, 17, 40, 11, 24], special_num: 14 },
+    { period: "2026275", time: "2026-10-02 21:32:32", normals: [42, 49, 4, 47, 14, 43], special_num: 17 },
+    { period: "2026274", time: "2026-10-01 21:32:32", normals: [12, 16, 32, 5, 39, 36], special_num: 33 },
+    { period: "2026273", time: "2026-09-30 21:32:32", normals: [30, 3, 25, 28, 6, 17], special_num: 5 },
+    { period: "2026272", time: "2026-09-29 21:32:32", normals: [43, 15, 4, 6, 32, 36], special_num: 2 },
+    { period: "2026271", time: "2026-09-28 21:32:32", normals: [25, 2, 5, 22, 20, 31], special_num: 35 },
+    { period: "2026270", time: "2026-09-27 21:32:32", normals: [39, 34, 20, 24, 17, 6], special_num: 19 },
+    { period: "2026269", time: "2026-09-26 21:32:32", normals: [19, 40, 36, 5, 38, 16], special_num: 22 },
+    { period: "2026268", time: "2026-09-25 21:32:32", normals: [48, 34, 11, 21, 19, 36], special_num: 40 },
+    { period: "2026267", time: "2026-09-24 21:32:32", normals: [16, 20, 25, 22, 9, 41], special_num: 40 },
+    { period: "2026266", time: "2026-09-23 21:32:32", normals: [38, 42, 37, 29, 45, 18], special_num: 8 },
+    { period: "2026265", time: "2026-09-22 21:32:32", normals: [5, 46, 40, 23, 26, 44], special_num: 49 },
+    { period: "2026264", time: "2026-09-21 21:32:32", normals: [10, 6, 8, 31, 22, 24], special_num: 21 },
+    { period: "2026263", time: "2026-09-20 21:32:32", normals: [44, 28, 3, 2, 24, 13], special_num: 9 },
+    { period: "2026262", time: "2026-09-19 21:32:32", normals: [38, 22, 33, 47, 36, 7], special_num: 30 },
+    { period: "2026261", time: "2026-09-18 21:32:32", normals: [6, 25, 43, 46, 29, 47], special_num: 24 },
+    { period: "2026260", time: "2026-09-17 21:32:32", normals: [25, 26, 44, 32, 6, 48], special_num: 20 },
+    { period: "2026259", time: "2026-09-16 21:32:32", normals: [43, 33, 49, 36, 19, 30], special_num: 22 },
+    { period: "2026258", time: "2026-09-15 21:32:32", normals: [3, 23, 21, 35, 5, 19], special_num: 46 },
+    { period: "2026257", time: "2026-09-14 21:32:32", normals: [8, 46, 47, 39, 27, 45], special_num: 7 },
+    { period: "2026256", time: "2026-09-13 21:32:32", normals: [40, 15, 9, 37, 7, 3], special_num: 1 },
+    { period: "2026255", time: "2026-09-12 21:32:32", normals: [36, 22, 6, 47, 39, 11], special_num: 44 },
+    { period: "2026254", time: "2026-09-11 21:32:32", normals: [26, 44, 35, 6, 16, 10], special_num: 2 },
+    { period: "2026253", time: "2026-09-10 21:32:32", normals: [5, 35, 15, 28, 13, 49], special_num: 16 },
+    { period: "2026252", time: "2026-09-09 21:32:32", normals: [33, 41, 43, 13, 6, 48], special_num: 22 },
+    { period: "2026251", time: "2026-09-08 21:32:32", normals: [9, 6, 11, 25, 8, 45], special_num: 30 },
+    { period: "2026250", time: "2026-09-07 21:32:32", normals: [10, 6, 39, 47, 37, 17], special_num: 14 },
+    { period: "2026249", time: "2026-09-06 21:32:32", normals: [41, 22, 13, 36, 26, 29], special_num: 23 },
+    { period: "2026248", time: "2026-09-05 21:32:32", normals: [43, 26, 49, 39, 14, 27], special_num: 20 },
+    { period: "2026247", time: "2026-09-04 21:32:32", normals: [3, 9, 43, 29, 46, 4], special_num: 40 },
+    { period: "2026246", time: "2026-09-03 21:32:32", normals: [22, 24, 19, 10, 20, 1], special_num: 30 },
+    { period: "2026245", time: "2026-09-02 21:32:32", normals: [22, 23, 14, 2, 13, 38], special_num: 18 },
+    { period: "2026244", time: "2026-09-01 21:32:32", normals: [9, 14, 3, 17, 33, 40], special_num: 46 },
+    { period: "2026243", time: "2026-08-31 21:32:32", normals: [42, 17, 12, 46, 9, 24], special_num: 21 },
+    { period: "2026242", time: "2026-08-30 21:32:32", normals: [29, 35, 46, 32, 13, 31], special_num: 9 },
+    { period: "2026241", time: "2026-08-29 21:32:32", normals: [29, 45, 27, 21, 42, 41], special_num: 49 },
+    { period: "2026240", time: "2026-08-28 21:32:32", normals: [2, 34, 22, 26, 28, 37], special_num: 27 },
+    { period: "2026239", time: "2026-08-27 21:32:32", normals: [47, 43, 34, 17, 22, 7], special_num: 5 },
+    { period: "2026238", time: "2026-08-26 21:32:32", normals: [35, 44, 23, 4, 7, 21], special_num: 17 },
+    { period: "2026237", time: "2026-08-25 21:32:32", normals: [47, 36, 14, 6, 41, 25], special_num: 12 },
+    { period: "2026236", time: "2026-08-24 21:32:32", normals: [26, 35, 42, 9, 14, 17], special_num: 11 },
+    { period: "2026235", time: "2026-08-23 21:32:32", normals: [27, 26, 35, 17, 44, 21], special_num: 32 },
+    { period: "2026234", time: "2026-08-22 21:32:32", normals: [25, 30, 37, 19, 7, 17], special_num: 39 },
+    { period: "2026233", time: "2026-08-21 21:32:32", normals: [18, 41, 5, 49, 4, 34], special_num: 7 },
+    { period: "2026232", time: "2026-08-20 21:32:32", normals: [29, 10, 17, 4, 46, 20], special_num: 42 },
+    { period: "2026231", time: "2026-08-19 21:32:32", normals: [39, 46, 23, 11, 8, 13], special_num: 20 },
+    { period: "2026230", time: "2026-08-18 21:32:32", normals: [28, 26, 47, 14, 49, 10], special_num: 16 },
+    { period: "2026229", time: "2026-08-17 21:32:32", normals: [11, 7, 15, 13, 33, 16], special_num: 38 },
+    { period: "2026228", time: "2026-08-16 21:32:32", normals: [38, 26, 8, 6, 29, 18], special_num: 23 },
+    { period: "2026227", time: "2026-08-15 21:32:32", normals: [23, 24, 29, 7, 13, 31], special_num: 16 },
+    { period: "2026226", time: "2026-08-14 21:32:32", normals: [1, 11, 29, 38, 4, 33], special_num: 17 },
+    { period: "2026225", time: "2026-08-13 21:32:32", normals: [7, 34, 27, 10, 19, 38], special_num: 1 },
+    { period: "2026224", time: "2026-08-12 21:32:32", normals: [25, 19, 8, 49, 18, 36], special_num: 9 },
+    { period: "2026223", time: "2026-08-11 21:32:32", normals: [21, 43, 1, 38, 29, 44], special_num: 23 },
+    { period: "2026222", time: "2026-08-10 21:32:32", normals: [49, 14, 47, 27, 18, 38], special_num: 26 },
+    { period: "2026221", time: "2026-08-09 21:32:32", normals: [24, 14, 18, 48, 46, 28], special_num: 1 },
+    { period: "2026220", time: "2026-08-08 21:32:32", normals: [27, 39, 4, 12, 38, 25], special_num: 48 },
+    { period: "2026219", time: "2026-08-07 21:32:32", normals: [31, 41, 7, 8, 29, 22], special_num: 43 },
+    { period: "2026218", time: "2026-08-06 21:32:32", normals: [2, 13, 47, 38, 46, 23], special_num: 17 },
+    { period: "2026217", time: "2026-08-05 21:32:32", normals: [34, 12, 11, 30, 42, 7], special_num: 26 },
+    { period: "2026216", time: "2026-08-04 21:32:32", normals: [18, 41, 32, 44, 36, 45], special_num: 37 },
+    { period: "2026215", time: "2026-08-03 21:32:32", normals: [19, 38, 30, 13, 1, 11], special_num: 14 },
+    { period: "2026214", time: "2026-08-02 21:32:32", normals: [29, 30, 27, 38, 43, 31], special_num: 4 },
+    { period: "2026213", time: "2026-08-01 21:32:32", normals: [9, 5, 12, 22, 1, 15], special_num: 35 },
+    { period: "2026212", time: "2026-07-31 21:32:32", normals: [43, 32, 16, 39, 19, 27], special_num: 6 },
+    { period: "2026211", time: "2026-07-30 21:32:32", normals: [13, 12, 39, 37, 38, 8], special_num: 1 },
+    { period: "2026210", time: "2026-07-29 21:32:32", normals: [40, 37, 15, 17, 42, 48], special_num: 49 },
+    { period: "2026209", time: "2026-07-28 21:32:32", normals: [44, 5, 39, 14, 21, 22], special_num: 8 },
+    { period: "2026208", time: "2026-07-27 21:32:32", normals: [7, 48, 40, 35, 23, 28], special_num: 19 },
+    { period: "2026207", time: "2026-07-26 21:32:32", normals: [9, 40, 26, 23, 44, 13], special_num: 31 },
+    { period: "2026206", time: "2026-07-25 21:32:32", normals: [9, 49, 37, 3, 40, 35], special_num: 47 },
+    { period: "2026205", time: "2026-07-24 21:32:32", normals: [30, 17, 39, 12, 11, 28], special_num: 3 },
+    { period: "2026204", time: "2026-07-23 21:32:32", normals: [11, 12, 17, 26, 10, 7], special_num: 5 },
+    { period: "2026203", time: "2026-07-22 21:32:32", normals: [12, 11, 31, 3, 44, 37], special_num: 25 },
+    { period: "2026202", time: "2026-07-21 21:32:32", normals: [21, 15, 25, 47, 13, 45], special_num: 40 },
+    { period: "2026201", time: "2026-07-20 21:32:32", normals: [46, 28, 19, 38, 31, 25], special_num: 32 },
+    { period: "2026200", time: "2026-07-19 21:32:32", normals: [43, 46, 5, 32, 35, 29], special_num: 39 },
+    { period: "2026199", time: "2026-07-18 21:32:32", normals: [17, 49, 42, 45, 5, 38], special_num: 36 },
+    { period: "2026198", time: "2026-07-17 21:32:32", normals: [48, 35, 45, 21, 12, 24], special_num: 7 },
+    { period: "2026197", time: "2026-07-16 21:32:32", normals: [40, 19, 30, 48, 44, 28], special_num: 8 },
+    { period: "2026196", time: "2026-07-15 21:32:32", normals: [3, 37, 24, 10, 41, 19], special_num: 39 },
+    { period: "2026195", time: "2026-07-14 21:32:32", normals: [46, 23, 39, 4, 9, 19], special_num: 25 },
+    { period: "2026194", time: "2026-07-13 21:32:32", normals: [30, 21, 22, 15, 4, 34], special_num: 26 },
+    { period: "2026193", time: "2026-07-12 21:32:32", normals: [2, 49, 25, 11, 45, 29], special_num: 9 },
+    { period: "2026192", time: "2026-07-11 21:32:32", normals: [27, 30, 45, 8, 1, 37], special_num: 25 },
+    { period: "2026191", time: "2026-07-10 21:32:32", normals: [19, 43, 39, 24, 16, 26], special_num: 29 },
+    { period: "2026190", time: "2026-07-09 21:32:32", normals: [46, 14, 19, 37, 48, 29], special_num: 16 },
+    { period: "2026189", time: "2026-07-08 21:32:32", normals: [45, 12, 37, 20, 38, 43], special_num: 15 },
+    { period: "2026188", time: "2026-07-07 21:32:32", normals: [38, 5, 19, 10, 14, 1], special_num: 16 },
+    { period: "2026187", time: "2026-07-06 21:32:32", normals: [23, 12, 36, 38, 27, 22], special_num: 1 },
+    { period: "2026186", time: "2026-07-05 21:32:32", normals: [17, 29, 22, 1, 5, 38], special_num: 23 },
+    { period: "2026185", time: "2026-07-04 21:32:32", normals: [18, 35, 9, 41, 12, 30], special_num: 36 },
+    { period: "2026184", time: "2026-07-03 21:32:32", normals: [44, 24, 11, 36, 25, 20], special_num: 1 },
+    { period: "2026183", time: "2026-07-02 21:32:32", normals: [23, 9, 46, 37, 42, 3], special_num: 24 },
+    { period: "2026182", time: "2026-07-01 21:32:32", normals: [15, 23, 9, 45, 24, 39], special_num: 41 },
+    { period: "2026181", time: "2026-06-30 21:32:32", normals: [17, 29, 6, 34, 47, 15], special_num: 19 },
+    { period: "2026180", time: "2026-06-29 21:32:32", normals: [14, 10, 37, 30, 49, 19], special_num: 21 },
+    { period: "2026179", time: "2026-06-28 21:32:32", normals: [10, 11, 26, 6, 31, 9], special_num: 15 },
+    { period: "2026178", time: "2026-06-27 21:32:32", normals: [26, 46, 22, 44, 31, 17], special_num: 18 },
+    { period: "2026177", time: "2026-06-26 21:32:32", normals: [19, 21, 5, 1, 2, 44], special_num: 14 },
+    { period: "2026176", time: "2026-06-25 21:32:32", normals: [30, 31, 2, 36, 38, 15], special_num: 10 },
+    { period: "2026175", time: "2026-06-24 21:32:32", normals: [7, 19, 30, 29, 28, 25], special_num: 26 },
+    { period: "2026174", time: "2026-06-23 21:32:32", normals: [15, 8, 34, 13, 28, 21], special_num: 41 },
+    { period: "2026173", time: "2026-06-22 21:32:32", normals: [39, 6, 16, 40, 13, 19], special_num: 26 },
+    { period: "2026172", time: "2026-06-21 21:32:32", normals: [28, 34, 42, 37, 45, 8], special_num: 44 },
+    { period: "2026171", time: "2026-06-20 21:32:32", normals: [24, 38, 40, 31, 42, 46], special_num: 28 },
+    { period: "2026170", time: "2026-06-19 21:32:32", normals: [27, 46, 6, 38, 20, 34], special_num: 3 },
+    { period: "2026169", time: "2026-06-18 21:32:32", normals: [44, 37, 30, 8, 40, 22], special_num: 24 },
+    { period: "2026168", time: "2026-06-17 21:32:32", normals: [27, 11, 24, 5, 40, 33], special_num: 15 },
+    { period: "2026167", time: "2026-06-16 21:32:32", normals: [23, 3, 40, 39, 7, 11], special_num: 19 },
+    { period: "2026166", time: "2026-06-15 21:32:32", normals: [20, 15, 1, 4, 21, 28], special_num: 6 },
+    { period: "2026165", time: "2026-06-14 21:32:32", normals: [11, 47, 9, 49, 2, 1], special_num: 3 },
+    { period: "2026164", time: "2026-06-13 21:32:32", normals: [46, 4, 38, 12, 3, 2], special_num: 21 },
+    { period: "2026163", time: "2026-06-12 21:32:32", normals: [39, 8, 10, 33, 7, 41], special_num: 37 },
+    { period: "2026162", time: "2026-06-11 21:32:32", normals: [23, 41, 24, 26, 33, 7], special_num: 32 },
+    { period: "2026161", time: "2026-06-10 21:32:32", normals: [36, 40, 42, 19, 34, 46], special_num: 8 },
+    { period: "2026160", time: "2026-06-09 21:32:32", normals: [8, 16, 26, 1, 29, 30], special_num: 2 },
+    { period: "2026159", time: "2026-06-08 21:32:32", normals: [12, 4, 28, 17, 20, 46], special_num: 39 },
+    { period: "2026158", time: "2026-06-07 21:32:32", normals: [43, 48, 3, 1, 12, 23], special_num: 16 },
+    { period: "2026157", time: "2026-06-06 21:32:32", normals: [43, 25, 11, 31, 17, 10], special_num: 40 },
+    { period: "2026156", time: "2026-06-05 21:32:32", normals: [31, 16, 11, 3, 37, 12], special_num: 1 },
+    { period: "2026155", time: "2026-06-04 21:32:32", normals: [21, 37, 46, 13, 40, 47], special_num: 7 },
+    { period: "2026154", time: "2026-06-03 21:32:32", normals: [46, 28, 42, 31, 23, 34], special_num: 41 },
+    { period: "2026153", time: "2026-06-02 21:32:32", normals: [1, 38, 33, 28, 6, 40], special_num: 41 },
+    { period: "2026152", time: "2026-06-01 21:32:32", normals: [34, 47, 16, 36, 44, 1], special_num: 45 },
+    { period: "2026151", time: "2026-05-31 21:32:32", normals: [27, 15, 29, 42, 20, 41], special_num: 31 },
+    { period: "2026150", time: "2026-05-30 21:32:32", normals: [11, 4, 22, 25, 44, 19], special_num: 9 },
+    { period: "2026149", time: "2026-05-29 21:32:32", normals: [28, 30, 44, 45, 4, 20], special_num: 27 },
+    { period: "2026148", time: "2026-05-28 21:32:32", normals: [28, 24, 31, 23, 4, 27], special_num: 48 },
+    { period: "2026147", time: "2026-05-27 21:32:32", normals: [29, 40, 6, 18, 31, 10], special_num: 13 },
+    { period: "2026146", time: "2026-05-26 21:32:32", normals: [11, 30, 20, 19, 5, 16], special_num: 42 },
+    { period: "2026145", time: "2026-05-25 21:32:32", normals: [36, 43, 25, 32, 37, 18], special_num: 5 },
+    { period: "2026144", time: "2026-05-24 21:32:32", normals: [47, 31, 29, 33, 22, 26], special_num: 43 },
+    { period: "2026143", time: "2026-05-23 21:32:32", normals: [13, 26, 18, 32, 2, 33], special_num: 44 },
+    { period: "2026142", time: "2026-05-22 21:32:32", normals: [45, 15, 26, 21, 18, 35], special_num: 23 },
+    { period: "2026141", time: "2026-05-21 21:32:32", normals: [43, 8, 17, 2, 34, 32], special_num: 33 },
+    { period: "2026140", time: "2026-05-20 21:32:32", normals: [13, 10, 42, 4, 46, 34], special_num: 16 },
+    { period: "2026139", time: "2026-05-19 21:32:32", normals: [41, 45, 48, 1, 36, 30], special_num: 24 },
+    { period: "2026138", time: "2026-05-18 21:32:32", normals: [38, 22, 6, 24, 20, 46], special_num: 49 },
+    { period: "2026137", time: "2026-05-17 21:32:32", normals: [24, 20, 32, 5, 19, 7], special_num: 26 },
+    { period: "2026136", time: "2026-05-16 21:32:32", normals: [1, 14, 24, 17, 15, 12], special_num: 48 },
+    { period: "2026135", time: "2026-05-15 21:32:32", normals: [8, 35, 9, 20, 18, 47], special_num: 30 },
+    { period: "2026134", time: "2026-05-14 21:32:32", normals: [24, 46, 40, 44, 22, 49], special_num: 37 },
+    { period: "2026133", time: "2026-05-13 21:32:32", normals: [38, 14, 23, 1, 26, 44], special_num: 7 },
+    { period: "2026132", time: "2026-05-12 21:32:32", normals: [48, 11, 20, 44, 39, 35], special_num: 30 },
+    { period: "2026131", time: "2026-05-11 21:32:32", normals: [12, 40, 21, 32, 1, 25], special_num: 7 },
+    { period: "2026130", time: "2026-05-10 21:32:32", normals: [41, 26, 9, 11, 5, 25], special_num: 29 },
+    { period: "2026129", time: "2026-05-09 21:32:32", normals: [34, 7, 40, 21, 17, 25], special_num: 41 },
+    { period: "2026128", time: "2026-05-08 21:32:32", normals: [25, 46, 2, 7, 45, 42], special_num: 37 },
+    { period: "2026127", time: "2026-05-07 21:32:32", normals: [14, 8, 27, 3, 7, 29], special_num: 45 },
+    { period: "2026126", time: "2026-05-06 21:32:32", normals: [15, 9, 5, 3, 1, 10], special_num: 49 },
+    { period: "2026125", time: "2026-05-05 21:32:32", normals: [16, 19, 7, 30, 38, 39], special_num: 31 },
+    { period: "2026124", time: "2026-05-04 21:32:32", normals: [46, 5, 10, 17, 12, 22], special_num: 39 },
+    { period: "2026123", time: "2026-05-03 21:32:32", normals: [39, 23, 49, 17, 42, 44], special_num: 46 },
+    { period: "2026122", time: "2026-05-02 21:32:32", normals: [18, 23, 15, 22, 25, 45], special_num: 1 },
+    { period: "2026121", time: "2026-05-01 21:32:32", normals: [45, 21, 35, 48, 6, 20], special_num: 44 },
+    { period: "2026120", time: "2026-04-30 21:32:32", normals: [18, 24, 7, 23, 48, 20], special_num: 6 }
 ];
 
-var HISTORY_DATA = DEFAULT_DATA;
-var OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_OMISSIONS));
-var ZODIAC_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_ZODIAC_OMISSIONS));
-var TAIL_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_TAIL_OMISSIONS));
+// 根据全量历史记录动态精确计算所有号码、生肖、尾数真实遗漏值
+function computeOmissionsFromHistory(dataList) {
+    var numOmit = {};
+    for (var num = 1; num <= 49; num++) {
+        var found = -1;
+        for (var i = 0; i < dataList.length; i++) {
+            if (dataList[i].special_num === num) { found = i; break; }
+        }
+        numOmit[num] = found === -1 ? dataList.length + 10 : found;
+    }
 
-// 自动检测内置最新期号：如果代码中更新了最新开奖，自动刷新旧缓存
+    var allZodiacs = ["鼠", "牛", "虎", "兔", "龍", "蛇", "馬", "羊", "猴", "雞", "狗", "豬"];
+    var zodOmit = {};
+    for (var zIdx = 0; zIdx < allZodiacs.length; zIdx++) {
+        var zName = allZodiacs[zIdx];
+        var foundZ = -1;
+        for (var i = 0; i < dataList.length; i++) {
+            if (getZodiac(dataList[i].special_num) === zName) { foundZ = i; break; }
+        }
+        zodOmit[zName] = foundZ === -1 ? dataList.length : foundZ;
+    }
+
+    var tailOmit = {};
+    for (var t = 0; t <= 9; t++) {
+        var foundT = -1;
+        for (var i = 0; i < dataList.length; i++) {
+            if (dataList[i].special_num % 10 === t) { foundT = i; break; }
+        }
+        tailOmit[t] = foundT === -1 ? dataList.length : foundT;
+    }
+
+    return { numOmit: numOmit, zodOmit: zodOmit, tailOmit: tailOmit };
+}
+
+var HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
 try {
-    var stored = localStorage.getItem("MACAU_HISTORY_DATA");
+    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V3");
     if (stored) {
         var parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0 && parseInt(parsed[0].period, 10) >= parseInt(DEFAULT_DATA[0].period, 10)) {
+        if (Array.isArray(parsed) && parsed.length >= DEFAULT_DATA.length && parseInt(parsed[0].period, 10) >= parseInt(DEFAULT_DATA[0].period, 10)) {
             HISTORY_DATA = parsed;
-            var storedOmit = localStorage.getItem("MACAU_OMISSION_DATA");
-            if (storedOmit) OMISSION_DATA = JSON.parse(storedOmit);
-            var storedZod = localStorage.getItem("MACAU_ZODIAC_OMISSION_DATA");
-            if (storedZod) ZODIAC_OMISSION_DATA = JSON.parse(storedZod);
-            var storedTail = localStorage.getItem("MACAU_TAIL_OMISSION_DATA");
-            if (storedTail) TAIL_OMISSION_DATA = JSON.parse(storedTail);
         } else {
-            localStorage.setItem("MACAU_HISTORY_DATA", JSON.stringify(HISTORY_DATA));
-            localStorage.setItem("MACAU_OMISSION_DATA", JSON.stringify(OMISSION_DATA));
-            localStorage.setItem("MACAU_ZODIAC_OMISSION_DATA", JSON.stringify(ZODIAC_OMISSION_DATA));
-            localStorage.setItem("MACAU_TAIL_OMISSION_DATA", JSON.stringify(TAIL_OMISSION_DATA));
+            localStorage.setItem("MACAU_HISTORY_DATA_V3", JSON.stringify(HISTORY_DATA));
         }
+    } else {
+        localStorage.setItem("MACAU_HISTORY_DATA_V3", JSON.stringify(HISTORY_DATA));
     }
 } catch (e) {}
+
+var computedOmit = computeOmissionsFromHistory(HISTORY_DATA);
+var OMISSION_DATA = computedOmit.numOmit;
+var ZODIAC_OMISSION_DATA = computedOmit.zodOmit;
+var TAIL_OMISSION_DATA = computedOmit.tailOmit;
 
 var PREDICT_RECORDS = [];
 try {
@@ -573,27 +738,12 @@ function addNewDraw() {
     var nowStr = new Date().toISOString().slice(0, 10) + " 21:35:00";
     var newObj = { period: pInput, time: nowStr, normals: normalsArr, special_num: specialNum };
     HISTORY_DATA.unshift(newObj);
-    localStorage.setItem("MACAU_HISTORY_DATA", JSON.stringify(HISTORY_DATA));
+    localStorage.setItem("MACAU_HISTORY_DATA_V3", JSON.stringify(HISTORY_DATA));
 
-    for (var num = 1; num <= 49; num++) {
-        if (num === specialNum) OMISSION_DATA[num] = 0;
-        else OMISSION_DATA[num] = (OMISSION_DATA[num] || 0) + 1;
-    }
-    localStorage.setItem("MACAU_OMISSION_DATA", JSON.stringify(OMISSION_DATA));
-
-    var specZodiac = getZodiac(specialNum);
-    for (var z in ZODIAC_OMISSION_DATA) {
-        if (z === specZodiac) ZODIAC_OMISSION_DATA[z] = 0;
-        else ZODIAC_OMISSION_DATA[z] = (ZODIAC_OMISSION_DATA[z] || 0) + 1;
-    }
-    localStorage.setItem("MACAU_ZODIAC_OMISSION_DATA", JSON.stringify(ZODIAC_OMISSION_DATA));
-
-    var specTail = specialNum % 10;
-    for (var t = 0; t <= 9; t++) {
-        if (t === specTail) TAIL_OMISSION_DATA[t] = 0;
-        else TAIL_OMISSION_DATA[t] = (TAIL_OMISSION_DATA[t] !== undefined ? TAIL_OMISSION_DATA[t] : 0) + 1;
-    }
-    localStorage.setItem("MACAU_TAIL_OMISSION_DATA", JSON.stringify(TAIL_OMISSION_DATA));
+    var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
+    OMISSION_DATA = recomputed.numOmit;
+    ZODIAC_OMISSION_DATA = recomputed.zodOmit;
+    TAIL_OMISSION_DATA = recomputed.tailOmit;
 
     document.getElementById("in-normals").value = "";
     document.getElementById("in-special").value = "";
@@ -604,20 +754,18 @@ function addNewDraw() {
     checkPredictRecords();
     doPredict();
     initAutoPeriod();
-    alert("第 " + pInput + " 期开奖录入成功！阶梯顺势加权与遗漏已全自动更新！");
+    alert("第 " + pInput + " 期开奖录入成功！200期大数据库与历史纪律已全自动更新！");
 }
 
 function resetDefaultData() {
-    if (confirm("确定要恢复默认的历史数据与所有遗漏统计吗？")) {
+    if (confirm("确定要恢复默认的 200 期完整历史数据与遗漏统计吗？")) {
         HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_OMISSIONS));
-        ZODIAC_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_ZODIAC_OMISSIONS));
-        TAIL_OMISSION_DATA = JSON.parse(JSON.stringify(DEFAULT_TAIL_OMISSIONS));
+        localStorage.setItem("MACAU_HISTORY_DATA_V3", JSON.stringify(HISTORY_DATA));
 
-        localStorage.setItem("MACAU_HISTORY_DATA", JSON.stringify(HISTORY_DATA));
-        localStorage.setItem("MACAU_OMISSION_DATA", JSON.stringify(OMISSION_DATA));
-        localStorage.setItem("MACAU_ZODIAC_OMISSION_DATA", JSON.stringify(ZODIAC_OMISSION_DATA));
-        localStorage.setItem("MACAU_TAIL_OMISSION_DATA", JSON.stringify(TAIL_OMISSION_DATA));
+        var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
+        OMISSION_DATA = recomputed.numOmit;
+        ZODIAC_OMISSION_DATA = recomputed.zodOmit;
+        TAIL_OMISSION_DATA = recomputed.tailOmit;
 
         renderTopLatest();
         renderTable(null);
@@ -625,7 +773,7 @@ function resetDefaultData() {
         checkPredictRecords();
         doPredict();
         initAutoPeriod();
-        alert("已恢复默认数据！");
+        alert("已恢复默认 200 期完整数据！");
     }
 }
 
@@ -711,42 +859,75 @@ function updateTimer() {
 }
 setInterval(updateTimer, 1000);
 
-// 通用连续顺势次数统计器
-function countStreak(getterFn) {
-    if (!HISTORY_DATA || HISTORY_DATA.length === 0) return 1;
+// 统计当前连开次数 + 历史最高连开纪律
+function getStreakAndHistoryMax(getterFn) {
+    if (!HISTORY_DATA || HISTORY_DATA.length === 0) return { current: 1, maxHist: 1 };
     var baseVal = getterFn(HISTORY_DATA[0].special_num);
-    var streak = 1;
+    var currentStreak = 1;
     for (var k = 1; k < HISTORY_DATA.length; k++) {
-        if (getterFn(HISTORY_DATA[k].special_num) === baseVal) {
-            streak++;
+        if (getterFn(HISTORY_DATA[k].special_num) === baseVal) currentStreak++;
+        else break;
+    }
+
+    var maxHist = 1;
+    var tempRun = 1;
+    for (var i = 1; i < HISTORY_DATA.length; i++) {
+        if (getterFn(HISTORY_DATA[i].special_num) === getterFn(HISTORY_DATA[i - 1].special_num)) {
+            tempRun++;
+            if (tempRun > maxHist) maxHist = tempRun;
         } else {
-            break;
+            tempRun = 1;
         }
     }
-    return streak;
+    return { current: currentStreak, maxHist: maxHist };
+}
+
+// 受历史最高纪录约束的阶梯加权计算器
+function calcDisciplinedWeight(currentStreak, maxHist, basePts, step2Pts, step3Pts) {
+    if (currentStreak >= maxHist && maxHist >= 2) {
+        return 5; // 触顶熔断防过热
+    }
+    if (currentStreak === maxHist - 1 && maxHist >= 3) {
+        return Math.round(step2Pts * 0.8);
+    }
+    if (currentStreak === 1) return basePts;
+    if (currentStreak === 2) return step2Pts;
+    return step3Pts;
 }
 
 function doPredict() {
     try {
         var last = HISTORY_DATA[0];
         var specNum = last.special_num;
+        var specPadLatest = specNum < 10 ? "0" + specNum : "" + specNum;
 
-        // 1. 动态追溯各项指标连续顺势的真实“次数”（支持3次、4次及更高连开）
         var s1 = Math.floor(specNum / 10);
-        var tenStreak = countStreak(function(n) { return Math.floor(n / 10); });
+        var tenStats = getStreakAndHistoryMax(function(n) { return Math.floor(n / 10); });
 
         var u1 = specNum % 10;
-        var unitStreak = countStreak(function(n) { return n % 10; });
+        var unitStats = getStreakAndHistoryMax(function(n) { return n % 10; });
 
         var c1 = getColorName(specNum);
-        var colorStreak = countStreak(function(n) { return getColorName(n); });
+        var colorStats = getStreakAndHistoryMax(function(n) { return getColorName(n); });
 
         var h1 = isHomeZodiac(getZodiac(specNum));
-        var zodiacStreak = countStreak(function(n) { return isHomeZodiac(getZodiac(n)); });
+        var zodiacStats = getStreakAndHistoryMax(function(n) { return isHomeZodiac(getZodiac(n)); });
+
+        var size1 = specNum >= 25 ? "大" : "小";
+        var sizeStats = getStreakAndHistoryMax(function(n) { return n >= 25 ? "大" : "小"; });
+
+        var parity1 = specNum % 2 === 0 ? "雙" : "單";
+        var parityStats = getStreakAndHistoryMax(function(n) { return n % 2 === 0 ? "雙" : "單"; });
+
+        var wTen = calcDisciplinedWeight(tenStats.current, tenStats.maxHist, 15, 28, 42);
+        var wUnit = calcDisciplinedWeight(unitStats.current, unitStats.maxHist, 15, 28, 42);
+        var wColor = calcDisciplinedWeight(colorStats.current, colorStats.maxHist, 15, 30, 45);
+        var wZodiac = calcDisciplinedWeight(zodiacStats.current, zodiacStats.maxHist, 15, 30, 48);
+        var wSize = calcDisciplinedWeight(sizeStats.current, sizeStats.maxHist, 14, 25, 38);
+        var wParity = calcDisciplinedWeight(parityStats.current, parityStats.maxHist, 14, 25, 38);
 
         var badgeColorClass = c1 === "红波" ? "badge-red" : (c1 === "蓝波" ? "badge-blue" : "badge-green");
 
-        // 遗漏过滤规则
         var analysis = getAnalysisExclusions();
         var excludedColdNums = analysis.cold7;
         var maxZodiac = analysis.maxZodiac;
@@ -754,9 +935,9 @@ function doPredict() {
         var maxTail = analysis.maxTail;
         var excludedTailNums = analysis.excludedTailNums;
 
-        // 2. 阶梯式顺势加权评分引擎（顺 1 次基础分，顺 2 次翻倍，顺 3 次及以上高阶重仓加码）
         var pool = [];
         for (var i = 1; i <= 49; i++) {
+            if (i === specNum) continue;
             if (excludedColdNums.indexOf(i) !== -1) continue;
             if (excludedZodiacNums.indexOf(i) !== -1) continue;
             if (excludedTailNums.indexOf(i) !== -1) continue;
@@ -766,36 +947,34 @@ function doPredict() {
             var iUnit = i % 10;
             var iColor = getColorName(i);
             var iIsHome = isHomeZodiac(getZodiac(i));
+            var iSize = i >= 25 ? "大" : "小";
+            var iParity = i % 2 === 0 ? "雙" : "單";
 
-            // --- A. 十位阶梯加权 ---
-            if (iTen === s1) {
-                if (tenStreak === 1) score += 15;
-                else if (tenStreak === 2) score += 30;
-                else if (tenStreak >= 3) score += 50;
+            if (iTen === s1) score += wTen;
+            if (iUnit === u1) score += wUnit;
+            if (iColor === c1) score += wColor;
+
+            if (zodiacStats.current >= zodiacStats.maxHist && zodiacStats.maxHist >= 3) {
+                if (iIsHome !== h1) score += 28;
+                else score += wZodiac;
+            } else {
+                if (iIsHome === h1) score += wZodiac;
             }
 
-            // --- B. 个位阶梯加权 ---
-            if (iUnit === u1) {
-                if (unitStreak === 1) score += 15;
-                else if (unitStreak === 2) score += 30;
-                else if (unitStreak >= 3) score += 50;
+            if (sizeStats.current >= sizeStats.maxHist && sizeStats.maxHist >= 3) {
+                if (iSize !== size1) score += 24;
+                else score += wSize;
+            } else {
+                if (iSize === size1) score += wSize;
             }
 
-            // --- C. 波色阶梯加权 ---
-            if (iColor === c1) {
-                if (colorStreak === 1) score += 15;
-                else if (colorStreak === 2) score += 32;
-                else if (colorStreak >= 3) score += 55;
+            if (parityStats.current >= parityStats.maxHist && parityStats.maxHist >= 3) {
+                if (iParity !== parity1) score += 24;
+                else score += wParity;
+            } else {
+                if (iParity === parity1) score += wParity;
             }
 
-            // --- D. 家野肖阶梯加权 ---
-            if (iIsHome === h1) {
-                if (zodiacStreak === 1) score += 15;
-                else if (zodiacStreak === 2) score += 35;
-                else if (zodiacStreak >= 3) score += 60;
-            }
-
-            // --- E. 遗漏温热回补分 ---
             var omitVal = OMISSION_DATA[i] || 0;
             score += Math.min(20, Math.floor(omitVal / 3));
 
@@ -810,24 +989,35 @@ function doPredict() {
         pool.sort(function(a, b) { return b.score !== a.score ? b.score - a.score : a.omit - b.omit; });
         var topPool = pool.slice(0, 12);
 
+        function formatLimitNote(curr, maxH, wApplied) {
+            if (curr >= maxH && maxH >= 2) {
+                return '<span style="color:#dc2626; font-weight:bold;">[已达历史极值 ' + maxH + ' 期，触发防过热限权 +' + wApplied + '分]</span>';
+            }
+            return '当前顺势 <b>' + curr + '</b> 期 / 历史最高纪录 <b>' + maxH + '</b> 期（合规加权 +' + wApplied + '分）';
+        }
+
         var analysisHtml = 
-            '• <b>十位连续顺势阶梯：</b> <span class="badge badge-teal">当前头路: ' + s1 + '头 | 连续顺势: <b style="color:#fef08a;">' + tenStreak + ' 次</b></span>' +
-            '<div class="reason-box">💡 <b>阶梯加权规则：</b>顺1次基础分(+15)，顺2次翻倍(+30)，顺3次及以上重仓加码(+50)。当前十位【' + s1 + '头】持续评级为 ' + tenStreak + ' 阶。</div>' +
+            '• <b>防重号硬性排除：</b> <span class="badge badge-red">已直接剔除上期刚开特码【' + specPadLatest + '号】</span>' +
+            '<div class="reason-box">💡 <b>原理解析：</b>特码连续两期完全重复开出的概率极低，系统已将上期特码【' + specPadLatest + '】移出候选号池。</div>' +
 
-            '• <b>个位连续惯性阶梯：</b> <span class="badge badge-teal">当前尾数: ' + u1 + '尾 | 连续顺势: <b style="color:#fef08a;">' + unitStreak + ' 次</b></span>' +
-            '<div class="reason-box">💡 <b>阶梯加权规则：</b>个位【' + u1 + '尾】连续顺势达 ' + unitStreak + ' 次，系统自动按阶梯倍数向该尾数号码倾斜权重。</div>' +
+            '• <b>家野肖历史纪律约束：</b> <span class="badge badge-purple">当前: ' + (h1 ? '家肖' : '野肖') + '连开 ' + zodiacStats.current + ' 期 (历史最高 ' + zodiacStats.maxHist + ' 期)</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>' + formatLimitNote(zodiacStats.current, zodiacStats.maxHist, wZodiac) + '。一切以 200 期历史纪录为标准，不过度追高。</div>' +
 
-            '• <b>波色连续延续阶梯：</b> <span class="badge ' + badgeColorClass + '">波色: ' + c1 + ' | 连续顺势: <b style="color:#fef08a;">' + colorStreak + ' 次</b></span>' +
-            '<div class="reason-box">💡 <b>阶梯加权规则：</b>【' + c1 + '】已连续开出 ' + colorStreak + ' 期，触发第 ' + colorStreak + ' 阶顺势加权（当前加权：' + (colorStreak === 1 ? '15分' : (colorStreak === 2 ? '32分' : '55分重仓')) + '）。</div>' +
+            '• <b>大小单双规律分析：</b> <span class="badge">当前: ' + size1 + '数(连' + sizeStats.current + '期/史高' + sizeStats.maxHist + '期) | ' + parity1 + '数(连' + parityStats.current + '期/史高' + parityStats.maxHist + '期)</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>大小维度' + formatLimitNote(sizeStats.current, sizeStats.maxHist, wSize) + '；单双维度' + formatLimitNote(parityStats.current, parityStats.maxHist, wParity) + '。</div>' +
 
-            '• <b>家野肖连开形态阶梯：</b> <span class="badge badge-purple">当前属性: ' + (h1 ? '家肖' : '野肖') + ' | 连续顺势: <b style="color:#fef08a;">' + zodiacStreak + ' 次</b></span>' +
-            '<div class="reason-box">💡 <b>阶梯加权规则：</b>【' + (h1 ? '家肖' : '野肖') + '】已连开达 ' + zodiacStreak + ' 期，系统自动按阶梯最高权重重仓追击同类肖！</div>' +
+            '• <b>波色连续顺势纪律：</b> <span class="badge ' + badgeColorClass + '">波色: ' + c1 + ' (连开 ' + colorStats.current + ' 期 / 历史最高 ' + colorStats.maxHist + ' 期)</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>' + formatLimitNote(colorStats.current, colorStats.maxHist, wColor) + '。</div>' +
 
-            '• <b>多维遗漏智能过滤：</b> <span class="badge badge-red">已自动剔除极端冷码、生肖与尾数</span>' +
+            '• <b>十位与个位顺势纪律：</b> <span class="badge badge-teal">十位 ' + s1 + '头(连' + tenStats.current + '/史高' + tenStats.maxHist + ') | 个位 ' + u1 + '尾(连' + unitStats.current + '/史高' + unitStats.maxHist + ')</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>十位与个位均严格对照 200 期历史最大连开纪录动态限权，防止极端行情偏差。</div>' +
+
+            '• <b>多维遗漏智能过滤：</b> <span class="badge badge-red">已自动剔除上期重号、极端冷码、生肖与尾数</span>' +
             '<div class="reason-box">💡 <b>过滤详情：</b>' +
-            '<br>1. <b>冷码排除（最冷7个）：</b> ' + excludedColdNums.map(function(n){return n<10?"0"+n:n}).join('、') +
-            '<br>2. <b>生肖排除（遗漏最多）：</b> 【' + maxZodiac + '生肖】' +
-            '<br>3. <b>尾数排除（遗漏最多）：</b> 【' + maxTail + ' 尾】' +
+            '<br>1. <b>上期特码排除：</b> ' + specPadLatest +
+            '<br>2. <b>冷码排除（最冷7个）：</b> ' + excludedColdNums.map(function(n){return n<10?"0"+n:n}).join('、') +
+            '<br>3. <b>生肖排除（遗漏最多）：</b> 【' + maxZodiac + '生肖】' +
+            '<br>4. <b>尾数排除（遗漏最多）：</b> 【' + maxTail + ' 尾】' +
             '</div>';
         
         document.getElementById("analysis-results").innerHTML = analysisHtml;
@@ -842,13 +1032,13 @@ function doPredict() {
             for (var j = 0; j < displayPool.length; j++) {
                 var p = displayPool[j];
                 var pPad = p.num < 10 ? "0" + p.num : "" + p.num;
-                poolStrs.push(pPad + '(' + p.anim + '·评' + p.score + ')');
+                poolStrs.push(pPad + '(' + p.anim + ')');
                 sortedPoolNums.push(p.num);
             }
 
-            document.getElementById("recommended-code").innerText = "🎯 阶梯顺势推荐一码：" + bestPad + " 号 (" + best.anim + ")";
-            document.getElementById("pool-display").innerHTML = "<b>顺势加权精选号池 (Top12带评分)：</b> " + poolStrs.join('、');
-            document.getElementById("excluded-info").innerText = "🚫 自动排除: 最冷7码+生肖[" + maxZodiac + "]+尾数[" + maxTail + "尾]";
+            document.getElementById("recommended-code").innerText = "🎯 历史纪律顺势推荐一码：" + bestPad + " 号 (" + best.anim + ")";
+            document.getElementById("pool-display").innerHTML = "<b>顺势精选号池 (Top12)：</b> " + poolStrs.join('、');
+            document.getElementById("excluded-info").innerText = "🚫 自动排除: 上期特码[" + specPadLatest + "]+最冷7码+生肖[" + maxZodiac + "]+尾数[" + maxTail + "尾]";
 
             var nextPeriod = (parseInt(HISTORY_DATA[0].period, 10) + 1).toString();
             var existIndex = -1;
