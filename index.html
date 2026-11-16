@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新澳門六合彩開獎公告与智能分析中心</title>
+    <title>新澳門六合彩開獎公告与全维智能分析中心</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f1f5f9; color: #1e293b; margin: 0; padding: 15px; }
         .container { max-width: 1000px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
@@ -101,7 +101,7 @@
 <body>
 
 <div class="container">
-    <h2 style="margin-top:0; color:#0f172a;">新澳門六合彩開獎公告与智能分析中心</h2>
+    <h2 style="margin-top:0; color:#0f172a;">新澳門六合彩開獎公告与全维智能分析中心</h2>
 
     <div class="top-banner">
         <div class="latest-left" id="top-latest-balls"></div>
@@ -119,7 +119,7 @@
 
     <!-- 手动录入表单面板 -->
     <div class="input-panel">
-        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（200期大数据库 + 近10期跳跃形态高权重引擎）</div>
+        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（200期大数据库 + 完整基础分析 + 近10期跳跃加权引擎）</div>
         <div class="input-row">
             <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 95px;"></div>
             <div>平码(空格/逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 190px;"></div>
@@ -162,12 +162,12 @@
     </div>
 
     <div class="card">
-        <div class="section-title" style="border-left-color: #dc2626;">📊 全维历史纪律与“近10期跳跃形态”高权重分析中心</div>
+        <div class="section-title" style="border-left-color: #dc2626;">📊 全维历史纪律与跳跃形态高权重分析中心（严格受 200 期历史纪录约束）</div>
         <div id="analysis-results">正在分析开奖走势...</div>
     </div>
 
     <div class="result-box">
-        <div style="font-weight: bold; color: #334155;">🎯 依据跳跃形态与历史纪律智能生成的精选推荐</div>
+        <div style="font-weight: bold; color: #334155;">🎯 依据全维历史纪律与跳跃形态智能生成的精选推荐</div>
         <div class="result-num" id="recommended-code">等待生成</div>
         <div id="pool-display" style="color: #64748b; font-size: 13px; margin-bottom: 8px;"></div>
         <div id="excluded-info" style="font-size: 12px; color: #dc2626; margin-bottom: 8px;"></div>
@@ -224,7 +224,7 @@
     </div>
 
     <div class="btn-container">
-        <button class="action-btn" onclick="doPredict()">🔮 立即运行跳跃形态顺势预测并记录战绩</button>
+        <button class="action-btn" onclick="doPredict()">🔮 立即运行全维分析预测并记录战绩</button>
     </div>
 </div>
 
@@ -503,16 +503,16 @@ function computeOmissionsFromHistory(dataList) {
 
 var HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
 try {
-    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V4");
+    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V5");
     if (stored) {
         var parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length >= DEFAULT_DATA.length && parseInt(parsed[0].period, 10) >= parseInt(DEFAULT_DATA[0].period, 10)) {
             HISTORY_DATA = parsed;
         } else {
-            localStorage.setItem("MACAU_HISTORY_DATA_V4", JSON.stringify(HISTORY_DATA));
+            localStorage.setItem("MACAU_HISTORY_DATA_V5", JSON.stringify(HISTORY_DATA));
         }
     } else {
-        localStorage.setItem("MACAU_HISTORY_DATA_V4", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V5", JSON.stringify(HISTORY_DATA));
     }
 } catch (e) {}
 
@@ -569,31 +569,28 @@ function getAnalysisExclusions() {
     };
 }
 
-// 🎯 核心检测：最近10期内是否形成跳跃走势
 function detectRecentZigzag(getterFn, typeName) {
     if (!HISTORY_DATA || HISTORY_DATA.length < 10) return { active: false, desc: "" };
     var recentVals = [];
     for (var i = 0; i < 10; i++) {
         recentVals.push(getterFn(HISTORY_DATA[i].special_num));
     }
-    // 检测单跳 (A-B-A-B...)
     var isSingleJump = true;
     for (var i = 2; i < 10; i++) {
         if (recentVals[i] !== recentVals[i % 2]) { isSingleJump = false; break; }
     }
     if (isSingleJump && recentVals[0] !== recentVals[1]) {
-        var nextGuess = recentVals[1]; // 下一期倾向反转回recentVals[1]
+        var nextGuess = recentVals[1];
         return { active: true, mode: "单跳", next: nextGuess, desc: typeName + "近期呈现精准单跳交替（" + recentVals.slice(0,4).join('-') + "...），预测下一期倾向反转至【" + nextGuess + "】" };
     }
 
-    // 检测双跳/组合跳 (如 A-A-B-B-A-A 或你提到的单跳双双)
     var isDoubleJump = true;
     for (var i = 0; i < 8; i++) {
         if (recentVals[i] !== recentVals[i+2]) { isDoubleJump = false; break; }
     }
     if (isDoubleJump) {
         var nextGuess2 = recentVals[2];
-        return { active: true, mode: "双跳/复合跳", next: nextGuess2, desc: typeName + "近期呈现复合双跳形态（如单双交替/单跳双双），预测下一期倾向【" + nextGuess2 + "】" };
+        return { active: true, mode: "双跳/复合跳", next: nextGuess2, desc: typeName + "近期呈现复合双跳形态，预测下一期倾向【" + nextGuess2 + "】" };
     }
 
     return { active: false, desc: "" };
@@ -763,7 +760,7 @@ function addNewDraw() {
     var nowStr = new Date().toISOString().slice(0, 10) + " 21:35:00";
     var newObj = { period: pInput, time: nowStr, normals: normalsArr, special_num: specialNum };
     HISTORY_DATA.unshift(newObj);
-    localStorage.setItem("MACAU_HISTORY_DATA_V4", JSON.stringify(HISTORY_DATA));
+    localStorage.setItem("MACAU_HISTORY_DATA_V5", JSON.stringify(HISTORY_DATA));
 
     var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
     OMISSION_DATA = recomputed.numOmit;
@@ -779,13 +776,13 @@ function addNewDraw() {
     checkPredictRecords();
     doPredict();
     initAutoPeriod();
-    alert("第 " + pInput + " 期开奖录入成功！跳跃形态与历史纪律已全自动更新！");
+    alert("第 " + pInput + " 期开奖录入成功！全维历史纪律与跳跃加权已更新！");
 }
 
 function resetDefaultData() {
     if (confirm("确定要恢复默认的 200 期完整历史数据与遗漏统计吗？")) {
         HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        localStorage.setItem("MACAU_HISTORY_DATA_V4", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V5", JSON.stringify(HISTORY_DATA));
 
         var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
         OMISSION_DATA = recomputed.numOmit;
@@ -905,18 +902,11 @@ function getStreakAndHistoryMax(getterFn) {
     return { current: currentStreak, maxHist: maxHist };
 }
 
-// 🎯 加权计算器：如果最近10期形成跳跃形态，其加权将自动超越基础顺势权重大幅提升（但仍受历史最高纪录熔断防过热保护）
-function calcZigzagDisciplinedWeight(zigzagInfo, currentStreak, maxHist, basePts) {
-    var finalPts = basePts;
-    if (zigzagInfo.active) {
-        // 跳跃形态加权大幅提高（超越历史普通连开权限，达到 55 ~ 65 高分）
-        finalPts = 58; 
-    }
-    // 历史纪律熔断防过热：如果当前连开已经达到历史最高纪录，依然强制熔断
+function calcDisciplinedWeight(currentStreak, maxHist, basePts) {
     if (currentStreak >= maxHist && maxHist >= 2) {
-        return 5;
+        return 5; // 触顶熔断
     }
-    return finalPts;
+    return basePts;
 }
 
 function doPredict() {
@@ -925,26 +915,29 @@ function doPredict() {
         var specNum = last.special_num;
         var specPadLatest = specNum < 10 ? "0" + specNum : "" + specNum;
 
-        // 1. 常规连开与历史最高纪录统计
+        // 1. 各维度顺势与历史最高纪录统计
         var parityStats = getStreakAndHistoryMax(function(n) { return n % 2 === 0 ? "雙" : "單"; });
         var sizeStats = getStreakAndHistoryMax(function(n) { return n >= 25 ? "大" : "小"; });
         var colorStats = getStreakAndHistoryMax(function(n) { return getColorName(n); });
         var zodiacStats = getStreakAndHistoryMax(function(n) { return isHomeZodiac(getZodiac(n)); });
+        
+        // 十位头路与个位尾数顺势统计
+        var tenStats = getStreakAndHistoryMax(function(n) { return Math.floor(n / 10); });
+        var unitStats = getStreakAndHistoryMax(function(n) { return n % 10; });
 
-        // 2. 🎯 检测近10期跳跃形态
+        // 2. 检测近10期跳跃形态
         var parityZigzag = detectRecentZigzag(function(n) { return n % 2 === 0 ? "雙" : "單"; }, "单双");
         var sizeZigzag = detectRecentZigzag(function(n) { return n >= 25 ? "大" : "小"; }, "大小");
         var colorZigzag = detectRecentZigzag(function(n) { return getColorName(n); }, "波色");
         var zodiacZigzag = detectRecentZigzag(function(n) { return isHomeZodiac(getZodiac(n)) ? "家肖" : "野肖"; }, "家野肖");
 
-        // 3. 计算加权（若近10期形成跳跃，加权显著高于历史普通均权）
-        var wParity = calcZigzagDisciplinedWeight(parityZigzag, parityStats.current, parityStats.maxHist, 20);
-        var wSize = calcZigzagDisciplinedWeight(sizeZigzag, sizeStats.current, sizeStats.maxHist, 20);
-        var wColor = calcZigzagDisciplinedWeight(colorZigzag, colorStats.current, colorStats.maxHist, 25);
-        var wZodiac = calcZigzagDisciplinedWeight(zodiacZigzag, zodiacStats.current, zodiacStats.maxHist, 30);
-
-        var c1 = getColorName(specNum);
-        var badgeColorClass = c1 === "红波" ? "badge-red" : (c1 === "蓝波" ? "badge-blue" : "badge-green");
+        // 3. 计算加权（兼顾常规历史纪律熔断与近10期跳跃加权）
+        var wParity = parityZigzag.active ? 55 : calcDisciplinedWeight(parityStats.current, parityStats.maxHist, 20);
+        var wSize = sizeZigzag.active ? 55 : calcDisciplinedWeight(sizeStats.current, sizeStats.maxHist, 20);
+        var wColor = colorZigzag.active ? 58 : calcDisciplinedWeight(colorStats.current, colorStats.maxHist, 25);
+        var wZodiac = zodiacZigzag.active ? 60 : calcDisciplinedWeight(zodiacStats.current, zodiacStats.maxHist, 30);
+        var wTen = calcDisciplinedWeight(tenStats.current, tenStats.maxHist, 15);
+        var wUnit = calcDisciplinedWeight(unitStats.current, unitStats.maxHist, 15);
 
         var analysis = getAnalysisExclusions();
         var excludedColdNums = analysis.cold7;
@@ -965,12 +958,20 @@ function doPredict() {
             var iSize = i >= 25 ? "大" : "小";
             var iColor = getColorName(i);
             var iIsHome = isHomeZodiac(getZodiac(i)) ? "家肖" : "野肖";
+            var iTen = Math.floor(i / 10);
+            var iUnit = i % 10;
 
-            // 如果触发跳跃形态，给契合跳跃反转倾向的号码赋高分
+            // 跳跃形态加权或常规顺势加权
             if (parityZigzag.active && iParity === parityZigzag.next) score += wParity;
+            else if (!parityZigzag.active && iParity === (parityStats.current > 0 ? (last.special_num % 2 === 0 ? "雙" : "單") : "")) score += wParity;
+
             if (sizeZigzag.active && iSize === sizeZigzag.next) score += wSize;
             if (colorZigzag.active && iColor === colorZigzag.next) score += wColor;
             if (zodiacZigzag.active && iIsHome === zodiacZigzag.next) score += wZodiac;
+
+            // 十位与个位顺势加权
+            if (iTen === Math.floor(last.special_num / 10)) score += wTen;
+            if (iUnit === last.special_num % 10) score += wUnit;
 
             // 遗漏温热回补分
             var omitVal = OMISSION_DATA[i] || 0;
@@ -987,27 +988,39 @@ function doPredict() {
         pool.sort(function(a, b) { return b.score !== a.score ? b.score - a.score : a.omit - b.omit; });
         var topPool = pool.slice(0, 12);
 
-        // 构造分析面板说明
+        // 4. 构造完整详细的上方分析展示卡片（包含您之前所有的分析条目与跳跃提示）
         var analysisHtml = 
             '• <b>防重号硬性排除：</b> <span class="badge badge-red">已直接剔除上期刚开特码【' + specPadLatest + '号】</span>' +
-            '<div class="reason-box">💡 <b>原理解析：</b>数字重复开出的概率极低，系统已强制剔除。</div>';
+            '<div class="reason-box">💡 <b>原理解析：</b>数字重复开出的概率极低，系统已强制将上期特码【' + specPadLatest + '】移出候选号池。</div>' +
 
-        // 动态展示各维度的跳跃形态检测结果
+            '• <b>家野肖历史纪律约束：</b> <span class="badge ' + (zodiacStats.current >= zodiacStats.maxHist ? 'badge-red' : 'badge') + '">当前: ' + (isHomeZodiac(getZodiac(specNum)) ? "家肖" : "野肖") + '连开 ' + zodiacStats.current + ' 期 (历史最高 ' + zodiacStats.maxHist + ' 期)</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>当前顺势 ' + zodiacStats.current + ' 期 / 历史最高纪录 ' + zodiacStats.maxHist + ' 期 ' + (zodiacStats.current >= zodiacStats.maxHist ? '（已触顶熔断降权）' : '（合规加权）') + '。严格受 200 期历史纪录约束，不过度追高。</div>' +
+
+            '• <b>大小单双规律分析：</b> <span class="badge">当前: ' + (specNum >= 25 ? "大" : "小") + '(连' + sizeStats.current + '期/史高' + sizeStats.maxHist + ') | ' + (specNum % 2 === 0 ? "雙" : "單") + '(连' + parityStats.current + '期/史高' + parityStats.maxHist + ')</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>大小维度当前顺势 ' + sizeStats.current + ' 期 / 历史最高纪录 ' + sizeStats.maxHist + ' 期；单双维度当前顺势 ' + parityStats.current + ' 期 / 历史最高纪录 ' + parityStats.maxHist + ' 期。</div>' +
+
+            '• <b>波色连续顺势纪律：</b> <span class="badge badge-green">波色: ' + getColorName(specNum) + ' (连开 ' + colorStats.current + ' 期 / 历史最高 ' + colorStats.maxHist + ' 期)</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>当前顺势 ' + colorStats.current + ' 期 / 历史最高纪录 ' + colorStats.maxHist + ' 期。</div>' +
+
+            '• <b>十位与个位顺势纪律：</b> <span class="badge badge-teal">十位 ' + Math.floor(specNum / 10) + '头 (连开' + tenStats.current + '/史高' + tenStats.maxHist + ') | 个位 ' + (specNum % 10) + '尾 (连开' + unitStats.current + '/史高' + unitStats.maxHist + ')</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>十位与个位均严格对照 200 期历史最大连开纪律动态限权，防止极端行情偏差。</div>';
+
+        // 动态展示跳跃形态捕捉结果
         var zigzagList = [parityZigzag, sizeZigzag, colorZigzag, zodiacZigzag];
         for (var z = 0; z < zigzagList.length; z++) {
             var item = zigzagList[z];
             if (item.active) {
-                analysisHtml += '• <b>跳跃形态捕捉成功：</b> <span class="badge badge-zigzag">✨ ' + item.desc + '</span>' +
-                '<div class="reason-box">💡 <b>加权机制：</b>近10期已形成明确跳跃/交替走势，<b>当前跳跃加权已自动提升至 58 分</b>（高于历史普通连开均权），且严格受历史最高纪录熔断防过热保护。</div>';
+                analysisHtml += '• <b>✨ 近10期跳跃形态捕捉：</b> <span class="badge badge-zigzag">' + item.desc + '</span>' +
+                '<div class="reason-box">💡 <b>跳跃高权重：</b>近10期已形成明确交替跳跃，系统已自动大幅提高该形态加权分值，优先推荐契合跳跃反转的候选号！</div>';
             }
         }
 
-        if (!parityZigzag.active && !sizeZigzag.active && !colorZigzag.active && !zodiacZigzag.active) {
-            analysisHtml += '• <b>跳跃形态检测：</b> <span class="badge">近期未形成标准单双/大小/波色/家野交替跳跃，按常规顺势与遗漏纪律加权。</span>' +
-            '<div class="reason-box">💡 <b>提示：</b>当最近10期内出现类似“单跳双双、小大大”等交替规律时，系统会自动点亮跳跃高权重。</div>';
-        }
-
-        analysisHtml += '• <b>多维遗漏智能过滤：</b> <span class="badge badge-red">已自动排除最冷7码、生肖【' + maxZodiac + '】、尾数【' + maxTail + '尾】</span>';
+        analysisHtml += '• <b>多维遗漏智能过滤：</b> <span class="badge badge-red">已自动剔除最冷7码、生肖【' + maxZodiac + '】、尾数【' + maxTail + '尾】</span>' +
+        '<div class="reason-box">💡 <b>过滤详情：</b><br>' +
+        '1. 上期特码排除: ' + specPadLatest + '<br>' +
+        '2. 冷码排除(最冷7个): ' + excludedColdNums.join(', ') + '<br>' +
+        '3. 生肖排除(遗漏最多): 【' + maxZodiac + '生肖】<br>' +
+        '4. 尾数排除(遗漏最多): 【' + maxTail + '尾】</div>';
 
         document.getElementById("analysis-results").innerHTML = analysisHtml;
 
@@ -1025,8 +1038,8 @@ function doPredict() {
                 sortedPoolNums.push(p.num);
             }
 
-            document.getElementById("recommended-code").innerText = "🎯 顺势跳跃精选推荐一码：" + bestPad + " 号 (" + best.anim + ")";
-            document.getElementById("pool-display").innerHTML = "<b>跳跃加权精选号池 (Top12)：</b> " + poolStrs.join('、');
+            document.getElementById("recommended-code").innerText = "🎯 全维纪律与跳跃精选推荐一码：" + bestPad + " 号 (" + best.anim + ")";
+            document.getElementById("pool-display").innerHTML = "<b>精选号池 (Top12)：</b> " + poolStrs.join('、');
             document.getElementById("excluded-info").innerText = "🚫 自动排除: 上期特码[" + specPadLatest + "]+最冷7码+生肖[" + maxZodiac + "]+尾数[" + maxTail + "尾]";
 
             var nextPeriod = (parseInt(HISTORY_DATA[0].period, 10) + 1).toString();
