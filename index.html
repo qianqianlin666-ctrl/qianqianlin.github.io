@@ -120,7 +120,7 @@
 
     <!-- 手动录入表单面板 -->
     <div class="input-panel">
-        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（支持单跳/双跳/ABB·BAA循环跳跃 + 满2期纪律激活）</div>
+        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（跳跃高权 + 隐藏评分直接按得分高低排序）</div>
         <div class="input-row">
             <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 95px;"></div>
             <div>平码(空格/逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 190px;"></div>
@@ -212,7 +212,7 @@
                     <tr>
                         <th>预测期数</th>
                         <th>推荐一码</th>
-                        <th>精选号池 (Top8 评分排序)</th>
+                        <th>精选号池 (Top8 按评分排序)</th>
                         <th>实际开出特码</th>
                         <th>核对结果</th>
                     </tr>
@@ -505,16 +505,16 @@ function computeOmissionsFromHistory(dataList) {
 
 var HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
 try {
-    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V8");
+    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V9");
     if (stored) {
         var parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length >= DEFAULT_DATA.length && parseInt(parsed[0].period, 10) >= parseInt(DEFAULT_DATA[0].period, 10)) {
             HISTORY_DATA = parsed;
         } else {
-            localStorage.setItem("MACAU_HISTORY_DATA_V8", JSON.stringify(HISTORY_DATA));
+            localStorage.setItem("MACAU_HISTORY_DATA_V9", JSON.stringify(HISTORY_DATA));
         }
     } else {
-        localStorage.setItem("MACAU_HISTORY_DATA_V8", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V9", JSON.stringify(HISTORY_DATA));
     }
 } catch (e) {}
 
@@ -581,7 +581,6 @@ function getAnalysisExclusions() {
     };
 }
 
-// 🎯 全能跳跃走势检测引擎：支持单跳(ABAB)、双跳(AABB)、以及3期循环节奏(ABB / BAA)
 function detectRecentZigzag(getterFn, typeName) {
     if (!HISTORY_DATA || HISTORY_DATA.length < 9) return { active: false, desc: "" };
     var recentVals = [];
@@ -589,51 +588,31 @@ function detectRecentZigzag(getterFn, typeName) {
         recentVals.push(getterFn(HISTORY_DATA[i].special_num));
     }
 
-    // 1. 检测 3期循环跳跃 (ABB, ABB, ABB 或 BAA, BAA, BAA)
-    // recentVals[0] 是最新一期，[1]是上期，[2]是上上期...
-    // 如果 [0]===[3]===[6] 且 [1]===[4]===[7] 且 [2]===[5]===[8]，则完美符合3期周期循环！
     var isCycle3 = true;
     for (var i = 0; i < 6; i++) {
         if (recentVals[i] !== recentVals[i+3]) { isCycle3 = false; break; }
     }
     if (isCycle3 && !(recentVals[0] === recentVals[1] && recentVals[1] === recentVals[2])) {
-        var nextGuess3 = recentVals[2]; // 周期推进到下一轮的第一位
-        return { 
-            active: true, 
-            mode: "ABB/BAA三期循环跳", 
-            next: nextGuess3, 
-            desc: typeName + "呈现精准三期周期循环（" + recentVals.slice(0,3).reverse().join('-') + " 重复节奏），预测下一期锁定【" + nextGuess3 + "】" 
-        };
+        var nextGuess3 = recentVals[2];
+        return { active: true, mode: "ABB/BAA三期循环跳", next: nextGuess3, desc: typeName + "呈现精准三期周期循环（" + recentVals.slice(0,3).reverse().join('-') + " 重复节奏），预测下一期锁定【" + nextGuess3 + "】" };
     }
 
-    // 2. 检测 2期对称循环跳跃 (AABB, AABB)
     var isCycle2 = true;
     for (var i = 0; i < 6; i++) {
         if (recentVals[i] !== recentVals[i+2]) { isCycle2 = false; break; }
     }
     if (isCycle2 && recentVals[0] !== recentVals[1]) {
         var nextGuess2 = recentVals[1];
-        return { 
-            active: true, 
-            mode: "AABB双跳循环", 
-            next: nextGuess2, 
-            desc: typeName + "呈现AABB双跳循环（" + recentVals.slice(0,4).reverse().join('-') + "），预测下一期锁定【" + nextGuess2 + "】" 
-        };
+        return { active: true, mode: "AABB双跳循环", next: nextGuess2, desc: typeName + "呈现AABB双跳循环（" + recentVals.slice(0,4).reverse().join('-') + "），预测下一期锁定【" + nextGuess2 + "】" };
     }
 
-    // 3. 检测高频交替跳跃（近8期内有4次以上切换）
     var changes = 0;
     for (var i = 0; i < 7; i++) {
         if (recentVals[i] !== recentVals[i+1]) changes++;
     }
     if (changes >= 4) {
         var nextGuessAlt = recentVals[1];
-        return { 
-            active: true, 
-            mode: "高频交替跳跃", 
-            next: nextGuessAlt, 
-            desc: typeName + "近期形成高频交替跳跃形态（" + recentVals.slice(0,4).reverse().join('-') + "），预测下一期倾向【" + nextGuessAlt + "】" 
-        };
+        return { active: true, mode: "高频交替跳跃", next: nextGuessAlt, desc: typeName + "近期形成高频交替跳跃形态（" + recentVals.slice(0,4).reverse().join('-') + "），预测下一期倾向【" + nextGuessAlt + "】" };
     }
 
     return { active: false, desc: "" };
@@ -812,7 +791,7 @@ function addNewDraw() {
     var nowStr = new Date().toISOString().slice(0, 10) + " 21:35:00";
     var newObj = { period: pInput, time: nowStr, normals: normalsArr, special_num: specialNum };
     HISTORY_DATA.unshift(newObj);
-    localStorage.setItem("MACAU_HISTORY_DATA_V8", JSON.stringify(HISTORY_DATA));
+    localStorage.setItem("MACAU_HISTORY_DATA_V9", JSON.stringify(HISTORY_DATA));
 
     var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
     OMISSION_DATA = recomputed.numOmit;
@@ -834,7 +813,7 @@ function addNewDraw() {
 function resetDefaultData() {
     if (confirm("确定要恢复默认的 200 期完整历史数据与遗漏统计吗？")) {
         HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        localStorage.setItem("MACAU_HISTORY_DATA_V8", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V9", JSON.stringify(HISTORY_DATA));
 
         var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
         OMISSION_DATA = recomputed.numOmit;
@@ -1038,8 +1017,9 @@ function doPredict() {
             });
         }
 
+        // 严格按照综合得分从高到低排序
         pool.sort(function(a, b) { return b.score !== a.score ? b.score - a.score : a.omit - b.omit; });
-        var topPool = pool.slice(0, 8);
+        var topPool = pool.slice(0, 8); // Top8 号码
 
         var zigzagMsgs = [];
         if (parityZigzag.active) zigzagMsgs.push(parityZigzag.desc);
@@ -1051,7 +1031,7 @@ function doPredict() {
             '• <b>硬性排除：</b> <span class="badge badge-red">已强制剔除上期特码【' + specPadLatest + '号】及上期生肖【' + lastZodiac + '】所有号码</span>' +
             '<div class="reason-box">💡 <b>原理解析：</b>数字与生肖重复开出概率极低，系统已完美过滤。</div>' +
 
-            '• <b>🔥 近10期跳跃形态高权（支持 ABB/BAA 三期循环 & 双跳）：</b> <span class="badge badge-zigzag">' + 
+            '• <b>🔥 近10期跳跃形态高权：</b> <span class="badge badge-zigzag">' + 
             (zigzagMsgs.length > 0 ? "已捕捉成型跳跃走势并设为第一优先级加权" : "当前未形成显著周期跳跃，按常规纪律分析") + '</span>' +
             '<div class="reason-box">💡 <b>跳跃详情：</b>' + (zigzagMsgs.length > 0 ? zigzagMsgs.join("；") : "暂无符合单跳、AABB双跳或ABB/BAA三期循环规律。") + '</div>' +
 
@@ -1086,7 +1066,8 @@ function doPredict() {
             for (var j = 0; j < topPool.length; j++) {
                 var p = topPool[j];
                 var pPad = p.num < 10 ? "0" + p.num : "" + p.num;
-                poolStrs.push(pPad + '(' + p.anim + '-评' + p.score + ')');
+                // 💡 优化：移除显示具体评分，只保留 号码(生肖) 格式，方便复制纯数字
+                poolStrs.push(pPad + '(' + p.anim + ')');
                 sortedPoolNums.push(p.num);
             }
 
