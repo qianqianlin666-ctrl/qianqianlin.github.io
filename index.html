@@ -57,6 +57,7 @@
         .badge-teal { background: #0d9488; color: #fff; }
         .badge-amber { background: #d97706; color: #fff; }
         .badge-zigzag { background: #ea580c; color: #fff; }
+        .badge-gray { background: #64748b; color: #fff; }
 
         .result-box { background: #ffffff; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 6px; text-align: center; margin-top: 20px; }
         .result-num { font-size: 26px; font-weight: bold; color: #dc2626; margin: 10px 0; }
@@ -119,7 +120,7 @@
 
     <!-- 手动录入表单面板 -->
     <div class="input-panel">
-        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（跳跃高权第一 + 严格过滤与斜线分析）</div>
+        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（支持单跳/双跳/ABB·BAA循环跳跃 + 满2期纪律激活）</div>
         <div class="input-row">
             <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 95px;"></div>
             <div>平码(空格/逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 190px;"></div>
@@ -265,7 +266,7 @@ function getColorName(n) {
 }
 
 var DEFAULT_DATA = [
-    { period: "2026321", time: "2026-11-17 21:35:00", normals: [15, 45, 23, 08, 47, 49], special_num: 41 },
+    { period: "2026321", time: "2026-11-17 21:35:00", normals: [15, 45, 23, 8, 47, 49], special_num: 41 },
     { period: "2026320", time: "2026-11-16 21:35:00", normals: [14, 17, 32, 34, 24, 46], special_num: 20 },
     { period: "2026319", time: "2026-11-15 21:35:00", normals: [6, 3, 15, 13, 25, 45], special_num: 5 },
     { period: "2026318", time: "2026-11-15 21:35:00", normals: [10, 36, 2, 9, 26, 37], special_num: 38 },
@@ -504,16 +505,16 @@ function computeOmissionsFromHistory(dataList) {
 
 var HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
 try {
-    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V6");
+    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V8");
     if (stored) {
         var parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length >= DEFAULT_DATA.length && parseInt(parsed[0].period, 10) >= parseInt(DEFAULT_DATA[0].period, 10)) {
             HISTORY_DATA = parsed;
         } else {
-            localStorage.setItem("MACAU_HISTORY_DATA_V6", JSON.stringify(HISTORY_DATA));
+            localStorage.setItem("MACAU_HISTORY_DATA_V8", JSON.stringify(HISTORY_DATA));
         }
     } else {
-        localStorage.setItem("MACAU_HISTORY_DATA_V6", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V8", JSON.stringify(HISTORY_DATA));
     }
 } catch (e) {}
 
@@ -538,9 +539,7 @@ function getAnalysisExclusions() {
     }
     numList.sort(function(a, b) { return b.count !== a.count ? b.count - a.count : a.num - b.num; });
     
-    // 要求5：最冷10个号、最热7个号
     var cold10 = numList.slice(0, 10).map(function(item) { return item.num; });
-    var hot7 = numList.slice(-7).map(function(item) { return item.num; }); // 遗漏最少的7个为最热
 
     var zodiacList = [];
     for (var z in ZODIAC_OMISSION_DATA) {
@@ -548,7 +547,6 @@ function getAnalysisExclusions() {
     }
     zodiacList.sort(function(a, b) { return b.count - a.count; });
     
-    // 要求4：排除遗漏最多的前2个生肖
     var excludedZodiacs = [];
     var excludedZodiacNums = [];
     if (zodiacList.length >= 1) {
@@ -574,7 +572,6 @@ function getAnalysisExclusions() {
     return {
         numList: numList,
         cold10: cold10,
-        hot7: hot7,
         zodiacList: zodiacList,
         excludedZodiacs: excludedZodiacs,
         excludedZodiacNums: excludedZodiacNums,
@@ -584,46 +581,70 @@ function getAnalysisExclusions() {
     };
 }
 
+// 🎯 全能跳跃走势检测引擎：支持单跳(ABAB)、双跳(AABB)、以及3期循环节奏(ABB / BAA)
 function detectRecentZigzag(getterFn, typeName) {
-    if (!HISTORY_DATA || HISTORY_DATA.length < 10) return { active: false, desc: "" };
+    if (!HISTORY_DATA || HISTORY_DATA.length < 9) return { active: false, desc: "" };
     var recentVals = [];
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 9; i++) {
         recentVals.push(getterFn(HISTORY_DATA[i].special_num));
     }
-    var isSingleJump = true;
-    for (var i = 2; i < 10; i++) {
-        if (recentVals[i] !== recentVals[i % 2]) { isSingleJump = false; break; }
+
+    // 1. 检测 3期循环跳跃 (ABB, ABB, ABB 或 BAA, BAA, BAA)
+    // recentVals[0] 是最新一期，[1]是上期，[2]是上上期...
+    // 如果 [0]===[3]===[6] 且 [1]===[4]===[7] 且 [2]===[5]===[8]，则完美符合3期周期循环！
+    var isCycle3 = true;
+    for (var i = 0; i < 6; i++) {
+        if (recentVals[i] !== recentVals[i+3]) { isCycle3 = false; break; }
     }
-    if (isSingleJump && recentVals[0] !== recentVals[1]) {
-        var nextGuess = recentVals[1];
-        return { active: true, mode: "单跳", next: nextGuess, desc: typeName + "近期呈现精准单跳交替（" + recentVals.slice(0,4).join('-') + "...），预测下一期倾向反转至【" + nextGuess + "】" };
+    if (isCycle3 && !(recentVals[0] === recentVals[1] && recentVals[1] === recentVals[2])) {
+        var nextGuess3 = recentVals[2]; // 周期推进到下一轮的第一位
+        return { 
+            active: true, 
+            mode: "ABB/BAA三期循环跳", 
+            next: nextGuess3, 
+            desc: typeName + "呈现精准三期周期循环（" + recentVals.slice(0,3).reverse().join('-') + " 重复节奏），预测下一期锁定【" + nextGuess3 + "】" 
+        };
     }
 
-    var isDoubleJump = true;
-    for (var i = 0; i < 8; i++) {
-        if (recentVals[i] !== recentVals[i+2]) { isDoubleJump = false; break; }
+    // 2. 检测 2期对称循环跳跃 (AABB, AABB)
+    var isCycle2 = true;
+    for (var i = 0; i < 6; i++) {
+        if (recentVals[i] !== recentVals[i+2]) { isCycle2 = false; break; }
     }
-    if (isDoubleJump) {
-        var nextGuess2 = recentVals[2];
-        return { active: true, mode: "双跳/复合跳", next: nextGuess2, desc: typeName + "近期呈现复合双跳形态，预测下一期倾向【" + nextGuess2 + "】" };
+    if (isCycle2 && recentVals[0] !== recentVals[1]) {
+        var nextGuess2 = recentVals[1];
+        return { 
+            active: true, 
+            mode: "AABB双跳循环", 
+            next: nextGuess2, 
+            desc: typeName + "呈现AABB双跳循环（" + recentVals.slice(0,4).reverse().join('-') + "），预测下一期锁定【" + nextGuess2 + "】" 
+        };
+    }
+
+    // 3. 检测高频交替跳跃（近8期内有4次以上切换）
+    var changes = 0;
+    for (var i = 0; i < 7; i++) {
+        if (recentVals[i] !== recentVals[i+1]) changes++;
+    }
+    if (changes >= 4) {
+        var nextGuessAlt = recentVals[1];
+        return { 
+            active: true, 
+            mode: "高频交替跳跃", 
+            next: nextGuessAlt, 
+            desc: typeName + "近期形成高频交替跳跃形态（" + recentVals.slice(0,4).reverse().join('-') + "），预测下一期倾向【" + nextGuessAlt + "】" 
+        };
     }
 
     return { active: false, desc: "" };
 }
 
-// 要求6：斜线分析引擎（捕捉历史走势中相邻期数在号码走势图中的对角斜线规律）
 function analyzeDiagonalTrend() {
     if (!HISTORY_DATA || HISTORY_DATA.length < 5) return { active: false, msg: "斜线数据不足" };
     var latestSpec = HISTORY_DATA[0].special_num;
     var prevSpec = HISTORY_DATA[1].special_num;
-    var diff = latestSpec - prevSpec; // 差值判定斜线步长（如 +1, -1, +6, -7 等斜线走势）
-    
-    // 统计最近几期斜线步长规律
-    var steps = [];
-    for(var i=0; i<Math.min(5, HISTORY_DATA.length-1); i++) {
-        steps.push(HISTORY_DATA[i].special_num - HISTORY_DATA[i+1].special_num);
-    }
-    var targetNextNum = (latestSpec + diff + 48) % 49 + 1; // 顺延斜线预测落点
+    var diff = latestSpec - prevSpec; 
+    var targetNextNum = (latestSpec + diff + 48) % 49 + 1; 
     return { active: true, diff: diff, target: targetNextNum, msg: "检测到斜线步长约 " + diff + " 格，顺势斜线落点指向【" + targetNextNum + "号】附近" };
 }
 
@@ -791,7 +812,7 @@ function addNewDraw() {
     var nowStr = new Date().toISOString().slice(0, 10) + " 21:35:00";
     var newObj = { period: pInput, time: nowStr, normals: normalsArr, special_num: specialNum };
     HISTORY_DATA.unshift(newObj);
-    localStorage.setItem("MACAU_HISTORY_DATA_V6", JSON.stringify(HISTORY_DATA));
+    localStorage.setItem("MACAU_HISTORY_DATA_V8", JSON.stringify(HISTORY_DATA));
 
     var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
     OMISSION_DATA = recomputed.numOmit;
@@ -813,7 +834,7 @@ function addNewDraw() {
 function resetDefaultData() {
     if (confirm("确定要恢复默认的 200 期完整历史数据与遗漏统计吗？")) {
         HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        localStorage.setItem("MACAU_HISTORY_DATA_V6", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V8", JSON.stringify(HISTORY_DATA));
 
         var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
         OMISSION_DATA = recomputed.numOmit;
@@ -934,12 +955,11 @@ function getStreakAndHistoryMax(getterFn) {
 }
 
 function calcDisciplinedWeight(currentStreak, maxHist, basePts) {
-    // 要求3：当前顺势需要达到2期以上才启动加权（历史最高功能保留）
     if (currentStreak < 2) {
-        return 0; // 不足2期不启动顺势加权
+        return 0; 
     }
     if (currentStreak >= maxHist && maxHist >= 2) {
-        return 5; // 触顶熔断
+        return 5; 
     }
     return basePts;
 }
@@ -951,7 +971,6 @@ function doPredict() {
         var specPadLatest = specNum < 10 ? "0" + specNum : "" + specNum;
         var lastZodiac = getZodiac(specNum);
 
-        // 各维度顺势统计
         var parityStats = getStreakAndHistoryMax(function(n) { return n % 2 === 0 ? "雙" : "單"; });
         var sizeStats = getStreakAndHistoryMax(function(n) { return n >= 25 ? "大" : "小"; });
         var colorStats = getStreakAndHistoryMax(function(n) { return getColorName(n); });
@@ -959,24 +978,22 @@ function doPredict() {
         var tenStats = getStreakAndHistoryMax(function(n) { return Math.floor(n / 10); });
         var unitStats = getStreakAndHistoryMax(function(n) { return n % 10; });
 
-        // 要求1：跳跃形态加权排第一（权重最高）
         var parityZigzag = detectRecentZigzag(function(n) { return n % 2 === 0 ? "雙" : "單"; }, "单双");
         var sizeZigzag = detectRecentZigzag(function(n) { return n >= 25 ? "大" : "小"; }, "大小");
         var colorZigzag = detectRecentZigzag(function(n) { return getColorName(n); }, "波色");
         var zodiacZigzag = detectRecentZigzag(function(n) { return isHomeZodiac(getZodiac(n)) ? "家肖" : "野肖"; }, "家野肖");
         var diagonalAnalysis = analyzeDiagonalTrend();
 
-        // 加权赋值（跳跃形态赋予最高优先级 65 分，排第一）
-        var wParity = parityZigzag.active ? 65 : calcDisciplinedWeight(parityStats.current, parityStats.maxHist, 20);
-        var wSize = sizeZigzag.active ? 65 : calcDisciplinedWeight(sizeStats.current, sizeStats.maxHist, 20);
-        var wColor = colorZigzag.active ? 68 : calcDisciplinedWeight(colorStats.current, colorStats.maxHist, 25);
-        var wZodiac = zodiacZigzag.active ? 70 : calcDisciplinedWeight(zodiacStats.current, zodiacStats.maxHist, 30);
+        var wParity = parityZigzag.active ? 68 : calcDisciplinedWeight(parityStats.current, parityStats.maxHist, 20);
+        var wSize = sizeZigzag.active ? 68 : calcDisciplinedWeight(sizeStats.current, sizeStats.maxHist, 20);
+        var wColor = colorZigzag.active ? 70 : calcDisciplinedWeight(colorStats.current, colorStats.maxHist, 25);
+        var wZodiac = zodiacZigzag.active ? 72 : calcDisciplinedWeight(zodiacStats.current, zodiacStats.maxHist, 30);
         var wTen = calcDisciplinedWeight(tenStats.current, tenStats.maxHist, 15);
         var wUnit = calcDisciplinedWeight(unitStats.current, unitStats.maxHist, 15);
-        var wDiagonal = diagonalAnalysis.active ? 50 : 0; // 斜线分析加权
+        var wDiagonal = diagonalAnalysis.active ? 50 : 0;
 
         var analysis = getAnalysisExclusions();
-        var excludedColdNums = analysis.cold10; // 要求5：最冷10个号排除
+        var excludedColdNums = analysis.cold10;
         var excludedZodiacs = analysis.excludedZodiacs;
         var excludedZodiacNums = analysis.excludedZodiacNums;
         var maxTail = analysis.maxTail;
@@ -984,9 +1001,8 @@ function doPredict() {
 
         var pool = [];
         for (var i = 1; i <= 49; i++) {
-            // 要求2：数字重复开出的概率极低，系统已强制将上期特码以及上期生肖都移除选号池
             if (i === specNum) continue; 
-            if (getZodiac(i) === lastZodiac) continue; // 移除上期生肖的所有号码
+            if (getZodiac(i) === lastZodiac) continue; 
 
             if (excludedColdNums.indexOf(i) !== -1) continue;
             if (excludedZodiacNums.indexOf(i) !== -1) continue;
@@ -1000,7 +1016,6 @@ function doPredict() {
             var iTen = Math.floor(i / 10);
             var iUnit = i % 10;
 
-            // 跳跃形态优先计入评分
             if (parityZigzag.active && iParity === parityZigzag.next) score += wParity;
             else if (!parityZigzag.active) score += wParity;
 
@@ -1008,14 +1023,10 @@ function doPredict() {
             if (colorZigzag.active && iColor === colorZigzag.next) score += wColor;
             if (zodiacZigzag.active && iIsHome === zodiacZigzag.next) score += wZodiac;
 
-            // 十位与个位顺势加权（需满足≥2期）
             if (iTen === Math.floor(last.special_num / 10)) score += wTen;
             if (iUnit === last.special_num % 10) score += wUnit;
-
-            // 要求6：斜线分析落点加权
             if (diagonalAnalysis.active && i === diagonalAnalysis.target) score += wDiagonal;
 
-            // 遗漏温热回补分
             var omitVal = OMISSION_DATA[i] || 0;
             score += Math.min(20, Math.floor(omitVal / 3));
 
@@ -1027,35 +1038,49 @@ function doPredict() {
             });
         }
 
-        // 要求7：按评分高低顺序排序
         pool.sort(function(a, b) { return b.score !== a.score ? b.score - a.score : a.omit - b.omit; });
-        
-        // 要求7：精选号池从 Top12 改为 Top8 个号
         var topPool = pool.slice(0, 8);
 
-        // 构造分析看板说明
+        var zigzagMsgs = [];
+        if (parityZigzag.active) zigzagMsgs.push(parityZigzag.desc);
+        if (sizeZigzag.active) zigzagMsgs.push(sizeZigzag.desc);
+        if (colorZigzag.active) zigzagMsgs.push(colorZigzag.desc);
+        if (zodiacZigzag.active) zigzagMsgs.push(zodiacZigzag.desc);
+
         var analysisHtml = 
-            '• <b>硬性排除（要求2）：</b> <span class="badge badge-red">已强制剔除上期特码【' + specPadLatest + '号】及上期生肖【' + lastZodiac + '】所有号码</span>' +
+            '• <b>硬性排除：</b> <span class="badge badge-red">已强制剔除上期特码【' + specPadLatest + '号】及上期生肖【' + lastZodiac + '】所有号码</span>' +
             '<div class="reason-box">💡 <b>原理解析：</b>数字与生肖重复开出概率极低，系统已完美过滤。</div>' +
 
-            '• <b>🔥 近10期跳跃形态高权（要求1）：</b> <span class="badge badge-zigzag">' + (parityZigzag.active || sizeZigzag.active || colorZigzag.active || zodiacZigzag.active ? "已检测到成型跳跃走势并设为第一优先级加权" : "当前未形成显著跳跃，按常规纪律分析") + '</span>' +
-            '<div class="reason-box">💡 <b>加权排序：</b>跳跃形态加权在系统中已设为第一核心优先权，得分离最高。</div>' +
+            '• <b>🔥 近10期跳跃形态高权（支持 ABB/BAA 三期循环 & 双跳）：</b> <span class="badge badge-zigzag">' + 
+            (zigzagMsgs.length > 0 ? "已捕捉成型跳跃走势并设为第一优先级加权" : "当前未形成显著周期跳跃，按常规纪律分析") + '</span>' +
+            '<div class="reason-box">💡 <b>跳跃详情：</b>' + (zigzagMsgs.length > 0 ? zigzagMsgs.join("；") : "暂无符合单跳、AABB双跳或ABB/BAA三期循环规律。") + '</div>' +
 
-            '• <b>📐 斜线走势分析（要求6）：</b> <span class="badge badge-purple">' + diagonalAnalysis.msg + '</span>' +
+            '• <b>📐 斜线走势分析：</b> <span class="badge badge-purple">' + diagonalAnalysis.msg + '</span>' +
             '<div class="reason-box">💡 <b>分析说明：</b>斜线步长追踪已纳入加权体系。</div>' +
 
-            '• <b>家野肖历史纪律（要求3）：</b> <span class="badge">当前连开 ' + zodiacStats.current + ' 期 (史高 ' + zodiacStats.maxHist + ' 期) ' + (zodiacStats.current < 2 ? '【未达2期暂不启动加权】' : '【已启动加权】') + '</span>' +
-            '<div class="reason-box">💡 <b>纪律约束：</b>顺势必须达到 2 期以上才启动加权（大小、单双、波色、十位、个位同理，历史最高功能完整保留）。</div>' +
+            '• <b>🐇 家野肖历史纪律：</b> <span class="badge ' + (zodiacStats.current >= 2 ? 'badge-blue' : 'badge-gray') + '">当前连开 ' + zodiacStats.current + ' 期 (史高 ' + zodiacStats.maxHist + ' 期) ' + (zodiacStats.current < 2 ? '【未达2期暂不启动加权】' : '【已启动加权】') + '</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>顺势必须达到 2 期以上才启动加权（历史最高功能已完整保留）。</div>' +
 
-            '• <b>多维智能过滤（要求4 & 5）：</b> <span class="badge badge-red">已剔除最冷10个号、遗漏最多前2个生肖【' + excludedZodiacs.join('、') + '】、尾数【' + maxTail + '尾】</span>';
+            '• <b>📊 大小历史纪律：</b> <span class="badge ' + (sizeStats.current >= 2 ? 'badge-blue' : 'badge-gray') + '">当前连开 ' + sizeStats.current + ' 期 (史高 ' + sizeStats.maxHist + ' 期) ' + (sizeStats.current < 2 ? '【未达2期暂不启动加权】' : '【已启动加权】') + '</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>大小顺势需达到 2 期以上才启动加权。</div>' +
+
+            '• <b>🔢 单双历史纪律：</b> <span class="badge ' + (parityStats.current >= 2 ? 'badge-blue' : 'badge-gray') + '">当前连开 ' + parityStats.current + ' 期 (史高 ' + parityStats.maxHist + ' 期) ' + (parityStats.current < 2 ? '【未达2期暂不启动加权】' : '【已启动加权】') + '</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>单双顺势需达到 2 期以上才启动加权。</div>' +
+
+            '• <b>🎨 波色历史纪律：</b> <span class="badge ' + (colorStats.current >= 2 ? 'badge-green' : 'badge-gray') + '">当前连开 ' + colorStats.current + ' 期 (史高 ' + colorStats.maxHist + ' 期) ' + (colorStats.current < 2 ? '【未达2期暂不启动加权】' : '【已启动加权】') + '</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>波色顺势需达到 2 期同色以上才启动加权。</div>' +
+
+            '• <b>十位与个位历史纪律：</b> <span class="badge badge-teal">十位连开 ' + tenStats.current + '期(史高' + tenStats.maxHist + ') | 个位连开 ' + unitStats.current + '期(史高' + unitStats.maxHist + ') ' + (tenStats.current < 2 && unitStats.current < 2 ? '【未达2期暂不启动】' : '【已启动】') + '</span>' +
+            '<div class="reason-box">💡 <b>纪律约束：</b>十位与个位均需达到 2 期以上才启动加权。</div>' +
+
+            '• <b>多维智能过滤：</b> <span class="badge badge-red">已剔除最冷10个号、遗漏最多前2个生肖【' + excludedZodiacs.join('、') + '】、尾数【' + maxTail + '尾】</span>';
 
         document.getElementById("analysis-results").innerHTML = analysisHtml;
 
         if (topPool.length > 0) {
-            var best = topPool[0]; // 评分最高的第一名作为推荐一码
+            var best = topPool[0];
             var bestPad = best.num < 10 ? "0" + best.num : "" + best.num;
 
-            // 要求7：精选号池改为按评分高低顺序排序展示（不再强制按号码大小排序，严格展现 Top8 评分高低）
             var poolStrs = [];
             var sortedPoolNums = [];
             for (var j = 0; j < topPool.length; j++) {
