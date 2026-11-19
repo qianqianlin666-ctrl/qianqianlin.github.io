@@ -64,18 +64,23 @@
         .manual-exclude-card { background: #fffbeb; border: 1px solid #fcd34d; padding: 16px; border-radius: 8px; margin-top: 20px; }
         .exclude-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
         .live-period-badge { background: #2563eb; color: #ffffff; padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: bold; }
-        .exclude-group-title { font-size: 13px; font-weight: bold; color: #92400e; margin: 10px 0 6px; }
-        .exclude-num-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
-        .exclude-zodiac-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-        .exclude-tail-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+        .exclude-group-title { font-size: 13px; font-weight: bold; color: #92400e; margin: 12px 0 6px; }
+        .exclude-num-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .exclude-zodiac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .exclude-tail-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
         @media (max-width: 650px) {
-            .exclude-num-grid { grid-template-columns: repeat(7, 1fr); }
-            .exclude-zodiac-grid { grid-template-columns: repeat(4, 1fr); }
-            .exclude-tail-grid { grid-template-columns: repeat(5, 1fr); }
+            .exclude-num-grid { grid-template-columns: repeat(4, 1fr); }
+            .exclude-zodiac-grid { grid-template-columns: repeat(3, 1fr); }
+            .exclude-tail-grid { grid-template-columns: repeat(3, 1fr); }
         }
-        .pick-btn { padding: 6px 4px; border: 1px solid #cbd5e1; background: #ffffff; color: #334155; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.15s; }
-        .pick-btn:hover { border-color: #f59e0b; }
-        .pick-btn.selected-exclude { background: #dc2626; color: #ffffff; border-color: #b91c1c; text-decoration: line-through; }
+        .pick-btn { padding: 7px 5px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; border-radius: 5px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.25; }
+        .pick-btn .opt-main { font-size: 13px; font-weight: bold; }
+        .pick-btn .opt-period { font-size: 10px; color: #2563eb; margin-top: 2px; }
+        .pick-btn:hover { border-color: #f59e0b; background: #fffdf7; }
+        .pick-btn.selected-exclude { background: #dc2626; color: #ffffff; border-color: #b91c1c; }
+        .pick-btn.selected-exclude .opt-main { text-decoration: line-through; }
+        .pick-btn.selected-exclude .opt-period { color: #fde68a; }
+
         .manual-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
         .btn-confirm-exclude { background: #dc2626; color: #fff; border: none; padding: 9px 16px; border-radius: 5px; font-weight: bold; font-size: 13px; cursor: pointer; }
         .btn-confirm-exclude:hover { background: #b91c1c; }
@@ -142,7 +147,7 @@
 
     <!-- 手动录入表单面板 -->
     <div class="input-panel">
-        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（实时更新最新未开期数 + 手动排除模式 + 自适应闭环）</div>
+        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（选项内实时自动更新未开期数 + 手动排除模式 + 自适应闭环）</div>
         <div class="input-row">
             <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 95px;"></div>
             <div>平码(空格/逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 190px;"></div>
@@ -189,20 +194,20 @@
         <div id="analysis-results">正在分析开奖走势...</div>
     </div>
 
-    <!-- ✅ 手动选择排除面板（含实时最新未开期数） -->
+    <!-- ✅ 手动选择排除面板（每个选项内部实时显示未开期数） -->
     <div class="manual-exclude-card">
         <div class="exclude-header">
-            <div style="font-size: 15px; font-weight: bold; color: #92400e;">✋ 每期手动选择排除条件（点击勾选要排除的号码、生肖、尾数后点“确定并预测”）</div>
+            <div style="font-size: 15px; font-weight: bold; color: #92400e;">✋ 每期手动选择排除条件（每个选项内已标注未开期数，点选后点“确定排除并预测”）</div>
             <span class="live-period-badge" id="live-unopened-period">当前最新未开：第 -- 期</span>
         </div>
         
-        <div class="exclude-group-title">1. 手动排除号码（01 - 49，点选变红表示排除）：</div>
+        <div class="exclude-group-title">1. 手动排除号码（01 - 49，选项内实时显示未开期数，点选变红排除）：</div>
         <div class="exclude-num-grid" id="manual-num-grid"></div>
 
-        <div class="exclude-group-title">2. 手动排除生肖：</div>
+        <div class="exclude-group-title">2. 手动排除生肖（选项内实时显示未开期数，点选变红排除）：</div>
         <div class="exclude-zodiac-grid" id="manual-zodiac-grid"></div>
 
-        <div class="exclude-group-title">3. 手动排除尾数（0 - 9 尾）：</div>
+        <div class="exclude-group-title">3. 手动排除尾数（0 - 9 尾，选项内实时显示未开期数，点选变红排除）：</div>
         <div class="exclude-tail-grid" id="manual-tail-grid"></div>
 
         <div class="active-exclude-summary" id="active-exclude-summary">当前已选排除：无（全部 49 个号码参与评分）</div>
@@ -516,7 +521,6 @@ var ADAPTIVE_OPTIMIZER = {
     boostDimensions: []
 };
 
-// 手动排除状态集合
 var MANUAL_EXCLUDED = {
     nums: [],
     zodiacs: [],
@@ -582,16 +586,16 @@ function computeOmissionsFromHistory(dataList) {
 
 var HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
 try {
-    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V13");
+    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V14");
     if (stored) {
         var parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length >= DEFAULT_DATA.length && parseInt(parsed[0].period, 10) >= parseInt(DEFAULT_DATA[0].period, 10)) {
             HISTORY_DATA = parsed;
         } else {
-            localStorage.setItem("MACAU_HISTORY_DATA_V13", JSON.stringify(HISTORY_DATA));
+            localStorage.setItem("MACAU_HISTORY_DATA_V14", JSON.stringify(HISTORY_DATA));
         }
     } else {
-        localStorage.setItem("MACAU_HISTORY_DATA_V13", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V14", JSON.stringify(HISTORY_DATA));
     }
 } catch (e) {}
 
@@ -602,7 +606,7 @@ var TAIL_OMISSION_DATA = computedOmit.tailOmit;
 
 var PREDICT_RECORDS = [];
 try {
-    var storedRec = localStorage.getItem("MACAU_PREDICT_RECORDS_V13");
+    var storedRec = localStorage.getItem("MACAU_PREDICT_RECORDS_V14");
     if (storedRec) {
         var parsedRec = JSON.parse(storedRec);
         if (Array.isArray(parsedRec)) PREDICT_RECORDS = parsedRec;
@@ -610,6 +614,7 @@ try {
 } catch (e) { PREDICT_RECORDS = []; }
 
 function initManualExcludeUI() {
+    var nextPeriod = getLatestUnopenedPeriod();
     var numGrid = document.getElementById("manual-num-grid");
     var zodGrid = document.getElementById("manual-zodiac-grid");
     var tailGrid = document.getElementById("manual-tail-grid");
@@ -619,7 +624,10 @@ function initManualExcludeUI() {
         for (var n = 1; n <= 49; n++) {
             var pad = n < 10 ? "0" + n : "" + n;
             var sel = MANUAL_EXCLUDED.nums.indexOf(n) !== -1 ? " selected-exclude" : "";
-            nHtml += '<button type="button" class="pick-btn' + sel + '" onclick="toggleExcludeNum(' + n + ', this)">' + pad + '</button>';
+            nHtml += '<button type="button" class="pick-btn' + sel + '" onclick="toggleExcludeNum(' + n + ', this)">' +
+                '<span class="opt-main">' + pad + '</span>' +
+                '<span class="opt-period">' + nextPeriod + '期</span>' +
+                '</button>';
         }
         numGrid.innerHTML = nHtml;
     }
@@ -629,7 +637,10 @@ function initManualExcludeUI() {
         for (var i = 0; i < ALL_ZODIACS.length; i++) {
             var z = ALL_ZODIACS[i];
             var selZ = MANUAL_EXCLUDED.zodiacs.indexOf(z) !== -1 ? " selected-exclude" : "";
-            zHtml += '<button type="button" class="pick-btn' + selZ + '" onclick="toggleExcludeZodiac(\'' + z + '\', this)">' + z + '</button>';
+            zHtml += '<button type="button" class="pick-btn' + selZ + '" onclick="toggleExcludeZodiac(\'' + z + '\', this)">' +
+                '<span class="opt-main">' + z + '</span>' +
+                '<span class="opt-period">' + nextPeriod + '期</span>' +
+                '</button>';
         }
         zodGrid.innerHTML = zHtml;
     }
@@ -638,7 +649,10 @@ function initManualExcludeUI() {
         var tHtml = "";
         for (var t = 0; t <= 9; t++) {
             var selT = MANUAL_EXCLUDED.tails.indexOf(t) !== -1 ? " selected-exclude" : "";
-            tHtml += '<button type="button" class="pick-btn' + selT + '" onclick="toggleExcludeTail(' + t + ', this)">' + t + '尾</button>';
+            tHtml += '<button type="button" class="pick-btn' + selT + '" onclick="toggleExcludeTail(' + t + ', this)">' +
+                '<span class="opt-main">' + t + '尾</span>' +
+                '<span class="opt-period">' + nextPeriod + '期</span>' +
+                '</button>';
         }
         tailGrid.innerHTML = tHtml;
     }
@@ -888,7 +902,7 @@ function checkPredictRecords() {
             }
         }
     }
-    localStorage.setItem("MACAU_PREDICT_RECORDS_V13", JSON.stringify(PREDICT_RECORDS));
+    localStorage.setItem("MACAU_PREDICT_RECORDS_V14", JSON.stringify(PREDICT_RECORDS));
     renderPredictRecords();
 }
 
@@ -925,7 +939,7 @@ function renderPredictRecords() {
 function clearRecords() {
     if (confirm("确定要清空所有预测战绩与复盘记录吗？")) {
         PREDICT_RECORDS = [];
-        localStorage.removeItem("MACAU_PREDICT_RECORDS_V13");
+        localStorage.removeItem("MACAU_PREDICT_RECORDS_V14");
         renderPredictRecords();
     }
 }
@@ -971,7 +985,7 @@ function addNewDraw() {
     var nowStr = new Date().toISOString().slice(0, 10) + " 21:35:00";
     var newObj = { period: pInput, time: nowStr, normals: normalsArr, special_num: specialNum };
     HISTORY_DATA.unshift(newObj);
-    localStorage.setItem("MACAU_HISTORY_DATA_V13", JSON.stringify(HISTORY_DATA));
+    localStorage.setItem("MACAU_HISTORY_DATA_V14", JSON.stringify(HISTORY_DATA));
 
     var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
     OMISSION_DATA = recomputed.numOmit;
@@ -984,17 +998,17 @@ function addNewDraw() {
     renderTopLatest();
     renderTable(null);
     updateLiveUnopenedPeriodUI();
-    updateExcludeSummary();
+    initManualExcludeUI();
     renderPanels();
     checkPredictRecords();
     doPredict();
-    alert("第 " + pInput + " 期开奖录入成功！最新未开期数已实时更新！");
+    alert("第 " + pInput + " 期开奖录入成功！所有选项内的未开期数已自动更新！");
 }
 
 function resetDefaultData() {
     if (confirm("确定要恢复默认的 200 期完整历史数据与遗漏统计吗？")) {
         HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        localStorage.setItem("MACAU_HISTORY_DATA_V13", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V14", JSON.stringify(HISTORY_DATA));
 
         var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
         OMISSION_DATA = recomputed.numOmit;
@@ -1004,7 +1018,7 @@ function resetDefaultData() {
         renderTopLatest();
         renderTable(null);
         updateLiveUnopenedPeriodUI();
-        updateExcludeSummary();
+        initManualExcludeUI();
         renderPanels();
         checkPredictRecords();
         doPredict();
@@ -1268,7 +1282,7 @@ function doPredict() {
             if (existIndex !== -1) PREDICT_RECORDS[existIndex] = recordItem;
             else PREDICT_RECORDS.unshift(recordItem);
 
-            localStorage.setItem("MACAU_PREDICT_RECORDS_V13", JSON.stringify(PREDICT_RECORDS));
+            localStorage.setItem("MACAU_PREDICT_RECORDS_V14", JSON.stringify(PREDICT_RECORDS));
             checkPredictRecords();
         } else {
             document.getElementById("recommended-code").innerText = "⚠️ 排除过多，无可用号码";
