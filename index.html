@@ -59,32 +59,6 @@
         .badge-zigzag { background: #ea580c; color: #fff; }
         .badge-gray { background: #64748b; color: #fff; }
 
-        /* 手动排除面板 */
-        .manual-exclude-card { background: #fffbeb; border: 1px solid #fcd34d; padding: 16px; border-radius: 8px; margin-top: 20px; }
-        .exclude-group-title { font-size: 13px; font-weight: bold; color: #92400e; margin: 12px 0 6px; }
-        .exclude-num-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .exclude-zodiac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .exclude-tail-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-        @media (max-width: 650px) {
-            .exclude-num-grid { grid-template-columns: repeat(4, 1fr); }
-            .exclude-zodiac-grid { grid-template-columns: repeat(3, 1fr); }
-            .exclude-tail-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-        .pick-btn { padding: 7px 5px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; border-radius: 5px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.25; }
-        .pick-btn .opt-main { font-size: 13px; font-weight: bold; }
-        .pick-btn .opt-omit { font-size: 11px; color: #dc2626; margin-top: 2px; font-weight: bold; }
-        .pick-btn:hover { border-color: #f59e0b; background: #fffdf7; }
-        .pick-btn.selected-exclude { background: #dc2626; color: #ffffff; border-color: #b91c1c; }
-        .pick-btn.selected-exclude .opt-main { text-decoration: line-through; }
-        .pick-btn.selected-exclude .opt-omit { color: #fde68a; }
-
-        .manual-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
-        .btn-confirm-exclude { background: #dc2626; color: #fff; border: none; padding: 9px 16px; border-radius: 5px; font-weight: bold; font-size: 13px; cursor: pointer; }
-        .btn-confirm-exclude:hover { background: #b91c1c; }
-        .btn-clear-exclude { background: #e2e8f0; color: #334155; border: none; padding: 9px 14px; border-radius: 5px; font-weight: bold; font-size: 13px; cursor: pointer; }
-        .btn-clear-exclude:hover { background: #cbd5e1; }
-        .active-exclude-summary { font-size: 12px; color: #78350f; background: #fef3c7; padding: 8px 12px; border-radius: 5px; margin-top: 10px; line-height: 1.5; }
-
         .result-box { background: #ffffff; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 6px; text-align: center; margin-top: 20px; }
         .result-num { font-size: 26px; font-weight: bold; color: #dc2626; margin: 10px 0; }
         
@@ -99,18 +73,31 @@
         .btn-tail { background: #0d9488; }
         .btn-tail:hover { background: #0f766e; }
 
-        .sub-panel { display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 15px; margin-top: 15px; text-align: left; }
+        .sub-panel { display: none; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 15px; margin-top: 15px; text-align: left; }
+        .panel-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; background: #fef3c7; padding: 10px 12px; border-radius: 6px; margin-top: 10px; font-size: 12px; color: #78350f; }
+        .panel-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-confirm-exclude { background: #dc2626; color: #fff; border: none; padding: 6px 12px; border-radius: 5px; font-weight: bold; font-size: 12px; cursor: pointer; }
+        .btn-confirm-exclude:hover { background: #b91c1c; }
+        .btn-clear-exclude { background: #e2e8f0; color: #334155; border: none; padding: 6px 10px; border-radius: 5px; font-weight: bold; font-size: 12px; cursor: pointer; }
+        .btn-clear-exclude:hover { background: #cbd5e1; }
+
         .omission-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 12px; }
         .zodiac-grid, .tail-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
         @media (max-width: 600px) { 
             .omission-grid { grid-template-columns: repeat(4, 1fr); } 
             .zodiac-grid, .tail-grid { grid-template-columns: repeat(2, 1fr); }
         }
-        .omit-cell { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 4px; text-align: center; }
+        .omit-cell { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; transition: all 0.15s; user-select: none; }
+        .omit-cell:hover { border-color: #f59e0b; transform: translateY(-1px); }
+        .omit-cell.excluded-item { background: #dc2626 !important; border-color: #991b1b !important; color: #ffffff !important; }
+        .omit-cell.excluded-item .omit-count { color: #ffffff !important; }
+        .omit-cell.excluded-item .zodiac-title { color: #ffffff !important; text-decoration: line-through; }
         .omit-tag { font-size: 10px; font-weight: bold; padding: 1px 5px; border-radius: 3px; display: inline-block; margin-top: 3px; }
         .tag-keep { background: #e2e8f0; color: #475569; }
         .tag-warn { background: #fee2e2; color: #dc2626; }
+        .tag-ex { background: #fef08a; color: #991b1b; }
         .omit-count { font-size: 12px; color: #334155; font-weight: bold; margin-top: 3px; }
+        .zodiac-title { font-weight: bold; font-size: 14px; color: #1e293b; margin-top: 2px; }
 
         .record-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; background: #ffffff; }
         .record-table th, .record-table td { padding: 8px 10px; text-align: center; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
@@ -191,26 +178,6 @@
         <div id="analysis-results">正在分析开奖走势...</div>
     </div>
 
-    <div class="manual-exclude-card">
-        <div style="font-size: 15px; font-weight: bold; color: #92400e;">✋ 每期手动选择排除条件（按未开期数从多到少排序，点击变红排除后点“确定排除并预测”）</div>
-        
-        <div class="exclude-group-title">1. 手动排除号码（01 - 49，未开期数越多越靠前，点选变红排除）：</div>
-        <div class="exclude-num-grid" id="manual-num-grid"></div>
-
-        <div class="exclude-group-title">2. 手动排除生肖（未开期数越多越靠前，点选变红排除）：</div>
-        <div class="exclude-zodiac-grid" id="manual-zodiac-grid"></div>
-
-        <div class="exclude-group-title">3. 手动排除尾数（0 - 9 尾，未开期数越多越靠前，点选变红排除）：</div>
-        <div class="exclude-tail-grid" id="manual-tail-grid"></div>
-
-        <div class="active-exclude-summary" id="active-exclude-summary">当前已选排除：无（全部 49 个号码参与评分）</div>
-
-        <div class="manual-actions">
-            <button class="btn-confirm-exclude" onclick="confirmExcludeAndPredict()">✅ 确定排除并预测</button>
-            <button class="btn-clear-exclude" onclick="clearManualExclusions()">🗑️ 清空已选排除</button>
-        </div>
-    </div>
-
     <div class="result-box">
         <div style="font-weight: bold; color: #334155;">🎯 依据升级规则智能生成的精选推荐</div>
         <div class="result-num" id="recommended-code">等待生成</div>
@@ -219,23 +186,44 @@
         
         <div class="btn-group">
             <button class="btn-custom btn-copy" onclick="copyPredictData()">📋 复制纯数字</button>
-            <button class="btn-custom btn-omit" onclick="togglePanel('omission-panel')">📊 遗漏号码</button>
-            <button class="btn-custom btn-zodiac" onclick="togglePanel('zodiac-panel')">🐇 遗漏生肖</button>
-            <button class="btn-custom btn-tail" onclick="togglePanel('tail-panel')">🔢 遗漏尾数</button>
+            <button class="btn-custom btn-omit" onclick="togglePanel('omission-panel')">📊 遗漏号码（点选排除）</button>
+            <button class="btn-custom btn-zodiac" onclick="togglePanel('zodiac-panel')">🐇 遗漏生肖（点选排除）</button>
+            <button class="btn-custom btn-tail" onclick="togglePanel('tail-panel')">🔢 遗漏尾数（点选排除）</button>
         </div>
 
         <div class="sub-panel" id="omission-panel">
-            <b style="color:#0f172a; font-size:13px;">📈 特码每个号码当前未开出期数实时排行</b>
+            <b style="color:#0f172a; font-size:13px;">📈 特码号码未开出期数排行（直接点击格子变红排除）</b>
+            <div class="panel-toolbar">
+                <span class="exclude-status-text">当前已选排除：无</span>
+                <div class="panel-btns">
+                    <button type="button" class="btn-confirm-exclude" onclick="confirmExcludeAndPredict()">✅ 确定排除并预测</button>
+                    <button type="button" class="btn-clear-exclude" onclick="clearManualExclusions()">🗑️ 清空已选排除</button>
+                </div>
+            </div>
             <div class="omission-grid" id="omission-grid"></div>
         </div>
 
         <div class="sub-panel" id="zodiac-panel">
-            <b style="color:#0f172a; font-size:13px;">🐇 特码每个生肖当前未开出期数排行</b>
+            <b style="color:#0f172a; font-size:13px;">🐇 特码生肖未开出期数排行（直接点击格子变红排除）</b>
+            <div class="panel-toolbar">
+                <span class="exclude-status-text">当前已选排除：无</span>
+                <div class="panel-btns">
+                    <button type="button" class="btn-confirm-exclude" onclick="confirmExcludeAndPredict()">✅ 确定排除并预测</button>
+                    <button type="button" class="btn-clear-exclude" onclick="clearManualExclusions()">🗑️ 清空已选排除</button>
+                </div>
+            </div>
             <div class="zodiac-grid" id="zodiac-grid"></div>
         </div>
 
         <div class="sub-panel" id="tail-panel">
-            <b style="color:#0f172a; font-size:13px;">🔢 特码每个尾数(0-9)当前未开出期数排行</b>
+            <b style="color:#0f172a; font-size:13px;">🔢 特码尾数(0-9)未开出期数排行（直接点击格子变红排除）</b>
+            <div class="panel-toolbar">
+                <span class="exclude-status-text">当前已选排除：无</span>
+                <div class="panel-btns">
+                    <button type="button" class="btn-confirm-exclude" onclick="confirmExcludeAndPredict()">✅ 确定排除并预测</button>
+                    <button type="button" class="btn-clear-exclude" onclick="clearManualExclusions()">🗑️ 清空已选排除</button>
+                </div>
+            </div>
             <div class="tail-grid" id="tail-grid"></div>
         </div>
     </div>
@@ -504,7 +492,6 @@ var DEFAULT_DATA = [
     { period: "2026120", time: "2026-04-30 21:32:32", normals: [18, 24, 7, 23, 48, 20], special_num: 6 }
 ];
 
-// 四维周期推演自适应权重倍率（1.0 为基准，中则 +0.15，不中则 -0.20，最低 0.4）
 var DIM_ADAPTIVE_MULTIPLIERS = {
     "波色": 1.0,
     "家野肖": 1.0,
@@ -560,16 +547,16 @@ function computeOmissionsFromHistory(dataList) {
 
 var HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
 try {
-    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V19");
+    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V20");
     if (stored) {
         var parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length >= DEFAULT_DATA.length && parseInt(parsed[0].period, 10) >= parseInt(DEFAULT_DATA[0].period, 10)) {
             HISTORY_DATA = parsed;
         } else {
-            localStorage.setItem("MACAU_HISTORY_DATA_V19", JSON.stringify(HISTORY_DATA));
+            localStorage.setItem("MACAU_HISTORY_DATA_V20", JSON.stringify(HISTORY_DATA));
         }
     } else {
-        localStorage.setItem("MACAU_HISTORY_DATA_V19", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V20", JSON.stringify(HISTORY_DATA));
     }
 } catch (e) {}
 
@@ -580,7 +567,7 @@ var TAIL_OMISSION_DATA = computedOmit.tailOmit;
 
 var PREDICT_RECORDS = [];
 try {
-    var storedRec = localStorage.getItem("MACAU_PREDICT_RECORDS_V19");
+    var storedRec = localStorage.getItem("MACAU_PREDICT_RECORDS_V20");
     if (storedRec) {
         var parsedRec = JSON.parse(storedRec);
         if (Array.isArray(parsedRec)) PREDICT_RECORDS = parsedRec;
@@ -603,88 +590,37 @@ function getOmissionReferenceLists() {
     return { numList: numList, zodiacList: zodiacList, tailList: tailList };
 }
 
-function initManualExcludeUI() {
-    var refs = getOmissionReferenceLists();
-    var numGrid = document.getElementById("manual-num-grid");
-    var zodGrid = document.getElementById("manual-zodiac-grid");
-    var tailGrid = document.getElementById("manual-tail-grid");
-
-    if (numGrid) {
-        var nHtml = "";
-        for (var i = 0; i < refs.numList.length; i++) {
-            var item = refs.numList[i];
-            var n = item.num;
-            var pad = n < 10 ? "0" + n : "" + n;
-            var sel = MANUAL_EXCLUDED.nums.indexOf(n) !== -1 ? " selected-exclude" : "";
-            nHtml += '<button type="button" class="pick-btn' + sel + '" onclick="toggleExcludeNum(' + n + ', this)">' +
-                '<span class="opt-main">' + pad + '</span>' +
-                '<span class="opt-omit">未开 ' + item.count + '期</span>' +
-                '</button>';
-        }
-        numGrid.innerHTML = nHtml;
-    }
-
-    if (zodGrid) {
-        var zHtml = "";
-        for (var i = 0; i < refs.zodiacList.length; i++) {
-            var zItem = refs.zodiacList[i];
-            var z = zItem.name;
-            var selZ = MANUAL_EXCLUDED.zodiacs.indexOf(z) !== -1 ? " selected-exclude" : "";
-            zHtml += '<button type="button" class="pick-btn' + selZ + '" onclick="toggleExcludeZodiac(\'' + z + '\', this)">' +
-                '<span class="opt-main">' + z + '</span>' +
-                '<span class="opt-omit">未开 ' + zItem.count + '期</span>' +
-                '</button>';
-        }
-        zodGrid.innerHTML = zHtml;
-    }
-
-    if (tailGrid) {
-        var tHtml = "";
-        for (var i = 0; i < refs.tailList.length; i++) {
-            var tItem = refs.tailList[i];
-            var t = tItem.tail;
-            var selT = MANUAL_EXCLUDED.tails.indexOf(t) !== -1 ? " selected-exclude" : "";
-            tHtml += '<button type="button" class="pick-btn' + selT + '" onclick="toggleExcludeTail(' + t + ', this)">' +
-                '<span class="opt-main">' + t + '尾</span>' +
-                '<span class="opt-omit">未开 ' + tItem.count + '期</span>' +
-                '</button>';
-        }
-        tailGrid.innerHTML = tHtml;
-    }
-    updateExcludeSummary();
-}
-
-function toggleExcludeNum(n, btn) {
+function toggleExcludeNum(n) {
     var idx = MANUAL_EXCLUDED.nums.indexOf(n);
-    if (idx === -1) { MANUAL_EXCLUDED.nums.push(n); btn.classList.add("selected-exclude"); }
-    else { MANUAL_EXCLUDED.nums.splice(idx, 1); btn.classList.remove("selected-exclude"); }
-    updateExcludeSummary();
+    if (idx === -1) MANUAL_EXCLUDED.nums.push(n);
+    else MANUAL_EXCLUDED.nums.splice(idx, 1);
+    renderPanels();
 }
 
-function toggleExcludeZodiac(z, btn) {
+function toggleExcludeZodiac(z) {
     var idx = MANUAL_EXCLUDED.zodiacs.indexOf(z);
-    if (idx === -1) { MANUAL_EXCLUDED.zodiacs.push(z); btn.classList.add("selected-exclude"); }
-    else { MANUAL_EXCLUDED.zodiacs.splice(idx, 1); btn.classList.remove("selected-exclude"); }
-    updateExcludeSummary();
+    if (idx === -1) MANUAL_EXCLUDED.zodiacs.push(z);
+    else MANUAL_EXCLUDED.zodiacs.splice(idx, 1);
+    renderPanels();
 }
 
-function toggleExcludeTail(t, btn) {
+function toggleExcludeTail(t) {
     var idx = MANUAL_EXCLUDED.tails.indexOf(t);
-    if (idx === -1) { MANUAL_EXCLUDED.tails.push(t); btn.classList.add("selected-exclude"); }
-    else { MANUAL_EXCLUDED.tails.splice(idx, 1); btn.classList.remove("selected-exclude"); }
-    updateExcludeSummary();
+    if (idx === -1) MANUAL_EXCLUDED.tails.push(t);
+    else MANUAL_EXCLUDED.tails.splice(idx, 1);
+    renderPanels();
 }
 
 function clearManualExclusions() {
     MANUAL_EXCLUDED.nums = [];
     MANUAL_EXCLUDED.zodiacs = [];
     MANUAL_EXCLUDED.tails = [];
-    initManualExcludeUI();
+    renderPanels();
     doPredict();
 }
 
 function confirmExcludeAndPredict() {
-    updateExcludeSummary();
+    renderPanels();
     doPredict();
 }
 
@@ -698,15 +634,13 @@ function getEffectiveExcludedNums() {
     return excludedSet;
 }
 
-function updateExcludeSummary() {
-    var summaryEl = document.getElementById("active-exclude-summary");
-    if (!summaryEl) return;
+function getExcludeSummaryText() {
     var numStr = MANUAL_EXCLUDED.nums.length > 0 ? MANUAL_EXCLUDED.nums.slice().sort(function(a,b){return a-b;}).map(function(x){return x<10?"0"+x:""+x;}).join("、") : "无";
     var zodStr = MANUAL_EXCLUDED.zodiacs.length > 0 ? MANUAL_EXCLUDED.zodiacs.join("、") : "无";
     var tailStr = MANUAL_EXCLUDED.tails.length > 0 ? MANUAL_EXCLUDED.tails.slice().sort(function(a,b){return a-b;}).map(function(x){return x+"尾";}).join("、") : "无";
     var effSet = getEffectiveExcludedNums();
     var totalExcluded = Object.keys(effSet).length;
-    summaryEl.innerHTML = "当前手动排除：<b>号码</b>[" + numStr + "] | <b>生肖</b>[" + zodStr + "] | <b>尾数</b>[" + tailStr + "]（共排除 <b>" + totalExcluded + "</b> 个号码，剩余 <b>" + (49 - totalExcluded) + "</b> 个号码参与评分）";
+    return "已选排除：号码[" + numStr + "] | 生肖[" + zodStr + "] | 尾数[" + tailStr + "]（共排除 <b>" + totalExcluded + "</b> 码，剩余 <b>" + (49 - totalExcluded) + "</b> 码）";
 }
 
 function runDimensionCyclePrediction(getterFn, dimName, candidates) {
@@ -813,6 +747,12 @@ function analyzeDiagonalTrend() {
 
 function renderPanels() {
     var refs = getOmissionReferenceLists();
+    var summaryHtml = getExcludeSummaryText();
+    var statusEls = document.querySelectorAll(".exclude-status-text");
+    for (var k = 0; k < statusEls.length; k++) {
+        statusEls[k].innerHTML = summaryHtml;
+    }
+
     var grid = document.getElementById("omission-grid");
     if (grid) {
         var html = "";
@@ -820,10 +760,11 @@ function renderPanels() {
             var item = refs.numList[i];
             var padN = item.num < 10 ? "0" + item.num : "" + item.num;
             var isCold = item.count >= 65;
-            html += '<div class="omit-cell"' + (isCold ? ' style="background:#fef2f2;border-color:#fca5a5;"' : '') + '>' +
+            var isEx = MANUAL_EXCLUDED.nums.indexOf(item.num) !== -1;
+            html += '<div class="omit-cell' + (isEx ? ' excluded-item' : '') + (isCold && !isEx ? ' style="background:#fef2f2;border-color:#fca5a5;"' : '') + '" onclick="toggleExcludeNum(' + item.num + ')">' +
                 '<div class="ball ' + getColorClass(item.num) + '" style="width:28px;height:28px;font-size:12px;margin:0 auto;">' + padN + '</div>' +
                 '<div class="omit-count">未开 ' + item.count + ' 期</div>' +
-                '<span class="omit-tag ' + (isCold ? 'tag-warn' : 'tag-keep') + '">' + (isCold ? '高遗漏' : '参考') + '</span>' +
+                '<span class="omit-tag ' + (isEx ? 'tag-ex' : (isCold ? 'tag-warn' : 'tag-keep')) + '">' + (isEx ? '已排除' : (isCold ? '高遗漏' : '点选排除')) + '</span>' +
                 '</div>';
         }
         grid.innerHTML = html;
@@ -835,10 +776,11 @@ function renderPanels() {
         for (var i = 0; i < refs.zodiacList.length; i++) {
             var zItem = refs.zodiacList[i];
             var isTopZ = i < 2;
-            zHtml += '<div class="omit-cell"' + (isTopZ ? ' style="background:#fef2f2;border-color:#fca5a5;"' : '') + '>' +
-                '<div style="font-weight:bold; font-size:14px; color:#1e293b; margin-top:2px;">' + zItem.name + '生肖</div>' +
+            var isExZ = MANUAL_EXCLUDED.zodiacs.indexOf(zItem.name) !== -1;
+            zHtml += '<div class="omit-cell' + (isExZ ? ' excluded-item' : '') + '" onclick="toggleExcludeZodiac(\'' + zItem.name + '\')">' +
+                '<div class="zodiac-title">' + zItem.name + '生肖</div>' +
                 '<div class="omit-count">未开 ' + zItem.count + ' 期</div>' +
-                '<span class="omit-tag ' + (isTopZ ? 'tag-warn' : 'tag-keep') + '">' + (isTopZ ? '未开最多' : '保留') + '</span>' +
+                '<span class="omit-tag ' + (isExZ ? 'tag-ex' : (isTopZ ? 'tag-warn' : 'tag-keep')) + '">' + (isExZ ? '已排除' : (isTopZ ? '未开最多' : '点选排除')) + '</span>' +
                 '</div>';
         }
         zGrid.innerHTML = zHtml;
@@ -850,10 +792,11 @@ function renderPanels() {
         for (var i = 0; i < refs.tailList.length; i++) {
             var tItem = refs.tailList[i];
             var isTopT = i === 0;
-            tHtml += '<div class="omit-cell"' + (isTopT ? ' style="background:#fef2f2;border-color:#fca5a5;"' : '') + '>' +
-                '<div style="font-weight:bold; font-size:14px; color:#1e293b; margin-top:2px;">' + tItem.tail + ' 尾</div>' +
+            var isExT = MANUAL_EXCLUDED.tails.indexOf(tItem.tail) !== -1;
+            tHtml += '<div class="omit-cell' + (isExT ? ' excluded-item' : '') + '" onclick="toggleExcludeTail(' + tItem.tail + ')">' +
+                '<div class="zodiac-title">' + tItem.tail + ' 尾</div>' +
                 '<div class="omit-count">未开 ' + tItem.count + ' 期</div>' +
-                '<span class="omit-tag ' + (isTopT ? 'tag-warn' : 'tag-keep') + '">' + (isTopT ? '未开最多' : '保留') + '</span>' +
+                '<span class="omit-tag ' + (isExT ? 'tag-ex' : (isTopT ? 'tag-warn' : 'tag-keep')) + '">' + (isExT ? '已排除' : (isTopT ? '未开最多' : '点选排除')) + '</span>' +
                 '</div>';
         }
         tGrid.innerHTML = tHtml;
@@ -870,9 +813,6 @@ function togglePanel(panelId) {
     if (!isVisible) { renderPanels(); p.style.display = "block"; }
 }
 
-/**
- * 核对实际开出号码与四维周期推演，动态更新各维度自适应倍率
- */
 function generateReviewAnalysis(rec, actualSpec) {
     var isWin = (rec.bestNum === actualSpec || (rec.poolNums && rec.poolNums.indexOf(actualSpec) !== -1));
     var actualZod = getZodiac(actualSpec);
@@ -937,7 +877,7 @@ function checkPredictRecords() {
             }
         }
     }
-    localStorage.setItem("MACAU_PREDICT_RECORDS_V19", JSON.stringify(PREDICT_RECORDS));
+    localStorage.setItem("MACAU_PREDICT_RECORDS_V20", JSON.stringify(PREDICT_RECORDS));
     renderPredictRecords();
 }
 
@@ -973,7 +913,7 @@ function clearRecords() {
     if (confirm("确定要清空所有预测战绩与复盘记录吗？")) {
         PREDICT_RECORDS = [];
         DIM_ADAPTIVE_MULTIPLIERS = { "波色": 1.0, "家野肖": 1.0, "单双": 1.0, "大小": 1.0 };
-        localStorage.removeItem("MACAU_PREDICT_RECORDS_V19");
+        localStorage.removeItem("MACAU_PREDICT_RECORDS_V20");
         renderPredictRecords();
     }
 }
@@ -1014,7 +954,7 @@ function addNewDraw() {
     }
     var nowStr = new Date().toISOString().slice(0, 10) + " 21:35:00";
     HISTORY_DATA.unshift({ period: pInput, time: nowStr, normals: normalsArr, special_num: specialNum });
-    localStorage.setItem("MACAU_HISTORY_DATA_V19", JSON.stringify(HISTORY_DATA));
+    localStorage.setItem("MACAU_HISTORY_DATA_V20", JSON.stringify(HISTORY_DATA));
 
     var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
     OMISSION_DATA = recomputed.numOmit;
@@ -1027,7 +967,6 @@ function addNewDraw() {
     renderTopLatest();
     renderTable(null);
     syncNextPeriodInput();
-    initManualExcludeUI();
     renderPanels();
     checkPredictRecords();
     doPredict();
@@ -1037,7 +976,7 @@ function addNewDraw() {
 function resetDefaultData() {
     if (confirm("确定要恢复默认历史数据吗？")) {
         HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        localStorage.setItem("MACAU_HISTORY_DATA_V19", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V20", JSON.stringify(HISTORY_DATA));
         var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
         OMISSION_DATA = recomputed.numOmit;
         ZODIAC_OMISSION_DATA = recomputed.zodOmit;
@@ -1045,7 +984,6 @@ function resetDefaultData() {
         renderTopLatest();
         renderTable(null);
         syncNextPeriodInput();
-        initManualExcludeUI();
         renderPanels();
         checkPredictRecords();
         doPredict();
@@ -1181,7 +1119,6 @@ function doPredict() {
 
         var diagonalAnalysis = analyzeDiagonalTrend();
 
-        // 四维各自乘以自适应倍率
         var wColor  = (colorCycle.active  ? 70 : calcDisciplinedWeight(colorStats.current,  colorStats.maxHist,  25)) * DIM_ADAPTIVE_MULTIPLIERS["波色"];
         var wZodiac = (homeCycle.active   ? 70 : calcDisciplinedWeight(zodiacStats.current, zodiacStats.maxHist, 30)) * DIM_ADAPTIVE_MULTIPLIERS["家野肖"];
         var wParity = (parityCycle.active ? 65 : calcDisciplinedWeight(parityStats.current, parityStats.maxHist, 20)) * DIM_ADAPTIVE_MULTIPLIERS["单双"];
@@ -1240,7 +1177,7 @@ function doPredict() {
 
         var analysisHtml =
             '• <b>手动排除条件：</b> <span class="badge badge-amber">号码[' + numStr + '] | 生肖[' + zodStr + '] | 尾数[' + tailStr + ']</span>' +
-            '<div class="reason-box">💡 <b>手动控制说明：</b>已按您本期的手动选择排除对应号码、生肖及尾数，其余号码参与全维智能打分。</div>' +
+            '<div class="reason-box">💡 <b>手动控制说明：</b>展开下方“遗漏号码 / 遗漏生肖 / 遗漏尾数”面板即可直接点选变红排除，并点击“确定排除并预测”。</div>' +
 
             '• <b>🔄 四维周期推演 + 自适应调权：</b> <span class="badge badge-zigzag">波色/家野肖/单双/大小 独立推演并动态调权</span>' +
             '<div class="reason-box">💡 <b>周期推演详情：</b><br>' + cycleMsgs.join("<br>") + '</div>' +
@@ -1282,7 +1219,7 @@ function doPredict() {
             if (existIndex !== -1) PREDICT_RECORDS[existIndex] = recordItem;
             else PREDICT_RECORDS.unshift(recordItem);
 
-            localStorage.setItem("MACAU_PREDICT_RECORDS_V19", JSON.stringify(PREDICT_RECORDS));
+            localStorage.setItem("MACAU_PREDICT_RECORDS_V20", JSON.stringify(PREDICT_RECORDS));
             checkPredictRecords();
         }
     } catch(err) { console.log(err); }
@@ -1292,7 +1229,6 @@ window.onload = function() {
     renderTopLatest();
     renderTable(null);
     syncNextPeriodInput();
-    initManualExcludeUI();
     renderPanels();
     updateTimer();
     checkPredictRecords();
