@@ -48,8 +48,8 @@
         .highlight-row { background: rgba(37, 99, 235, 0.08); }
 
         .card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 6px; margin-top: 20px; }
-        .reason-box { font-size: 13px; color: #475569; margin-top: 4px; margin-bottom: 12px; line-height: 1.6; padding: 6px 10px; border-radius: 0 4px 4px 0; border: 1px solid #e2e8f0; border-left: 4px solid #2563eb; background: #ffffff; }
-        .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; background: #2563eb; color: #fff; margin-right: 3px; }
+        .reason-box { font-size: 13px; color: #475569; margin-top: 4px; margin-bottom: 12px; line-height: 1.65; padding: 8px 12px; border-radius: 0 4px 4px 0; border: 1px solid #e2e8f0; border-left: 4px solid #2563eb; background: #ffffff; }
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; background: #2563eb; color: #fff; margin-right: 3px; margin-bottom: 2px; }
         .badge-red { background: #dc2626; color: #fff; }
         .badge-blue { background: #2563eb; color: #fff; }
         .badge-green { background: #16a34a; color: #fff; }
@@ -58,6 +58,12 @@
         .badge-amber { background: #d97706; color: #fff; }
         .badge-zigzag { background: #ea580c; color: #fff; }
         .badge-gray { background: #64748b; color: #fff; }
+
+        .streak-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+        @media (max-width: 720px) { .streak-grid { grid-template-columns: 1fr; } }
+        .streak-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; padding: 8px 10px; font-size: 12px; }
+        .streak-cap-warn { color: #dc2626; font-weight: bold; }
+        .streak-cap-ok { color: #16a34a; font-weight: bold; }
 
         .result-box { background: #ffffff; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 6px; text-align: center; margin-top: 20px; }
         .result-num { font-size: 26px; font-weight: bold; color: #dc2626; margin: 10px 0; }
@@ -131,7 +137,7 @@
     </div>
 
     <div class="input-panel">
-        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（实时更新未开期数与排序 + 四维周期推演 + 中/不中自适应调权）</div>
+        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（实时更新未开期数、历史连开极值、四维周期推演与自适应调权）</div>
         <div class="input-row">
             <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 95px;"></div>
             <div>平码(空格/逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 190px;"></div>
@@ -174,7 +180,7 @@
     </div>
 
     <div class="card">
-        <div class="section-title" style="border-left-color: #dc2626;">📊 全维历史纪律与跳跃形态高权重分析中心</div>
+        <div class="section-title" style="border-left-color: #dc2626;">📊 全维历史纪律、连开极值与跳跃形态高权重分析中心</div>
         <div id="analysis-results">正在分析开奖走势...</div>
     </div>
 
@@ -547,16 +553,16 @@ function computeOmissionsFromHistory(dataList) {
 
 var HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
 try {
-    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V20");
+    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V21");
     if (stored) {
         var parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length >= DEFAULT_DATA.length && parseInt(parsed[0].period, 10) >= parseInt(DEFAULT_DATA[0].period, 10)) {
             HISTORY_DATA = parsed;
         } else {
-            localStorage.setItem("MACAU_HISTORY_DATA_V20", JSON.stringify(HISTORY_DATA));
+            localStorage.setItem("MACAU_HISTORY_DATA_V21", JSON.stringify(HISTORY_DATA));
         }
     } else {
-        localStorage.setItem("MACAU_HISTORY_DATA_V20", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V21", JSON.stringify(HISTORY_DATA));
     }
 } catch (e) {}
 
@@ -567,7 +573,7 @@ var TAIL_OMISSION_DATA = computedOmit.tailOmit;
 
 var PREDICT_RECORDS = [];
 try {
-    var storedRec = localStorage.getItem("MACAU_PREDICT_RECORDS_V20");
+    var storedRec = localStorage.getItem("MACAU_PREDICT_RECORDS_V21");
     if (storedRec) {
         var parsedRec = JSON.parse(storedRec);
         if (Array.isArray(parsedRec)) PREDICT_RECORDS = parsedRec;
@@ -877,7 +883,7 @@ function checkPredictRecords() {
             }
         }
     }
-    localStorage.setItem("MACAU_PREDICT_RECORDS_V20", JSON.stringify(PREDICT_RECORDS));
+    localStorage.setItem("MACAU_PREDICT_RECORDS_V21", JSON.stringify(PREDICT_RECORDS));
     renderPredictRecords();
 }
 
@@ -913,7 +919,7 @@ function clearRecords() {
     if (confirm("确定要清空所有预测战绩与复盘记录吗？")) {
         PREDICT_RECORDS = [];
         DIM_ADAPTIVE_MULTIPLIERS = { "波色": 1.0, "家野肖": 1.0, "单双": 1.0, "大小": 1.0 };
-        localStorage.removeItem("MACAU_PREDICT_RECORDS_V20");
+        localStorage.removeItem("MACAU_PREDICT_RECORDS_V21");
         renderPredictRecords();
     }
 }
@@ -954,7 +960,7 @@ function addNewDraw() {
     }
     var nowStr = new Date().toISOString().slice(0, 10) + " 21:35:00";
     HISTORY_DATA.unshift({ period: pInput, time: nowStr, normals: normalsArr, special_num: specialNum });
-    localStorage.setItem("MACAU_HISTORY_DATA_V20", JSON.stringify(HISTORY_DATA));
+    localStorage.setItem("MACAU_HISTORY_DATA_V21", JSON.stringify(HISTORY_DATA));
 
     var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
     OMISSION_DATA = recomputed.numOmit;
@@ -970,13 +976,13 @@ function addNewDraw() {
     renderPanels();
     checkPredictRecords();
     doPredict();
-    alert("第 " + pInput + " 期开奖录入成功！未开期数、排序、四维周期推演与自适应倍率已更新！");
+    alert("第 " + pInput + " 期开奖录入成功！未开期数、连开极值、四维周期推演与自适应倍率已更新！");
 }
 
 function resetDefaultData() {
     if (confirm("确定要恢复默认历史数据吗？")) {
         HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        localStorage.setItem("MACAU_HISTORY_DATA_V20", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V21", JSON.stringify(HISTORY_DATA));
         var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
         OMISSION_DATA = recomputed.numOmit;
         ZODIAC_OMISSION_DATA = recomputed.zodOmit;
@@ -1073,7 +1079,7 @@ function updateTimer() {
 setInterval(updateTimer, 1000);
 
 function getStreakAndHistoryMax(getterFn) {
-    if (!HISTORY_DATA || HISTORY_DATA.length === 0) return { current: 1, maxHist: 1 };
+    if (!HISTORY_DATA || HISTORY_DATA.length === 0) return { current: 1, maxHist: 1, currentVal: "" };
     var baseVal = getterFn(HISTORY_DATA[0].special_num);
     var currentStreak = 1;
     for (var k = 1; k < HISTORY_DATA.length; k++) {
@@ -1090,13 +1096,25 @@ function getStreakAndHistoryMax(getterFn) {
             tempRun = 1;
         }
     }
-    return { current: currentStreak, maxHist: maxHist };
+    return { current: currentStreak, maxHist: maxHist, currentVal: baseVal };
 }
 
 function calcDisciplinedWeight(currentStreak, maxHist, basePts) {
     if (currentStreak < 2) return 0;
     if (currentStreak >= maxHist && maxHist >= 2) return 5;
     return basePts;
+}
+
+function formatStreakCard(label, st) {
+    var reachCap = st.current >= 2 && st.current >= st.maxHist;
+    var statusTag = reachCap
+        ? '<span class="streak-cap-warn">⚠️ 已触及/超历史连开极值（压低追连分）</span>'
+        : (st.current >= 2 ? '<span class="streak-cap-ok">✅ 连开中且未超历史极值</span>' : '<span>当前 1 期（无连开）</span>');
+    return '<div class="streak-item">' +
+        '<div><b>' + label + '</b>（当前：<b>' + st.currentVal + '</b>）</div>' +
+        '<div>当前连开：<b>' + st.current + '</b> 期 ｜ 历史最多连开：<b>' + st.maxHist + '</b> 期</div>' +
+        '<div style="margin-top:3px;">' + statusTag + '</div>' +
+        '</div>';
 }
 
 function doPredict() {
@@ -1108,9 +1126,9 @@ function doPredict() {
         var parityStats = getStreakAndHistoryMax(function(n) { return n % 2 === 0 ? "雙" : "單"; });
         var sizeStats = getStreakAndHistoryMax(function(n) { return n >= 25 ? "大" : "小"; });
         var colorStats = getStreakAndHistoryMax(function(n) { return getColorName(n); });
-        var zodiacStats = getStreakAndHistoryMax(function(n) { return isHomeZodiac(getZodiac(n)); });
-        var tenStats = getStreakAndHistoryMax(function(n) { return Math.floor(n / 10); });
-        var unitStats = getStreakAndHistoryMax(function(n) { return n % 10; });
+        var zodiacStats = getStreakAndHistoryMax(function(n) { return isHomeZodiac(getZodiac(n)) ? "家肖" : "野肖"; });
+        var tenStats = getStreakAndHistoryMax(function(n) { return Math.floor(n / 10) + "十位段"; });
+        var unitStats = getStreakAndHistoryMax(function(n) { return (n % 10) + "尾"; });
 
         var colorCycle = runDimensionCyclePrediction(function(n) { return getColorName(n); }, "波色", ["红波", "蓝波", "绿波"]);
         var homeCycle  = runDimensionCyclePrediction(function(n) { return isHomeZodiac(getZodiac(n)) ? "家肖" : "野肖"; }, "家野肖", ["家肖", "野肖"]);
@@ -1175,7 +1193,19 @@ function doPredict() {
         var zodStr = MANUAL_EXCLUDED.zodiacs.length > 0 ? MANUAL_EXCLUDED.zodiacs.join("、") : "无";
         var tailStr = MANUAL_EXCLUDED.tails.length > 0 ? MANUAL_EXCLUDED.tails.map(function(x){return x+"尾";}).join("、") : "无";
 
+        var streakGridHtml = '<div class="streak-grid">' +
+            formatStreakCard("波色连开", colorStats) +
+            formatStreakCard("家野肖连开", zodiacStats) +
+            formatStreakCard("单双连开", parityStats) +
+            formatStreakCard("大小连开", sizeStats) +
+            formatStreakCard("十位段连开", tenStats) +
+            formatStreakCard("尾数连开", unitStats) +
+            '</div>';
+
         var analysisHtml =
+            '• <b>🔥 历史连开最多期与连开纪律分析：</b> <span class="badge badge-red">已统计全部 ' + HISTORY_DATA.length + ' 期历史极值</span>' +
+            '<div class="reason-box">💡 <b>各维度当前连开 vs 历史最多连开：</b>' + streakGridHtml + '</div>' +
+
             '• <b>手动排除条件：</b> <span class="badge badge-amber">号码[' + numStr + '] | 生肖[' + zodStr + '] | 尾数[' + tailStr + ']</span>' +
             '<div class="reason-box">💡 <b>手动控制说明：</b>展开下方“遗漏号码 / 遗漏生肖 / 遗漏尾数”面板即可直接点选变红排除，并点击“确定排除并预测”。</div>' +
 
@@ -1219,7 +1249,7 @@ function doPredict() {
             if (existIndex !== -1) PREDICT_RECORDS[existIndex] = recordItem;
             else PREDICT_RECORDS.unshift(recordItem);
 
-            localStorage.setItem("MACAU_PREDICT_RECORDS_V20", JSON.stringify(PREDICT_RECORDS));
+            localStorage.setItem("MACAU_PREDICT_RECORDS_V21", JSON.stringify(PREDICT_RECORDS));
             checkPredictRecords();
         }
     } catch(err) { console.log(err); }
