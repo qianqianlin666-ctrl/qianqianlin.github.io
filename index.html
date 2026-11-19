@@ -143,9 +143,8 @@
         </div>
     </div>
 
-    <!-- 手动录入表单面板 -->
     <div class="input-panel">
-        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（实时更新各号码/生肖/尾数未开期数与排序 + 手动排除模式 + 自适应闭环）</div>
+        <div style="font-size: 14px; font-weight: bold; color: #334155;">➕ 手动录入开奖数据（实时更新未开期数与排序 + 四维周期推演 + 中/不中自适应调权）</div>
         <div class="input-row">
             <div>期号: <input type="text" id="in-period" placeholder="自动生成下一期" style="width: 95px;"></div>
             <div>平码(空格/逗号): <input type="text" id="in-normals" placeholder="例如: 31 49 30 22 43 24" style="width: 190px;"></div>
@@ -172,7 +171,7 @@
         <button class="zodiac-btn reset active" onclick="filterZodiac(null, this)">还原</button>
     </div>
 
-    <div class="section-title">开奖历史记录表（已收录 200 期完整数据）</div>
+    <div class="section-title">开奖历史记录表（已收录完整历史数据）</div>
     <div style="overflow-x: auto; max-height: 420px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 4px;">
         <table class="history-table">
             <thead>
@@ -192,7 +191,6 @@
         <div id="analysis-results">正在分析开奖走势...</div>
     </div>
 
-    <!-- ✅ 手动选择排除面板（按未开期数从多到少排序，仅显示当前未开期数） -->
     <div class="manual-exclude-card">
         <div style="font-size: 15px; font-weight: bold; color: #92400e;">✋ 每期手动选择排除条件（按未开期数从多到少排序，点击变红排除后点“确定排除并预测”）</div>
         
@@ -226,32 +224,28 @@
             <button class="btn-custom btn-tail" onclick="togglePanel('tail-panel')">🔢 遗漏尾数</button>
         </div>
 
-        <!-- 1. 号码未开期数（遗漏）面板 -->
         <div class="sub-panel" id="omission-panel">
             <b style="color:#0f172a; font-size:13px;">📈 特码每个号码当前未开出期数实时排行</b>
             <div class="omission-grid" id="omission-grid"></div>
         </div>
 
-        <!-- 2. 生肖未开期数（遗漏）面板 -->
         <div class="sub-panel" id="zodiac-panel">
             <b style="color:#0f172a; font-size:13px;">🐇 特码每个生肖当前未开出期数排行</b>
             <div class="zodiac-grid" id="zodiac-grid"></div>
         </div>
 
-        <!-- 3. 尾数未开期数（遗漏）面板 -->
         <div class="sub-panel" id="tail-panel">
             <b style="color:#0f172a; font-size:13px;">🔢 特码每个尾数(0-9)当前未开出期数排行</b>
             <div class="tail-grid" id="tail-grid"></div>
         </div>
     </div>
 
-    <!-- 🎯 智能预测战绩复盘与闭环自适应优化模块 -->
     <div class="card" style="margin-top: 20px; border-left: 4px solid #16a34a;">
         <div class="section-title" style="border-left-color: #16a34a; display: flex; justify-content: space-between; align-items: center;">
             <span>🎯 智能预测复盘与“中/不中”自适应优化中心</span>
             <button class="reset-data-btn" onclick="clearRecords()" style="background:#dc2626; padding:4px 8px; font-size:11px;">清空记录</button>
         </div>
-        <div style="font-size: 12px; color: #64748b; margin-bottom: 10px;">录入开奖后自动生成复盘报告：命中则分析得益点并强化；不中则剖析问题并在下期自动规避。</div>
+        <div style="font-size: 12px; color: #64748b; margin-bottom: 10px;">录入开奖后自动核对并调整四维周期权重：命中则对应维度提权（+15%）；不中则对应维度降权（-20%）。</div>
         <div style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
             <table class="record-table">
                 <thead>
@@ -287,9 +281,7 @@ var ZODIAC_MAP = {
 var ALL_ZODIACS = ["鼠", "牛", "虎", "兔", "龍", "蛇", "馬", "羊", "猴", "雞", "狗", "豬"];
 var HOME_ZODIACS = ["牛", "馬", "羊", "雞", "狗", "豬"];
 
-function isHomeZodiac(zodiac) {
-    return HOME_ZODIACS.indexOf(zodiac) !== -1;
-}
+function isHomeZodiac(zodiac) { return HOME_ZODIACS.indexOf(zodiac) !== -1; }
 
 var REDS = [1,2,7,8,12,13,18,19,23,24,29,30,34,35,40,45,46];
 var BLUES = [3,4,9,10,14,15,20,25,26,31,36,37,41,42,47,48];
@@ -307,6 +299,7 @@ function getColorName(n) {
 }
 
 var DEFAULT_DATA = [
+    { period: "2026322", time: "2026-11-19 21:35:00", normals: [47, 31, 43, 17, 8, 30], special_num: 7 },
     { period: "2026321", time: "2026-11-17 21:35:00", normals: [15, 45, 23, 8, 47, 49], special_num: 41 },
     { period: "2026320", time: "2026-11-16 21:35:00", normals: [14, 17, 32, 34, 24, 46], special_num: 20 },
     { period: "2026319", time: "2026-11-15 21:35:00", normals: [6, 3, 15, 13, 25, 45], special_num: 5 },
@@ -511,32 +504,26 @@ var DEFAULT_DATA = [
     { period: "2026120", time: "2026-04-30 21:32:32", normals: [18, 24, 7, 23, 48, 20], special_num: 6 }
 ];
 
-var ADAPTIVE_OPTIMIZER = {
-    penaltyDimensions: [],
-    boostDimensions: []
+// 四维周期推演自适应权重倍率（1.0 为基准，中则 +0.15，不中则 -0.20，最低 0.4）
+var DIM_ADAPTIVE_MULTIPLIERS = {
+    "波色": 1.0,
+    "家野肖": 1.0,
+    "单双": 1.0,
+    "大小": 1.0
 };
 
-var MANUAL_EXCLUDED = {
-    nums: [],
-    zodiacs: [],
-    tails: []
-};
+var MANUAL_EXCLUDED = { nums: [], zodiacs: [], tails: [] };
 
 function getLatestUnopenedPeriod() {
     if (!HISTORY_DATA || HISTORY_DATA.length === 0) return "未知";
     var latestPeriod = parseInt(HISTORY_DATA[0].period, 10);
-    if (!isNaN(latestPeriod)) {
-        return (latestPeriod + 1).toString();
-    }
+    if (!isNaN(latestPeriod)) return (latestPeriod + 1).toString();
     return HISTORY_DATA[0].period + "+1";
 }
 
 function syncNextPeriodInput() {
-    var nextPeriod = getLatestUnopenedPeriod();
     var nextPeriodInput = document.getElementById("in-period");
-    if (nextPeriodInput) {
-        nextPeriodInput.value = nextPeriod;
-    }
+    if (nextPeriodInput) nextPeriodInput.value = getLatestUnopenedPeriod();
 }
 
 function computeOmissionsFromHistory(dataList) {
@@ -573,16 +560,16 @@ function computeOmissionsFromHistory(dataList) {
 
 var HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
 try {
-    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V16");
+    var stored = localStorage.getItem("MACAU_HISTORY_DATA_V19");
     if (stored) {
         var parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length >= DEFAULT_DATA.length && parseInt(parsed[0].period, 10) >= parseInt(DEFAULT_DATA[0].period, 10)) {
             HISTORY_DATA = parsed;
         } else {
-            localStorage.setItem("MACAU_HISTORY_DATA_V16", JSON.stringify(HISTORY_DATA));
+            localStorage.setItem("MACAU_HISTORY_DATA_V19", JSON.stringify(HISTORY_DATA));
         }
     } else {
-        localStorage.setItem("MACAU_HISTORY_DATA_V16", JSON.stringify(HISTORY_DATA));
+        localStorage.setItem("MACAU_HISTORY_DATA_V19", JSON.stringify(HISTORY_DATA));
     }
 } catch (e) {}
 
@@ -593,7 +580,7 @@ var TAIL_OMISSION_DATA = computedOmit.tailOmit;
 
 var PREDICT_RECORDS = [];
 try {
-    var storedRec = localStorage.getItem("MACAU_PREDICT_RECORDS_V16");
+    var storedRec = localStorage.getItem("MACAU_PREDICT_RECORDS_V19");
     if (storedRec) {
         var parsedRec = JSON.parse(storedRec);
         if (Array.isArray(parsedRec)) PREDICT_RECORDS = parsedRec;
@@ -602,21 +589,15 @@ try {
 
 function getOmissionReferenceLists() {
     var numList = [];
-    for (var num = 1; num <= 49; num++) {
-        numList.push({ num: num, count: OMISSION_DATA[num] || 0 });
-    }
+    for (var num = 1; num <= 49; num++) numList.push({ num: num, count: OMISSION_DATA[num] || 0 });
     numList.sort(function(a, b) { return b.count !== a.count ? b.count - a.count : a.num - b.num; });
 
     var zodiacList = [];
-    for (var z in ZODIAC_OMISSION_DATA) {
-        zodiacList.push({ name: z, count: ZODIAC_OMISSION_DATA[z] });
-    }
+    for (var z in ZODIAC_OMISSION_DATA) zodiacList.push({ name: z, count: ZODIAC_OMISSION_DATA[z] });
     zodiacList.sort(function(a, b) { return b.count - a.count; });
 
     var tailList = [];
-    for (var t = 0; t <= 9; t++) {
-        tailList.push({ tail: t, count: TAIL_OMISSION_DATA[t] !== undefined ? TAIL_OMISSION_DATA[t] : 0 });
-    }
+    for (var t = 0; t <= 9; t++) tailList.push({ tail: t, count: TAIL_OMISSION_DATA[t] !== undefined ? TAIL_OMISSION_DATA[t] : 0 });
     tailList.sort(function(a, b) { return b.count - a.count; });
 
     return { numList: numList, zodiacList: zodiacList, tailList: tailList };
@@ -675,37 +656,22 @@ function initManualExcludeUI() {
 
 function toggleExcludeNum(n, btn) {
     var idx = MANUAL_EXCLUDED.nums.indexOf(n);
-    if (idx === -1) {
-        MANUAL_EXCLUDED.nums.push(n);
-        btn.classList.add("selected-exclude");
-    } else {
-        MANUAL_EXCLUDED.nums.splice(idx, 1);
-        btn.classList.remove("selected-exclude");
-    }
+    if (idx === -1) { MANUAL_EXCLUDED.nums.push(n); btn.classList.add("selected-exclude"); }
+    else { MANUAL_EXCLUDED.nums.splice(idx, 1); btn.classList.remove("selected-exclude"); }
     updateExcludeSummary();
 }
 
 function toggleExcludeZodiac(z, btn) {
     var idx = MANUAL_EXCLUDED.zodiacs.indexOf(z);
-    if (idx === -1) {
-        MANUAL_EXCLUDED.zodiacs.push(z);
-        btn.classList.add("selected-exclude");
-    } else {
-        MANUAL_EXCLUDED.zodiacs.splice(idx, 1);
-        btn.classList.remove("selected-exclude");
-    }
+    if (idx === -1) { MANUAL_EXCLUDED.zodiacs.push(z); btn.classList.add("selected-exclude"); }
+    else { MANUAL_EXCLUDED.zodiacs.splice(idx, 1); btn.classList.remove("selected-exclude"); }
     updateExcludeSummary();
 }
 
 function toggleExcludeTail(t, btn) {
     var idx = MANUAL_EXCLUDED.tails.indexOf(t);
-    if (idx === -1) {
-        MANUAL_EXCLUDED.tails.push(t);
-        btn.classList.add("selected-exclude");
-    } else {
-        MANUAL_EXCLUDED.tails.splice(idx, 1);
-        btn.classList.remove("selected-exclude");
-    }
+    if (idx === -1) { MANUAL_EXCLUDED.tails.push(t); btn.classList.add("selected-exclude"); }
+    else { MANUAL_EXCLUDED.tails.splice(idx, 1); btn.classList.remove("selected-exclude"); }
     updateExcludeSummary();
 }
 
@@ -724,16 +690,10 @@ function confirmExcludeAndPredict() {
 
 function getEffectiveExcludedNums() {
     var excludedSet = {};
-    for (var i = 0; i < MANUAL_EXCLUDED.nums.length; i++) {
-        excludedSet[MANUAL_EXCLUDED.nums[i]] = true;
-    }
+    for (var i = 0; i < MANUAL_EXCLUDED.nums.length; i++) excludedSet[MANUAL_EXCLUDED.nums[i]] = true;
     for (var n = 1; n <= 49; n++) {
-        if (MANUAL_EXCLUDED.zodiacs.indexOf(getZodiac(n)) !== -1) {
-            excludedSet[n] = true;
-        }
-        if (MANUAL_EXCLUDED.tails.indexOf(n % 10) !== -1) {
-            excludedSet[n] = true;
-        }
+        if (MANUAL_EXCLUDED.zodiacs.indexOf(getZodiac(n)) !== -1) excludedSet[n] = true;
+        if (MANUAL_EXCLUDED.tails.indexOf(n % 10) !== -1) excludedSet[n] = true;
     }
     return excludedSet;
 }
@@ -741,61 +701,113 @@ function getEffectiveExcludedNums() {
 function updateExcludeSummary() {
     var summaryEl = document.getElementById("active-exclude-summary");
     if (!summaryEl) return;
-    var numStr = MANUAL_EXCLUDED.nums.length > 0
-        ? MANUAL_EXCLUDED.nums.slice().sort(function(a,b){return a-b;}).map(function(x){return x<10?"0"+x:""+x;}).join("、")
-        : "无";
+    var numStr = MANUAL_EXCLUDED.nums.length > 0 ? MANUAL_EXCLUDED.nums.slice().sort(function(a,b){return a-b;}).map(function(x){return x<10?"0"+x:""+x;}).join("、") : "无";
     var zodStr = MANUAL_EXCLUDED.zodiacs.length > 0 ? MANUAL_EXCLUDED.zodiacs.join("、") : "无";
-    var tailStr = MANUAL_EXCLUDED.tails.length > 0
-        ? MANUAL_EXCLUDED.tails.slice().sort(function(a,b){return a-b;}).map(function(x){return x+"尾";}).join("、")
-        : "无";
+    var tailStr = MANUAL_EXCLUDED.tails.length > 0 ? MANUAL_EXCLUDED.tails.slice().sort(function(a,b){return a-b;}).map(function(x){return x+"尾";}).join("、") : "无";
     var effSet = getEffectiveExcludedNums();
     var totalExcluded = Object.keys(effSet).length;
     summaryEl.innerHTML = "当前手动排除：<b>号码</b>[" + numStr + "] | <b>生肖</b>[" + zodStr + "] | <b>尾数</b>[" + tailStr + "]（共排除 <b>" + totalExcluded + "</b> 个号码，剩余 <b>" + (49 - totalExcluded) + "</b> 个号码参与评分）";
 }
 
-function detectRecentZigzag(getterFn, typeName) {
-    if (!HISTORY_DATA || HISTORY_DATA.length < 9) return { active: false, desc: "" };
-    var recentVals = [];
-    for (var i = 0; i < 9; i++) {
-        recentVals.push(getterFn(HISTORY_DATA[i].special_num));
+function runDimensionCyclePrediction(getterFn, dimName, candidates) {
+    if (!HISTORY_DATA || HISTORY_DATA.length < 4) {
+        return { active: false, next: null, mode: "无触发", desc: dimName + "历史期数不足，暂无周期触发" };
     }
 
-    var isCycle3 = true;
-    for (var i = 0; i < 6; i++) {
-        if (recentVals[i] !== recentVals[i+3]) { isCycle3 = false; break; }
-    }
-    if (isCycle3 && !(recentVals[0] === recentVals[1] && recentVals[1] === recentVals[2])) {
-        var nextGuess3 = recentVals[2];
-        return { active: true, mode: "ABB/BAA三期循环跳", next: nextGuess3, desc: typeName + "呈现精准三期周期循环（" + recentVals.slice(0,3).reverse().join('-') + " 重复节奏），预测下一期锁定【" + nextGuess3 + "】" };
+    var winLen = Math.min(HISTORY_DATA.length, 10);
+    var chrono = [];
+    for (var i = winLen - 1; i >= 0; i--) {
+        chrono.push(getterFn(HISTORY_DATA[i].special_num));
     }
 
-    var isCycle2 = true;
-    for (var i = 0; i < 6; i++) {
-        if (recentVals[i] !== recentVals[i+2]) { isCycle2 = false; break; }
-    }
-    if (isCycle2 && recentVals[0] !== recentVals[1]) {
-        var nextGuess2 = recentVals[1];
-        return { active: true, mode: "AABB双跳循环", next: nextGuess2, desc: typeName + "呈现AABB双跳循环（" + recentVals.slice(0,4).reverse().join('-') + "），预测下一期倾向【" + nextGuess2 + "】" };
+    var len = chrono.length;
+    var last = chrono[len - 1];
+    var prev1 = chrono[len - 2];
+    var prev2 = chrono[len - 3];
+
+    if (len >= 4 && chrono[len - 1] === chrono[len - 3]) {
+        return {
+            active: true,
+            next: prev1,
+            mode: "2期周期/隔期回跳",
+            desc: dimName + "呈隔期周期推演（" + chrono.slice(-4).join("→") + "），周期下一位推演【" + prev1 + "】"
+        };
     }
 
-    var changes = 0;
-    for (var i = 0; i < 7; i++) {
-        if (recentVals[i] !== recentVals[i+1]) changes++;
-    }
-    if (changes >= 4) {
-        var nextGuessAlt = recentVals[1];
-        return { active: true, mode: "高频交替跳跃", next: nextGuessAlt, desc: typeName + "近期形成高频交替跳跃形态（" + recentVals.slice(0,4).reverse().join('-') + "），预测下一期倾向【" + nextGuessAlt + "】" };
+    if (len >= 4 && prev2 !== prev1 && prev1 !== last && prev2 !== last) {
+        var cycleTarget = null;
+        for (var p = len - 4; p >= 0; p--) {
+            if (chrono[p] === prev2 && p + 2 < len) {
+                cycleTarget = chrono[p + 2];
+                break;
+            }
+        }
+        if (!cycleTarget) {
+            var rem = candidates.filter(function(c) { return c !== last && c !== prev1; });
+            cycleTarget = rem.length > 0 ? rem[0] : prev2;
+        }
+        return {
+            active: true,
+            next: cycleTarget,
+            mode: "三态周期轮动",
+            desc: dimName + "出现三态周期推演（近3期 " + [prev2, prev1, last].join("→") + "），周期下一拍推演【" + cycleTarget + "】"
+        };
     }
 
-    return { active: false, desc: "" };
+    var runs = [];
+    for (var r = 0; r < len; r++) {
+        if (runs.length === 0 || runs[runs.length - 1].val !== chrono[r]) {
+            runs.push({ val: chrono[r], cnt: 1 });
+        } else {
+            runs[runs.length - 1].cnt++;
+        }
+    }
+
+    if (runs.length >= 2) {
+        var rLast = runs[runs.length - 1];
+        var rPrev = runs[runs.length - 2];
+        if (rPrev.cnt >= 2 && rLast.cnt === 1) {
+            return {
+                active: true,
+                next: rLast.val,
+                mode: "双连跳接力",
+                desc: dimName + "出现双连跳接力（" + rPrev.val + "×" + rPrev.cnt + " → " + rLast.val + "），周期推演【" + rLast.val + "】"
+            };
+        }
+        if (rLast.cnt === 2) {
+            var nextAfterDouble = candidates.filter(function(c) { return c !== rLast.val; })[0] || rLast.val;
+            return {
+                active: true,
+                next: nextAfterDouble,
+                mode: "双连跳变",
+                desc: dimName + "刚成双（" + rLast.val + rLast.val + "），周期推演跳向【" + nextAfterDouble + "】"
+            };
+        }
+    }
+
+    var switches = 0;
+    for (var s = 1; s < len; s++) {
+        if (chrono[s] !== chrono[s - 1]) switches++;
+    }
+    if (switches >= 2) {
+        var fallbackNext = candidates.filter(function(c) { return c !== last; })[0] || last;
+        return {
+            active: true,
+            next: fallbackNext,
+            mode: "活跃跳变推演",
+            desc: dimName + "近期处于活跃跳变（" + chrono.slice(-5).join("→") + "），周期推演【" + fallbackNext + "】"
+        };
+    }
+
+    return { active: false, next: null, mode: "常规", desc: dimName + "走势平稳（" + chrono.slice(-4).join("→") + "）" };
 }
 
 function analyzeDiagonalTrend() {
     if (!HISTORY_DATA || HISTORY_DATA.length < 5) return { active: false, msg: "斜线数据不足" };
     var latestSpec = HISTORY_DATA[0].special_num;
     var prevSpec = HISTORY_DATA[1].special_num;
-    var diff = latestSpec - prevSpec; 
-    var targetNextNum = (latestSpec + diff + 48) % 49 + 1; 
+    var diff = latestSpec - prevSpec;
+    var targetNextNum = (latestSpec + diff + 48) % 49 + 1;
     return { active: true, diff: diff, target: targetNextNum, msg: "检测到斜线步长约 " + diff + " 格，顺势斜线落点指向【" + targetNextNum + "号】附近" };
 }
 
@@ -810,7 +822,7 @@ function renderPanels() {
             var isCold = item.count >= 65;
             html += '<div class="omit-cell"' + (isCold ? ' style="background:#fef2f2;border-color:#fca5a5;"' : '') + '>' +
                 '<div class="ball ' + getColorClass(item.num) + '" style="width:28px;height:28px;font-size:12px;margin:0 auto;">' + padN + '</div>' +
-                '<div class="omit-count">遗漏 ' + item.count + ' 期</div>' +
+                '<div class="omit-count">未开 ' + item.count + ' 期</div>' +
                 '<span class="omit-tag ' + (isCold ? 'tag-warn' : 'tag-keep') + '">' + (isCold ? '高遗漏' : '参考') + '</span>' +
                 '</div>';
         }
@@ -825,8 +837,8 @@ function renderPanels() {
             var isTopZ = i < 2;
             zHtml += '<div class="omit-cell"' + (isTopZ ? ' style="background:#fef2f2;border-color:#fca5a5;"' : '') + '>' +
                 '<div style="font-weight:bold; font-size:14px; color:#1e293b; margin-top:2px;">' + zItem.name + '生肖</div>' +
-                '<div class="omit-count">遗漏 ' + zItem.count + ' 期</div>' +
-                '<span class="omit-tag ' + (isTopZ ? 'tag-warn' : 'tag-keep') + '">' + (isTopZ ? '遗漏最多' : '保留') + '</span>' +
+                '<div class="omit-count">未开 ' + zItem.count + ' 期</div>' +
+                '<span class="omit-tag ' + (isTopZ ? 'tag-warn' : 'tag-keep') + '">' + (isTopZ ? '未开最多' : '保留') + '</span>' +
                 '</div>';
         }
         zGrid.innerHTML = zHtml;
@@ -840,8 +852,8 @@ function renderPanels() {
             var isTopT = i === 0;
             tHtml += '<div class="omit-cell"' + (isTopT ? ' style="background:#fef2f2;border-color:#fca5a5;"' : '') + '>' +
                 '<div style="font-weight:bold; font-size:14px; color:#1e293b; margin-top:2px;">' + tItem.tail + ' 尾</div>' +
-                '<div class="omit-count">遗漏 ' + tItem.count + ' 期</div>' +
-                '<span class="omit-tag ' + (isTopT ? 'tag-warn' : 'tag-keep') + '">' + (isTopT ? '最多排除' : '保留') + '</span>' +
+                '<div class="omit-count">未开 ' + tItem.count + ' 期</div>' +
+                '<span class="omit-tag ' + (isTopT ? 'tag-warn' : 'tag-keep') + '">' + (isTopT ? '未开最多' : '保留') + '</span>' +
                 '</div>';
         }
         tGrid.innerHTML = tHtml;
@@ -858,26 +870,55 @@ function togglePanel(panelId) {
     if (!isVisible) { renderPanels(); p.style.display = "block"; }
 }
 
+/**
+ * 核对实际开出号码与四维周期推演，动态更新各维度自适应倍率
+ */
 function generateReviewAnalysis(rec, actualSpec) {
     var isWin = (rec.bestNum === actualSpec || (rec.poolNums && rec.poolNums.indexOf(actualSpec) !== -1));
     var actualZod = getZodiac(actualSpec);
     var actualColor = getColorName(actualSpec);
     var actualSize = actualSpec >= 25 ? "大" : "小";
     var actualParity = actualSpec % 2 === 0 ? "雙" : "單";
+    var actualHome = isHomeZodiac(actualZod) ? "家肖" : "野肖";
+
+    var dimMap = {
+        "波色": actualColor,
+        "家野肖": actualHome,
+        "单双": actualParity,
+        "大小": actualSize
+    };
+
+    var triggeredDims = rec.triggeredDims || {};
+    var matchedDims = [];
+    var missedDims = [];
+
+    for (var dName in dimMap) {
+        if (triggeredDims[dName]) {
+            if (triggeredDims[dName] === dimMap[dName]) {
+                matchedDims.push(dName + "[" + triggeredDims[dName] + "]");
+                DIM_ADAPTIVE_MULTIPLIERS[dName] = Math.min(1.6, +(DIM_ADAPTIVE_MULTIPLIERS[dName] + 0.15).toFixed(2));
+            } else {
+                missedDims.push(dName + "(推" + triggeredDims[dName] + "/实" + dimMap[dName] + ")");
+                DIM_ADAPTIVE_MULTIPLIERS[dName] = Math.max(0.4, +(DIM_ADAPTIVE_MULTIPLIERS[dName] - 0.20).toFixed(2));
+            }
+        }
+    }
+
+    var adjSummary = "当前四维倍率：波色 " + DIM_ADAPTIVE_MULTIPLIERS["波色"] +
+        "x | 家野肖 " + DIM_ADAPTIVE_MULTIPLIERS["家野肖"] +
+        "x | 单双 " + DIM_ADAPTIVE_MULTIPLIERS["单双"] +
+        "x | 大小 " + DIM_ADAPTIVE_MULTIPLIERS["大小"] + "x";
 
     if (isWin) {
-        ADAPTIVE_OPTIMIZER.boostDimensions.push("跳跃形态与纪律顺势");
-        return "🟢 <b>【精准命中复盘】</b>：实际开出<b>" + actualSpec + "号 (" + actualZod + "/" + actualColor + "/" + actualSize + "/" + actualParity + ")</b> 完美落入推荐号池。<br>" +
-               "📈 <b>成功原因分析</b>：上期采用的<b>跳跃走势追踪与顺势纪律权重</b>方向完全正确，成功捕获了同频振荡节奏。<br>" +
-               "🛡️ <b>下期自适应优化</b>：系统已自动强化该成功维度的权重，下一期将继续沿用此核心逻辑顺势跟进。";
+        return "🟢 <b>【精准命中复盘】</b>：实际开出<b>" + actualSpec + "号 (" + actualZod + "/" + actualColor + "/" + actualSize + "/" + actualParity + ")</b> 落入号池。" +
+               (matchedDims.length > 0 ? "<br>📈 <b>推演命中维度</b>：" + matchedDims.join("、") + "（已自动提权 +0.15x）。" : "") +
+               "<br>🛡️ <b>自适应状态</b>：" + adjSummary;
     } else {
         var diffNum = Math.abs(rec.bestNum - actualSpec);
-        var reason = diffNum <= 3 ? "推荐一码与实际开出仅差 " + diffNum + " 位（属于邻位震荡偏移），大方向号池接近。" : "实际开出号码偏向冷码回补或走势突变，触发了历史防熔断断龙保护。";
-
-        ADAPTIVE_OPTIMIZER.penaltyDimensions.push("常规惯性权重");
-        return "🔴 <b>【未中深度剖析与规避】</b>：实际开出<b>" + actualSpec + "号 (" + actualZod + "/" + actualColor + "/" + actualSize + "/" + actualParity + ")</b> 未在首选命中。<br>" +
-               "🔍 <b>问题所在排查</b>：" + reason + "<br>" +
-               "🛠️ <b>下期自动优化规避</b>：系统已将本期惯性权重判定为潜在失误点，<b>下期将自动下调常规惯性权重，提高冷码回补与变轨防范权重</b>。";
+        var reason = diffNum <= 3 ? "推荐一码与实际开出仅差 " + diffNum + " 位。" : "实际开出偏向冷码或走势突变。";
+        return "🔴 <b>【未中复盘与降权】</b>：实际开出<b>" + actualSpec + "号 (" + actualZod + "/" + actualColor + "/" + actualSize + "/" + actualParity + ")</b>。" + reason +
+               (missedDims.length > 0 ? "<br>🛠️ <b>推演偏差维度</b>：" + missedDims.join("、") + "（已自动降权 -0.20x）。" : "") +
+               "<br>🛡️ <b>自适应状态</b>：" + adjSummary;
     }
 }
 
@@ -896,7 +937,7 @@ function checkPredictRecords() {
             }
         }
     }
-    localStorage.setItem("MACAU_PREDICT_RECORDS_V16", JSON.stringify(PREDICT_RECORDS));
+    localStorage.setItem("MACAU_PREDICT_RECORDS_V19", JSON.stringify(PREDICT_RECORDS));
     renderPredictRecords();
 }
 
@@ -913,11 +954,9 @@ function renderPredictRecords() {
         var statusBadge = '<span class="status-wait">等待开奖</span>';
         if (item.result === "中") statusBadge = '<span class="status-win">🟢 中</span>';
         else if (item.result === "不中") statusBadge = '<span class="status-lose">🔴 不中</span>';
-
         var specStr = item.actualSpecial !== undefined ? (item.actualSpecial < 10 ? "0" + item.actualSpecial : item.actualSpecial) : "待开奖";
         var bestPad = item.bestNum < 10 ? "0" + item.bestNum : item.bestNum;
-        var reviewContent = item.reviewText ? item.reviewText : "<span style='color:#d97706;'>等待开奖录入后自动生成复盘与自适应优化分析...</span>";
-
+        var reviewContent = item.reviewText ? item.reviewText : "<span style='color:#d97706;'>等待开奖录入后自动生成复盘...</span>";
         html += "<tr>" +
             "<td><b>第 " + item.targetPeriod + " 期</b></td>" +
             "<td><span class='badge " + getColorClass(item.bestNum) + "'>" + bestPad + "号(" + getZodiac(item.bestNum) + ")</span></td>" +
@@ -933,7 +972,8 @@ function renderPredictRecords() {
 function clearRecords() {
     if (confirm("确定要清空所有预测战绩与复盘记录吗？")) {
         PREDICT_RECORDS = [];
-        localStorage.removeItem("MACAU_PREDICT_RECORDS_V16");
+        DIM_ADAPTIVE_MULTIPLIERS = { "波色": 1.0, "家野肖": 1.0, "单双": 1.0, "大小": 1.0 };
+        localStorage.removeItem("MACAU_PREDICT_RECORDS_V19");
         renderPredictRecords();
     }
 }
@@ -964,22 +1004,17 @@ function addNewDraw() {
     var pInput = document.getElementById("in-period").value.trim();
     var nInput = document.getElementById("in-normals").value.trim();
     var sInput = document.getElementById("in-special").value.trim();
-
     if (!pInput || !nInput || !sInput) { alert("请完整填写期号、平码和特码！"); return; }
-
     var cleanedStr = nInput.replace(/[,，\s]+/g, ' ').trim();
     var normalsArr = cleanedStr.split(' ').map(function(item) { return parseInt(item, 10); });
     var specialNum = parseInt(sInput, 10);
-
     if (normalsArr.length !== 6 || normalsArr.some(isNaN) || isNaN(specialNum) || specialNum < 1 || specialNum > 49) {
         alert("格式错误：平码必须是6个数字，特码必须是1~49之间！");
         return;
     }
-
     var nowStr = new Date().toISOString().slice(0, 10) + " 21:35:00";
-    var newObj = { period: pInput, time: nowStr, normals: normalsArr, special_num: specialNum };
-    HISTORY_DATA.unshift(newObj);
-    localStorage.setItem("MACAU_HISTORY_DATA_V16", JSON.stringify(HISTORY_DATA));
+    HISTORY_DATA.unshift({ period: pInput, time: nowStr, normals: normalsArr, special_num: specialNum });
+    localStorage.setItem("MACAU_HISTORY_DATA_V19", JSON.stringify(HISTORY_DATA));
 
     var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
     OMISSION_DATA = recomputed.numOmit;
@@ -996,19 +1031,17 @@ function addNewDraw() {
     renderPanels();
     checkPredictRecords();
     doPredict();
-    alert("第 " + pInput + " 期开奖录入成功！各号码、生肖、尾数未开期数与排序已实时自动更新！");
+    alert("第 " + pInput + " 期开奖录入成功！未开期数、排序、四维周期推演与自适应倍率已更新！");
 }
 
 function resetDefaultData() {
-    if (confirm("确定要恢复默认的 200 期完整历史数据与遗漏统计吗？")) {
+    if (confirm("确定要恢复默认历史数据吗？")) {
         HISTORY_DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        localStorage.setItem("MACAU_HISTORY_DATA_V16", JSON.stringify(HISTORY_DATA));
-
+        localStorage.setItem("MACAU_HISTORY_DATA_V19", JSON.stringify(HISTORY_DATA));
         var recomputed = computeOmissionsFromHistory(HISTORY_DATA);
         OMISSION_DATA = recomputed.numOmit;
         ZODIAC_OMISSION_DATA = recomputed.zodOmit;
         TAIL_OMISSION_DATA = recomputed.tailOmit;
-
         renderTopLatest();
         renderTable(null);
         syncNextPeriodInput();
@@ -1016,7 +1049,6 @@ function resetDefaultData() {
         renderPanels();
         checkPredictRecords();
         doPredict();
-        alert("已恢复默认 200 期完整数据！");
     }
 }
 
@@ -1124,8 +1156,8 @@ function getStreakAndHistoryMax(getterFn) {
 }
 
 function calcDisciplinedWeight(currentStreak, maxHist, basePts) {
-    if (currentStreak < 2) return 0; 
-    if (currentStreak >= maxHist && maxHist >= 2) return 5; 
+    if (currentStreak < 2) return 0;
+    if (currentStreak >= maxHist && maxHist >= 2) return 5;
     return basePts;
 }
 
@@ -1134,6 +1166,7 @@ function doPredict() {
         syncNextPeriodInput();
         var nextPeriod = getLatestUnopenedPeriod();
         var last = HISTORY_DATA[0];
+
         var parityStats = getStreakAndHistoryMax(function(n) { return n % 2 === 0 ? "雙" : "單"; });
         var sizeStats = getStreakAndHistoryMax(function(n) { return n >= 25 ? "大" : "小"; });
         var colorStats = getStreakAndHistoryMax(function(n) { return getColorName(n); });
@@ -1141,21 +1174,21 @@ function doPredict() {
         var tenStats = getStreakAndHistoryMax(function(n) { return Math.floor(n / 10); });
         var unitStats = getStreakAndHistoryMax(function(n) { return n % 10; });
 
-        var parityZigzag = detectRecentZigzag(function(n) { return n % 2 === 0 ? "雙" : "單"; }, "单双");
-        var sizeZigzag = detectRecentZigzag(function(n) { return n >= 25 ? "大" : "小"; }, "大小");
-        var colorZigzag = detectRecentZigzag(function(n) { return getColorName(n); }, "波色");
-        var zodiacZigzag = detectRecentZigzag(function(n) { return isHomeZodiac(getZodiac(n)) ? "家肖" : "野肖"; }, "家野肖");
+        var colorCycle = runDimensionCyclePrediction(function(n) { return getColorName(n); }, "波色", ["红波", "蓝波", "绿波"]);
+        var homeCycle  = runDimensionCyclePrediction(function(n) { return isHomeZodiac(getZodiac(n)) ? "家肖" : "野肖"; }, "家野肖", ["家肖", "野肖"]);
+        var parityCycle= runDimensionCyclePrediction(function(n) { return n % 2 === 0 ? "雙" : "單"; }, "单双", ["單", "雙"]);
+        var sizeCycle  = runDimensionCyclePrediction(function(n) { return n >= 25 ? "大" : "小"; }, "大小", ["大", "小"]);
+
         var diagonalAnalysis = analyzeDiagonalTrend();
 
-        var penaltyFactor = (ADAPTIVE_OPTIMIZER.penaltyDimensions.length > 0) ? 0.85 : 1.0;
-        var boostFactor = (ADAPTIVE_OPTIMIZER.boostDimensions.length > 0) ? 1.15 : 1.0;
+        // 四维各自乘以自适应倍率
+        var wColor  = (colorCycle.active  ? 70 : calcDisciplinedWeight(colorStats.current,  colorStats.maxHist,  25)) * DIM_ADAPTIVE_MULTIPLIERS["波色"];
+        var wZodiac = (homeCycle.active   ? 70 : calcDisciplinedWeight(zodiacStats.current, zodiacStats.maxHist, 30)) * DIM_ADAPTIVE_MULTIPLIERS["家野肖"];
+        var wParity = (parityCycle.active ? 65 : calcDisciplinedWeight(parityStats.current, parityStats.maxHist, 20)) * DIM_ADAPTIVE_MULTIPLIERS["单双"];
+        var wSize   = (sizeCycle.active   ? 65 : calcDisciplinedWeight(sizeStats.current,   sizeStats.maxHist,   20)) * DIM_ADAPTIVE_MULTIPLIERS["大小"];
 
-        var wParity = (parityZigzag.active ? 68 : calcDisciplinedWeight(parityStats.current, parityStats.maxHist, 20)) * boostFactor;
-        var wSize = (sizeZigzag.active ? 68 : calcDisciplinedWeight(sizeStats.current, sizeStats.maxHist, 20)) * boostFactor;
-        var wColor = (colorZigzag.active ? 70 : calcDisciplinedWeight(colorStats.current, colorStats.maxHist, 25)) * boostFactor;
-        var wZodiac = (zodiacZigzag.active ? 72 : calcDisciplinedWeight(zodiacStats.current, zodiacStats.maxHist, 30)) * boostFactor;
-        var wTen = calcDisciplinedWeight(tenStats.current, tenStats.maxHist, 15) * penaltyFactor;
-        var wUnit = calcDisciplinedWeight(unitStats.current, unitStats.maxHist, 15) * penaltyFactor;
+        var wTen = calcDisciplinedWeight(tenStats.current, tenStats.maxHist, 15);
+        var wUnit = calcDisciplinedWeight(unitStats.current, unitStats.maxHist, 15);
         var wDiagonal = diagonalAnalysis.active ? 50 : 0;
 
         var excludedMap = getEffectiveExcludedNums();
@@ -1169,81 +1202,57 @@ function doPredict() {
             var iSize = i >= 25 ? "大" : "小";
             var iColor = getColorName(i);
             var iIsHome = isHomeZodiac(getZodiac(i)) ? "家肖" : "野肖";
-            var iTen = Math.floor(i / 10);
-            var iUnit = i % 10;
 
-            if (parityZigzag.active && iParity === parityZigzag.next) score += wParity;
-            else if (!parityZigzag.active) score += wParity;
+            if (colorCycle.active  && iColor  === colorCycle.next)  score += wColor;
+            if (homeCycle.active   && iIsHome === homeCycle.next)   score += wZodiac;
+            if (parityCycle.active && iParity === parityCycle.next) score += wParity;
+            if (sizeCycle.active   && iSize   === sizeCycle.next)   score += wSize;
 
-            if (sizeZigzag.active && iSize === sizeZigzag.next) score += wSize;
-            if (colorZigzag.active && iColor === colorZigzag.next) score += wColor;
-            if (zodiacZigzag.active && iIsHome === zodiacZigzag.next) score += wZodiac;
-
-            if (iTen === Math.floor(last.special_num / 10)) score += wTen;
-            if (iUnit === last.special_num % 10) score += wUnit;
+            if (Math.floor(i / 10) === Math.floor(last.special_num / 10)) score += wTen;
+            if (i % 10 === last.special_num % 10) score += wUnit;
             if (diagonalAnalysis.active && i === diagonalAnalysis.target) score += wDiagonal;
 
             var omitVal = OMISSION_DATA[i] || 0;
             score += Math.min(20, Math.floor(omitVal / 3));
 
-            pool.push({
-                num: i,
-                anim: getZodiac(i),
-                omit: omitVal,
-                score: score
-            });
+            pool.push({ num: i, anim: getZodiac(i), omit: omitVal, score: score });
         }
 
         pool.sort(function(a, b) { return b.score !== a.score ? b.score - a.score : a.omit - b.omit; });
         var topPool = pool.slice(0, 8);
 
-        var zigzagMsgs = [];
-        if (parityZigzag.active) zigzagMsgs.push(parityZigzag.desc);
-        if (sizeZigzag.active) zigzagMsgs.push(sizeZigzag.desc);
-        if (colorZigzag.active) zigzagMsgs.push(colorZigzag.desc);
-        if (zodiacZigzag.active) zigzagMsgs.push(zodiacZigzag.desc);
+        var triggeredDims = {};
+        if (colorCycle.active)  triggeredDims["波色"]  = colorCycle.next;
+        if (homeCycle.active)   triggeredDims["家野肖"] = homeCycle.next;
+        if (parityCycle.active) triggeredDims["单双"]  = parityCycle.next;
+        if (sizeCycle.active)   triggeredDims["大小"]  = sizeCycle.next;
 
-        var adaptiveNotice = "";
-        if (ADAPTIVE_OPTIMIZER.penaltyDimensions.length > 0) {
-            adaptiveNotice = '<br>• <b>🔄 自适应闭环修正：</b> 已根据上一期失误自动下调惯性权重，强化防错规避。';
-        }
+        var cycleMsgs = [
+            colorCycle.desc  + "（倍率 " + DIM_ADAPTIVE_MULTIPLIERS["波色"] + "x）",
+            homeCycle.desc   + "（倍率 " + DIM_ADAPTIVE_MULTIPLIERS["家野肖"] + "x）",
+            parityCycle.desc + "（倍率 " + DIM_ADAPTIVE_MULTIPLIERS["单双"] + "x）",
+            sizeCycle.desc   + "（倍率 " + DIM_ADAPTIVE_MULTIPLIERS["大小"] + "x）"
+        ];
 
         var numStr = MANUAL_EXCLUDED.nums.length > 0 ? MANUAL_EXCLUDED.nums.map(function(x){return x<10?"0"+x:""+x;}).join("、") : "无";
         var zodStr = MANUAL_EXCLUDED.zodiacs.length > 0 ? MANUAL_EXCLUDED.zodiacs.join("、") : "无";
         var tailStr = MANUAL_EXCLUDED.tails.length > 0 ? MANUAL_EXCLUDED.tails.map(function(x){return x+"尾";}).join("、") : "无";
 
-        var analysisHtml = 
+        var analysisHtml =
             '• <b>手动排除条件：</b> <span class="badge badge-amber">号码[' + numStr + '] | 生肖[' + zodStr + '] | 尾数[' + tailStr + ']</span>' +
             '<div class="reason-box">💡 <b>手动控制说明：</b>已按您本期的手动选择排除对应号码、生肖及尾数，其余号码参与全维智能打分。</div>' +
 
-            '• <b>🔥 近10期跳跃形态高权：</b> <span class="badge badge-zigzag">' + 
-            (zigzagMsgs.length > 0 ? "已捕捉成型跳跃走势并设为第一优先级加权" : "当前未形成显著周期跳跃，按常规纪律分析") + '</span>' +
-            '<div class="reason-box">💡 <b>跳跃详情：</b>' + (zigzagMsgs.length > 0 ? zigzagMsgs.join("；") : "暂无符合单跳、AABB双跳或ABB/BAA三期循环规律。") + '</div>' +
+            '• <b>🔄 四维周期推演 + 自适应调权：</b> <span class="badge badge-zigzag">波色/家野肖/单双/大小 独立推演并动态调权</span>' +
+            '<div class="reason-box">💡 <b>周期推演详情：</b><br>' + cycleMsgs.join("<br>") + '</div>' +
 
             '• <b>📐 斜线走势分析：</b> <span class="badge badge-purple">' + diagonalAnalysis.msg + '</span>' +
-            '<div class="reason-box">💡 <b>分析说明：</b>斜线步长追踪已纳入加权体系。</div>' +
-
-            '• <b>🐇 家野肖历史纪律：</b> <span class="badge ' + (zodiacStats.current >= 2 ? 'badge-blue' : 'badge-gray') + '">当前连开 ' + zodiacStats.current + ' 期 (史高 ' + zodiacStats.maxHist + ' 期) ' + (zodiacStats.current < 2 ? '【未达2期暂不启动加权】' : '【已启动加权】') + '</span>' +
-            '<div class="reason-box">💡 <b>纪律约束：</b>顺势必须达到 2 期以上才启动加权。</div>' +
-
-            '• <b>📊 大小历史纪律：</b> <span class="badge ' + (sizeStats.current >= 2 ? 'badge-blue' : 'badge-gray') + '">当前连开 ' + sizeStats.current + ' 期 (史高 ' + sizeStats.maxHist + ' 期) ' + (sizeStats.current < 2 ? '【未达2期暂不启动加权】' : '【已启动加权】') + '</span>' +
-            '<div class="reason-box">💡 <b>纪律约束：</b>大小顺势需达到 2 期以上才启动加权。</div>' +
-
-            '• <b>🔢 单双历史纪律：</b> <span class="badge ' + (parityStats.current >= 2 ? 'badge-blue' : 'badge-gray') + '">当前连开 ' + parityStats.current + ' 期 (史高 ' + parityStats.maxHist + ' 期) ' + (parityStats.current < 2 ? '【未达2期暂不启动加权】' : '【已启动加权】') + '</span>' +
-            '<div class="reason-box">💡 <b>纪律约束：</b>单双顺势需达到 2 期以上才启动加权。</div>' +
-
-            '• <b>🎨 波色历史纪律：</b> <span class="badge ' + (colorStats.current >= 2 ? 'badge-green' : 'badge-gray') + '">当前连开 ' + colorStats.current + ' 期 (史高 ' + colorStats.maxHist + ' 期) ' + (colorStats.current < 2 ? '【未达2期暂不启动加权】' : '【已启动加权】') + '</span>' +
-            '<div class="reason-box">💡 <b>纪律约束：</b>波色顺势需达到 2 期同色以上才启动加权。</div>' +
-
-            '• <b>十位与个位历史纪律：</b> <span class="badge badge-teal">十位连开 ' + tenStats.current + '期(史高' + tenStats.maxHist + ') | 个位连开 ' + unitStats.current + '期(史高' + unitStats.maxHist + ') ' + (tenStats.current < 2 && unitStats.current < 2 ? '【未达2期暂不启动】' : '【已启动】') + '</span>' +
-            '<div class="reason-box">💡 <b>纪律约束：</b>十位与个位均需达到 2 期以上才启动加权。</div>' + adaptiveNotice;
+            '<div class="reason-box">💡 <b>分析说明：</b>斜线步长追踪已纳入加权体系。</div>';
 
         document.getElementById("analysis-results").innerHTML = analysisHtml;
 
         if (topPool.length > 0) {
             var best = topPool[0];
             var bestPad = best.num < 10 ? "0" + best.num : "" + best.num;
-
             var poolStrs = [];
             var sortedPoolNums = [];
             for (var j = 0; j < topPool.length; j++) {
@@ -1261,24 +1270,20 @@ function doPredict() {
             for (var r = 0; r < PREDICT_RECORDS.length; r++) {
                 if (PREDICT_RECORDS[r].targetPeriod === nextPeriod) { existIndex = r; break; }
             }
-
             var recordItem = {
                 targetPeriod: nextPeriod,
                 bestNum: best.num,
                 poolNums: sortedPoolNums,
                 poolStr: poolStrs.join('、'),
+                triggeredDims: triggeredDims,
                 result: "等待开奖",
                 reviewText: ""
             };
-
             if (existIndex !== -1) PREDICT_RECORDS[existIndex] = recordItem;
             else PREDICT_RECORDS.unshift(recordItem);
 
-            localStorage.setItem("MACAU_PREDICT_RECORDS_V16", JSON.stringify(PREDICT_RECORDS));
+            localStorage.setItem("MACAU_PREDICT_RECORDS_V19", JSON.stringify(PREDICT_RECORDS));
             checkPredictRecords();
-        } else {
-            document.getElementById("recommended-code").innerText = "⚠️ 排除过多，无可用号码";
-            document.getElementById("pool-display").innerHTML = "请减少部分手动排除的号码、生肖或尾数后再预测。";
         }
     } catch(err) { console.log(err); }
 }
